@@ -63,7 +63,7 @@ jobs:
   telegram_notify:
     runs-on: ubuntu-latest
     needs: deploy
-	if: ${{ needs.deploy.result == 'success' }}
+    if: ${{ needs.deploy.result == 'success' }}
     steps:
       - name: Send Telegram Message
         run: |
