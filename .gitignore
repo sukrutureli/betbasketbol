@@ -1,0 +1,60 @@
+# ==========================================
+#  Java / Maven / Eclipse Projesi .gitignore
+# ==========================================
+
+# --- IDE klasörleri ---
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# --- Maven build çıktıları ---
+/target/
+**/target/
+
+# --- Log ve temp dosyaları ---
+*.log
+*.tmp
+*.bak
+*.swp
+
+# --- İşletim sistemi dosyaları ---
+.DS_Store
+Thumbs.db
+
+# --- Test coverage / report çıktıları ---
+/coverage/
+/test-output/
+/surefire-reports/
+
+# --- Java derleme çıktıları ---
+*.class
+
+# --- Local config / environment ---
+.env
+*.properties.local
+*.yml.local
+
+# --- HTML üretimi (sadece public dizini hariç tutma) ---
+!public/
+public/*
+!public/*.html
+
+# --- Netlify / GitHub Pages cache ---
+.netlify/
+dist/
+build/
+
+# --- Eclipse metadata ---
+/bin/
+.metadata/
+
+# --- Diğer gereksiz ---
+*.orig
+*.rej
+*.zip
+*.tar
+*.tar.gz
+*.7z
