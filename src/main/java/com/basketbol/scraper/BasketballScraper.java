@@ -397,66 +397,66 @@ public class BasketballScraper {
 	}
 
 	private List<MatchResult> extractMatchResults(String matchType, String originalUrl, int homeOrAway) {
-		List<MatchResult> matches = new ArrayList<>();
-		String selectorString = "";
-		if (homeOrAway == 1) {
-			selectorString = "div[data-test-id='LastMatchesTableFirst'] table";
-		} else if (homeOrAway == 2) {
-			selectorString = "div[data-test-id='LastMatchesTableSecond'] table";
-		}
+	    List<MatchResult> matches = new ArrayList<>();
 
-		try {
+	    String selectorString = (homeOrAway == 1)
+	            ? "div[data-test-id='LastMatchesTableFirst'] div[data-test-id='LastMatchesTable'] table"
+	            : "div[data-test-id='LastMatchesTableSecond'] div[data-test-id='LastMatchesTable'] table";
 
-			List<WebElement> table = driver.findElements(By.cssSelector(selectorString));
-			if (!table.isEmpty()) {
-				if (hasNoData(table.get(0))) {
-					System.out.println("Bu müsabaka için veri yok, tablo beklenmeyecek.");
-					return matches;
-				}
-			}
+	    try {
+	        int retries = 0;
+	        while (driver.findElements(By.cssSelector(selectorString)).isEmpty() && retries < 20) {
+	            Thread.sleep(500);
+	            retries++;
+	        }
 
-			int retries = 0;
-			while (driver.findElements(By.cssSelector("tbody tr")).isEmpty() && retries < 20) {
-				Thread.sleep(500); // 0.5 saniye bekle
-				retries++;
-			}
+	        List<WebElement> table = driver.findElements(By.cssSelector(selectorString));
+	        if (table.isEmpty()) {
+	            System.out.println("⚠️ Tablo bulunamadı: " + selectorString);
+	            return matches;
+	        }
 
-			List<WebElement> rows = table.get(0).findElements(By.cssSelector("tbody tr"));
+	        if (hasNoData(table.get(0))) {
+	            System.out.println("Bu müsabaka için veri yok, tablo beklenmeyecek.");
+	            return matches;
+	        }
 
-			for (WebElement row : rows) {
-				try {
-					// Takım isimlerini çek
-					String homeTeam = row.findElement(By.cssSelector("div[data-test-id='HomeTeam']")).getText().trim();
-					String awayTeam = row.findElement(By.cssSelector("div[data-test-id='AwayTeam']")).getText().trim();
+	        List<WebElement> rows = table.get(0).findElements(By.cssSelector("tbody tr"));
+	        if (rows.isEmpty()) {
+	            System.out.println("⚠️ Tablo satırları bulunamadı, muhtemelen boş sayfa.");
+	            return matches;
+	        }
 
-					// Skoru güvenli şekilde çek
-					String scoreText = extractScore(row);
-					int homeScore = -1;
-					int awayScore = -1;
-					if (!scoreText.equals("-")) {
-						String[] parts = scoreText.split("-");
-						if (parts.length == 2) {
-							homeScore = Integer.parseInt(parts[0].trim());
-							awayScore = Integer.parseInt(parts[1].trim());
-						}
-					}
+	        for (WebElement row : rows) {
+	            try {
+	                String homeTeam = row.findElement(By.cssSelector("div[data-test-id='HomeTeam'] span")).getText().trim();
+	                String awayTeam = row.findElement(By.cssSelector("div[data-test-id='AwayTeam'] span")).getText().trim();
 
-					// Lig + tarih bilgisini al
-					String leagueAndDate = row.findElement(By.cssSelector("td[data-test-id='TableBodyLeague']"))
-							.getText();
+	                String scoreText = extractScore(row);
+	                int homeScore = -1, awayScore = -1;
+	                if (!scoreText.equals("-")) {
+	                    String[] parts = scoreText.split("-");
+	                    if (parts.length == 2) {
+	                        homeScore = Integer.parseInt(parts[0].trim());
+	                        awayScore = Integer.parseInt(parts[1].trim());
+	                    }
+	                }
 
-					MatchResult match = new MatchResult(homeTeam, awayTeam, homeScore, awayScore, leagueAndDate, "",
-							matchType);
-					matches.add(match);
+	                String leagueAndDate = row.findElement(By.cssSelector("td[data-test-id='TableBodyLeague']")).getText();
 
-				} catch (Exception e) {
-					System.out.println("Satır işlenemedi: " + e.getMessage());
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("extractMatchResults hatası: " + e.getMessage());
-		}
-		return matches;
+	                MatchResult match = new MatchResult(homeTeam, awayTeam, homeScore, awayScore, leagueAndDate, "", matchType);
+	                matches.add(match);
+
+	            } catch (Exception e) {
+	                System.out.println("Satır işlenemedi: " + e.getMessage());
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        System.out.println("extractMatchResults hatası: " + e.getMessage());
+	    }
+
+	    return matches;
 	}
 
 	private void selectTournament() {
