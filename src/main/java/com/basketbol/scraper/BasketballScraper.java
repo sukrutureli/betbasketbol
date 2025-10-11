@@ -275,6 +275,13 @@ public class BasketballScraper {
 			driver.get(url);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
 			Thread.sleep(1500);
+
+			int retries = 0;
+			while (driver.findElements(By.cssSelector("a[data-test-id='TeamLink'] span[data-test-id='HeaderTeams']"))
+					.isEmpty() && retries < 20) {
+				Thread.sleep(500); // 0.5 saniye bekle
+				retries++;
+			}
 			// Tüm takım linklerini bul
 			List<WebElement> teamLinks = driver
 					.findElements(By.cssSelector("a[data-test-id='TeamLink'] span[data-test-id='HeaderTeams']"));
