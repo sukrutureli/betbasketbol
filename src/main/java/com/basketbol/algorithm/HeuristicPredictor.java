@@ -9,7 +9,7 @@ public class HeuristicPredictor {
         System.out.println("🧮 Tahminler yapılıyor...");
         for (MatchInfo m : matches) {
             // Basit örnek: ev sahibi avantajı
-            m.setPrediction("MS 1 (örnek tahmin)");
+            //m.setPrediction("MS 1 (örnek tahmin)");
         }
     }
 }

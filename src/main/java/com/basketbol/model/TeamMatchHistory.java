@@ -1,0 +1,156 @@
+package com.basketbol.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TeamMatchHistory {
+	private String teamName;
+	private String teamEv;
+	private String teamDep;
+	private String detailUrl;
+	private Odds odds;
+	private List<MatchResult> rekabetGecmisi;
+	private List<MatchResult> sonMaclarHome;
+	private List<MatchResult> sonMaclarAway;
+
+	public TeamMatchHistory(String teamName, String teamEv, String teamDep, String detailUrl, Odds odds) {
+		this.teamName = teamName;
+		this.teamEv = teamEv;
+		this.teamDep = teamDep;
+		this.setDetailUrl(detailUrl);
+        this.rekabetGecmisi = new ArrayList<>();
+        this.sonMaclarHome = new ArrayList<>();
+        this.sonMaclarAway = new ArrayList<>();
+		this.odds = odds;
+	}
+	
+    // Add methods
+    public void addRekabetGecmisiMatch(MatchResult match) {
+        rekabetGecmisi.add(match);
+    }
+    
+    public void addSonMacMatch(MatchResult match, int homeOrAway) {
+        if (homeOrAway == 1) {
+            sonMaclarHome.add(match);
+        } else if (homeOrAway == 2) {
+            sonMaclarAway.add(match);
+        } 
+    }
+    
+    // Utility methods
+    public int getTotalMatches() {
+        return rekabetGecmisi.size() + sonMaclarHome.size() + sonMaclarAway.size();
+    }
+    
+    public List<MatchResult> getAllMatches() {
+        List<MatchResult> allMatches = new ArrayList<>();
+        allMatches.addAll(rekabetGecmisi);
+        allMatches.addAll(sonMaclarHome);
+        allMatches.addAll(sonMaclarAway);
+        return allMatches;
+    }
+
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+
+	public String getTeamEv() {
+		return teamEv;
+	}
+
+	public void setTeamEv(String teamEv) {
+		this.teamEv = teamEv;
+	}
+
+	public String getTeamDep() {
+		return teamDep;
+	}
+
+	public void setTeamDep(String teamDep) {
+		this.teamDep = teamDep;
+	}
+
+	public List<MatchResult> getRekabetGecmisi() {
+		return rekabetGecmisi;
+	}
+
+	public void setRekabetGecmisi(List<MatchResult> rekabetGecmisi) {
+		this.rekabetGecmisi = rekabetGecmisi;
+	}
+
+	public List<MatchResult> getSonMaclarHome() {
+		return sonMaclarHome;
+	}
+
+	public void setSonMaclarHome(List<MatchResult> sonMaclarHome) {
+		this.sonMaclarHome = sonMaclarHome;
+	}
+
+	public List<MatchResult> getSonMaclarAway() {
+		return sonMaclarAway;
+	}
+
+	public void setSonMaclarAway(List<MatchResult> sonMaclarAway) {
+		this.sonMaclarAway = sonMaclarAway;
+	}
+	
+	public String getDetailUrl() {
+		return detailUrl;
+	}
+
+	public void setDetailUrl(String detailUrl) {
+		this.detailUrl = detailUrl;
+	}
+
+	public int getUst() {
+        int ust = 0;
+
+        for (int i = 0; i < rekabetGecmisi.size(); i++) {
+            if ((rekabetGecmisi.get(i).getHomeScore() + rekabetGecmisi.get(i).getAwayScore()) > odds.gethOverUnderValue()) {
+                ust++;
+            } 
+        }
+        
+        for (int i = 0; i < sonMaclarHome.size(); i++) {
+            if ((sonMaclarHome.get(i).getHomeScore() + sonMaclarHome.get(i).getAwayScore()) > odds.gethOverUnderValue()) {
+                ust++;
+            } 
+        }
+        
+        for (int i = 0; i < sonMaclarAway.size(); i++) {
+            if ((sonMaclarAway.get(i).getHomeScore() + sonMaclarAway.get(i).getAwayScore()) > odds.gethOverUnderValue()) {
+                ust++;
+            } 
+        }
+        return ust;
+    }
+	
+    public int getAlt() {
+        return getTotalMatches() - getUst();
+    }
+	
+    public String toStringAsPercentage(int value, String type) {
+        return type + " : %" + ((int)(((value * 1.0) / getTotalMatches()) * 100));
+    }
+	
+    public String getStyle(int value, String type) {
+        String color = "background-color: #c8facc;";
+        //int percentage = ((int)(((value * 1.0) / getTotalMatchesIn10()) * 100));
+        int percentage = 0;
+
+        if (type.startsWith("MS")) {
+            if (percentage >= 50) {
+                return color;
+            }
+        } else {
+            if (percentage >= 70) {
+                return color;
+            }
+        }
+        return "";
+    }
+}
