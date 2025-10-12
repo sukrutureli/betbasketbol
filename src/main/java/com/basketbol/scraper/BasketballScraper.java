@@ -14,246 +14,289 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class BasketballScraper {
+
     private WebDriver driver;
     private JavascriptExecutor js;
-    private WebDriverWait wait;
-
+    
     public BasketballScraper() {
         setupDriver();
     }
 
     private void setupDriver() {
+        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver"); // Windows'taysan değiştir
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu",
-                "--window-size=1920,1080", "--disable-extensions", "--disable-blink-features=AutomationControlled",
-                "--disable-default-apps", "--disable-background-timer-throttling",
-                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-        options.setBinary("/usr/bin/google-chrome");
+        options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
+                "--disable-gpu", "--window-size=1920,1080", "--disable-extensions",
+                "--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
         options.setExperimentalOption("useAutomationExtension", false);
-
-        this.driver = new ChromeDriver(options);
-        this.js = (JavascriptExecutor) driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        driver = new ChromeDriver(options);
+        js = (JavascriptExecutor) driver;
+        new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
+    // ============================ ANA SAYFA ============================
     public List<MatchInfo> fetchMatches() {
         List<MatchInfo> list = new ArrayList<>();
-        ZoneId turkeyZone = ZoneId.of("Europe/Istanbul");
-        LocalDate today = LocalDate.now(turkeyZone);
-        String todayStr = today.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-
         try {
-            String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + todayStr + "&le=2&ocg=MS&gt=Popüler";
+            String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Popüler";
             driver.get(url);
             PageWaitUtils.safeWaitForLoad(driver, 10);
-            performScrolling();
+            scrollToEnd();
 
             List<WebElement> events = driver.findElements(By.cssSelector("div.odd-col.event-list.pre-event"));
             System.out.println("Final element sayısı: " + events.size());
 
-            for (int idx = 0; idx < events.size(); idx++) {
-                try {
-                    WebElement event = events.get(idx);
-                    MatchInfo matchInfo = extractMatchInfo(event, idx);
-                    if (matchInfo != null) list.add(matchInfo);
-                } catch (Exception e) {
-                    System.out.println("Element " + idx + " işlenirken hata: " + e.getMessage());
-                }
+            for (int i = 0; i < events.size(); i++) {
+                WebElement e = events.get(i);
+                MatchInfo info = extractMatchInfo(e, i);
+                if (info != null) list.add(info);
             }
 
         } catch (Exception e) {
-            System.out.println("Ana sayfa scraping hatası: " + e.getMessage());
+            System.out.println("fetchMatches hatası: " + e.getMessage());
         }
         return list;
     }
 
-    private void performScrolling() {
-        try {
-            int previousCount = -1, stableRounds = 0;
-            while (stableRounds < 3) {
-                List<WebElement> matches = driver.findElements(By.cssSelector("div.odd-col.event-list.pre-event"));
-                int currentCount = matches.size();
-                js.executeScript("window.scrollBy(0, 1500);");
-                Thread.sleep(1000);
-                stableRounds = (currentCount == previousCount) ? stableRounds + 1 : 0;
-                previousCount = currentCount;
-            }
-        } catch (Exception e) {
-            System.out.println("Scroll işlemi hatası: " + e.getMessage());
+    private void scrollToEnd() throws InterruptedException {
+        int stable = 0, prev = -1;
+        while (stable < 3) {
+            List<WebElement> events = driver.findElements(By.cssSelector("div.odd-col.event-list.pre-event"));
+            int size = events.size();
+            js.executeScript("window.scrollBy(0,1500)");
+            Thread.sleep(800);
+            stable = (size == prev) ? stable + 1 : 0;
+            prev = size;
         }
     }
 
-    private MatchInfo extractMatchInfo(WebElement event, int idx) {
+    private MatchInfo extractMatchInfo(WebElement event, int i) {
         try {
             js.executeScript("arguments[0].scrollIntoView({block:'center'});", event);
-            Thread.sleep(200);
-
-            String matchName = "İsim bulunamadı";
-            String detailUrl = null;
+            Thread.sleep(100);
+            String name = "İsim bulunamadı", url = null;
 
             List<WebElement> nameLinks = event.findElements(By.cssSelector("div.name a"));
             if (!nameLinks.isEmpty()) {
-                WebElement link = nameLinks.get(0);
-                matchName = link.getText().trim();
-                detailUrl = link.getAttribute("href");
+                name = nameLinks.get(0).getText().trim();
+                url = nameLinks.get(0).getAttribute("href");
             }
 
-            if (detailUrl == null || detailUrl.isEmpty()) {
-                for (WebElement link : event.findElements(By.tagName("a"))) {
-                    String href = link.getAttribute("href");
+            if (url == null) {
+                for (WebElement a : event.findElements(By.tagName("a"))) {
+                    String href = a.getAttribute("href");
                     if (href != null && href.contains("istatistik.nesine.com")) {
-                        detailUrl = href;
-                        if (matchName.equals("İsim bulunamadı")) {
-                            String t = link.getText().trim();
-                            if (!t.isEmpty()) matchName = t;
-                        }
+                        url = href;
                         break;
                     }
                 }
             }
 
-            String matchTime = extractMatchTime(event);
+            String time = extractMatchTime(event);
             Odds odds = extractOdds(event);
-
-            if (matchName.equals("İsim bulunamadı") && matchTime.equals("Zaman bulunamadı")) {
-                return null;
-            }
-
-            return new MatchInfo(matchName, matchTime, detailUrl, odds, idx);
+            return new MatchInfo(name, time, url, odds, i);
         } catch (Exception e) {
-            System.out.println("Element " + idx + " extract hatası: " + e.getMessage());
+            System.out.println("extractMatchInfo hata: " + e.getMessage());
             return null;
         }
     }
 
-    private String extractMatchTime(WebElement event) {
+    private String extractMatchTime(WebElement e) {
         try {
-            List<WebElement> timeList = event.findElements(By.cssSelector("div.time > span"));
-            return !timeList.isEmpty() ? timeList.get(0).getText().trim() : "Zaman bulunamadı";
-        } catch (Exception e) {
-            return "Zaman hatası";
+            List<WebElement> spans = e.findElements(By.cssSelector("div.time span"));
+            return spans.isEmpty() ? "?" : spans.get(0).getText().trim();
+        } catch (Exception ex) {
+            return "?";
         }
     }
 
+    // ============================ ODDS ============================
     private Odds extractOdds(WebElement event) {
-        String[] odds = {"-", "-", "-", "-", "-", "-", "-", "-", "-"};
+        String[] o = {"-", "-", "-", "-", "-", "-", "-", "-", "-"};
         try {
-            List<WebElement> mainOdds = event.findElements(By.cssSelector("dd.col-02.event-row .cell"));
-            for (int i = 0; i < Math.min(2, mainOdds.size()); i++) {
-                String text = mainOdds.get(i).getText().trim();
-                odds[i] = text.isEmpty() ? "-" : text;
-            }
-        } catch (Exception ignored) {}
-        return new Odds(toDouble(odds[0]), toDouble(odds[1]), toDouble(odds[2]), toDouble(odds[3]), toDouble(odds[4]),
-                toDouble(odds[5]), toDouble(odds[6]), toDouble(odds[7]), toDouble(odds[8]));
-    }
+            List<WebElement> main = event.findElements(By.cssSelector("dd.col-02.event-row .cell"));
+            for (int i = 0; i < main.size() && i < 2; i++)
+                o[i] = main.get(i).findElement(By.cssSelector("a.odd")).getText().trim();
 
-    public Double toDouble(String oddInString) {
-        oddInString = oddInString.replaceAll(",", ".");
-        return oddInString.equals("-") ? 0.0 : Double.valueOf(oddInString);
-    }
+            List<WebElement> overUnder = event.findElements(By.cssSelector("dd.col-03.event-row .cell"));
+            for (int i = 0; i < overUnder.size() && i < 3; i++)
+                o[2 + i] = overUnder.get(i).findElement(By.cssSelector(".odd")).getText().trim();
 
-    public TeamMatchHistory scrapeTeamHistory(String detailUrl, String teamName, Odds odds) {
-        if (detailUrl == null || detailUrl.isEmpty()) return null;
-        List<String> names = scrapeDetailUrl(detailUrl);
-        if (names.size() < 3) {
-            System.out.println("⚠️ Takım isimleri çekilemedi, atlanıyor: " + detailUrl);
-            return null;
-        }
-
-        TeamMatchHistory teamHistory = new TeamMatchHistory(names.get(0), names.get(1), names.get(2), detailUrl, odds);
-        try {
-            List<MatchResult> rekabetGecmisi = scrapeRekabetGecmisi(detailUrl + "/rekabet-gecmisi");
-            rekabetGecmisi.forEach(teamHistory::addRekabetGecmisiMatch);
-
-            List<MatchResult> sonMaclarHome = scrapeSonMaclar(detailUrl + "/son-maclari", 1);
-            sonMaclarHome.forEach(m -> teamHistory.addSonMacMatch(m, 1));
-
-            List<MatchResult> sonMaclarAway = scrapeSonMaclar(detailUrl + "/son-maclari", 2);
-            sonMaclarAway.forEach(m -> teamHistory.addSonMacMatch(m, 2));
+            List<WebElement> extra = event.findElements(By.cssSelector("dd.col-04.event-row .cell"));
+            for (int i = 0; i < extra.size() && i < 4; i++)
+                o[5 + i] = extra.get(i).findElement(By.cssSelector(".odd")).getText().trim();
 
         } catch (Exception e) {
-            System.out.println("Takım geçmişi çekme hatası: " + e.getMessage());
+            System.out.println("Oran hatası: " + e.getMessage());
         }
-        return teamHistory;
+
+        return new Odds(toDouble(o[0]), toDouble(o[1]), toDouble(o[2]),
+                toDouble(o[3]), toDouble(o[4]), toDouble(o[5]),
+                toDouble(o[6]), toDouble(o[7]), toDouble(o[8]));
     }
 
-    private List<String> scrapeDetailUrl(String url) {
-        List<String> names = new ArrayList<>();
+    private double toDouble(String s) {
         try {
-            driver.get(url);
-            PageWaitUtils.safeWaitForLoad(driver, 10);
-
-            List<WebElement> teamLinks = driver.findElements(By.cssSelector("a[data-test-id='TeamLink'] span[data-test-id='HeaderTeams']"));
-            String homeTeam = teamLinks.size() > 0 ? teamLinks.get(0).getText().trim() : "-";
-            String awayTeam = teamLinks.size() > 1 ? teamLinks.get(1).getText().trim() : "-";
-
-            names.add(homeTeam + " - " + awayTeam);
-            names.add(homeTeam);
-            names.add(awayTeam);
+            s = s.replace(",", ".");
+            return s.equals("-") ? 0.0 : Double.parseDouble(s);
         } catch (Exception e) {
-            System.out.println("Rekabet geçmişi hatası: " + e.getMessage());
+            return 0.0;
         }
-        return names;
+    }
+
+    // ============================ TAKIM GEÇMİŞİ ============================
+    public TeamMatchHistory scrapeTeamHistory(String detailUrl, String name, Odds odds) {
+        if (detailUrl == null || !detailUrl.startsWith("http")) return null;
+
+        TeamMatchHistory th = new TeamMatchHistory(name, name, name, detailUrl, odds);
+        try {
+            List<MatchResult> rekabet = scrapeRekabetGecmisi(detailUrl + "/rekabet-gecmisi");
+            rekabet.forEach(th::addRekabetGecmisiMatch);
+
+            List<MatchResult> sonHome = scrapeSonMaclar(detailUrl + "/son-maclari", 1);
+            sonHome.forEach(m -> th.addSonMacMatch(m, 1));
+
+            List<MatchResult> sonAway = scrapeSonMaclar(detailUrl + "/son-maclari", 2);
+            sonAway.forEach(m -> th.addSonMacMatch(m, 2));
+
+        } catch (Exception e) {
+            System.out.println("scrapeTeamHistory hata: " + e.getMessage());
+        }
+        return th;
     }
 
     private List<MatchResult> scrapeRekabetGecmisi(String url) {
-        List<MatchResult> matches = new ArrayList<>();
+        List<MatchResult> list = new ArrayList<>();
         try {
             driver.get(url);
             PageWaitUtils.safeWaitForLoad(driver, 10);
-
-            if (!PageWaitUtils.elementExists(driver, By.cssSelector("div[data-test-id='CompitionHistoryTable']"), 5)) {
-                return matches;
-            }
-
             selectTournament();
+            list = extractCompetitionHistoryResults("rekabet", url);
         } catch (Exception e) {
             System.out.println("Rekabet geçmişi hatası: " + e.getMessage());
         }
-        return matches;
+        return list;
     }
 
-    private List<MatchResult> scrapeSonMaclar(String url, int homeOrAway) {
-        List<MatchResult> matches = new ArrayList<>();
+    private List<MatchResult> scrapeSonMaclar(String url, int side) {
+        List<MatchResult> list = new ArrayList<>();
         try {
             driver.get(url);
             PageWaitUtils.safeWaitForLoad(driver, 10);
-
-            String selector = (homeOrAway == 1)
-                    ? "div[data-test-id='LastMatchesTableFirst'] table"
-                    : "div[data-test-id='LastMatchesTableSecond'] table";
-
-            if (!PageWaitUtils.elementExists(driver, By.cssSelector(selector), 8)) {
-                System.out.println("⚠️ Tablo bulunamadı: " + selector);
-                return Collections.emptyList();
-            }
-
+            Thread.sleep(700);
             selectTournament();
+            list = extractMatchResults("sonmaclar", url, side);
         } catch (Exception e) {
-            System.out.println("Son maçlar hatası: " + e.getMessage());
+            System.out.println("Son maç hatası: " + e.getMessage());
         }
-        return matches;
+        return list;
     }
 
+    // ============================ TABLO PARSING ============================
+    private List<MatchResult> extractCompetitionHistoryResults(String type, String url) {
+        List<MatchResult> list = new ArrayList<>();
+        try {
+            List<WebElement> rows = driver.findElements(By.cssSelector("div[data-test-id='CompitionHistoryTableItem']"));
+            if (rows.isEmpty()) {
+                System.out.println("⚠️ Rekabet tablosu bulunamadı: " + url);
+                return list;
+            }
+
+            for (WebElement r : rows) {
+                try {
+                    String league = getTextSafe(r, "[data-test-id='CompitionTableItemLeague']");
+                    String season = getTextSafe(r, "[data-test-id='CompitionTableItemSeason']");
+                    String home = getTextSafe(r, "div[data-test-id='HomeTeam']");
+                    String away = getTextSafe(r, "div[data-test-id='AwayTeam']");
+                    String score = extractScore(r);
+                    int[] sc = parseScore(score);
+                    list.add(new MatchResult(home, away, sc[0], sc[1], season, league, type));
+                } catch (Exception ex) {
+                    System.out.println("Rekabet satırı hatası: " + ex.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("extractCompetitionHistoryResults hata: " + e.getMessage());
+        }
+        return list;
+    }
+
+    private List<MatchResult> extractMatchResults(String type, String url, int side) {
+        List<MatchResult> list = new ArrayList<>();
+        String sel = (side == 1)
+                ? "div[data-test-id='LastMatchesTableFirst'] table"
+                : "div[data-test-id='LastMatchesTableSecond'] table";
+        try {
+            List<WebElement> tables = driver.findElements(By.cssSelector(sel));
+            if (tables.isEmpty()) {
+                System.out.println("⚠️ Tablo bulunamadı: " + sel);
+                return list;
+            }
+
+            for (WebElement r : tables.get(0).findElements(By.cssSelector("tbody tr"))) {
+                try {
+                    String home = getTextSafe(r, "div[data-test-id='HomeTeam']");
+                    String away = getTextSafe(r, "div[data-test-id='AwayTeam']");
+                    String score = extractScore(r);
+                    int[] sc = parseScore(score);
+                    String league = getTextSafe(r, "td[data-test-id='TableBodyLeague']");
+                    list.add(new MatchResult(home, away, sc[0], sc[1], league, "", type));
+                } catch (Exception ex) {
+                    System.out.println("Son maç satırı hatası: " + ex.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("extractMatchResults hata: " + e.getMessage());
+        }
+        return list;
+    }
+
+    private String extractScore(WebElement r) {
+        try {
+            for (WebElement s : r.findElements(By.cssSelector("button[data-test-id='NsnButton'] span"))) {
+                String t = s.getText().replaceAll("\\(.*?\\)", "").trim();
+                if (t.matches("\\d+\\s*-\\s*\\d+")) return t;
+            }
+        } catch (Exception e) {}
+        return "-";
+    }
+
+    private int[] parseScore(String s) {
+        try {
+            String[] p = s.split("-");
+            return new int[]{Integer.parseInt(p[0].trim()), Integer.parseInt(p[1].trim())};
+        } catch (Exception e) {
+            return new int[]{-1, -1};
+        }
+    }
+
+    private String getTextSafe(WebElement parent, String css) {
+        try {
+            return parent.findElement(By.cssSelector(css)).getText().trim();
+        } catch (Exception e) {
+            return "-";
+        }
+    }
+
+    // ============================ TURNUVA SEÇİMİ ============================
     private void selectTournament() {
         try {
-            PageWaitUtils.safeClick(driver, By.cssSelector("div[data-test-id='CustomDropdown']"), 6);
-            PageWaitUtils.safeClick(driver, By.xpath("//div[@role='option']//span[contains(text(), 'Bu Turnuva')]"), 6);
-            PageWaitUtils.safeWaitForLoad(driver, 5);
+            PageWaitUtils.safeClick(driver, By.cssSelector("div[data-test-id='CustomDropdown']"), 5);
+            Thread.sleep(300);
+            PageWaitUtils.safeClick(driver,
+                    By.xpath("//div[@role='option']//span[contains(text(),'Bu Turnuva')]"), 5);
+            Thread.sleep(300);
         } catch (Exception e) {
-            System.out.println("Turnuva seçimi atlandı: " + e.getClass().getSimpleName());
+            System.out.println("Turnuva seçimi atlandı");
         }
     }
 
     public void close() {
-        try {
-            if (driver != null) driver.quit();
-        } catch (Exception ignore) {}
+        try { driver.quit(); } catch (Exception ignored) {}
     }
 }
