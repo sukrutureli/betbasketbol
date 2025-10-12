@@ -77,7 +77,7 @@ public class BasketballScraper {
 			List<WebElement> events = driver.findElements(By.cssSelector("div.odd-col.event-list.pre-event"));
 			System.out.println("Final element sayısı: " + events.size());
 
-			for (int idx = 0; idx < events.size(); idx++) {
+			for (int idx = 0; idx < 5; idx++) {
 				try {
 					WebElement event = events.get(idx);
 					MatchInfo matchInfo = extractMatchInfo(event, idx);
