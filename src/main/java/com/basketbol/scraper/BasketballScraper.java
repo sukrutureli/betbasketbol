@@ -121,14 +121,16 @@ public class BasketballScraper {
             List<WebElement> main = event.findElements(By.cssSelector("dd.col-02.event-row .cell"));
             for (int i = 0; i < main.size() && i < 2; i++)
                 o[i] = main.get(i).findElement(By.cssSelector("a.odd")).getText().trim();
+            
+            List<WebElement> extra = event.findElements(By.cssSelector("dd.col-04.event-row .cell"));
+            for (int i = 0; i < extra.size() && i < 4; i++)
+                o[2 + i] = extra.get(i).findElement(By.cssSelector(".odd")).getText().trim();
 
             List<WebElement> overUnder = event.findElements(By.cssSelector("dd.col-03.event-row .cell"));
             for (int i = 0; i < overUnder.size() && i < 3; i++)
-                o[2 + i] = overUnder.get(i).findElement(By.cssSelector(".odd")).getText().trim();
+                o[6 + i] = overUnder.get(i).findElement(By.cssSelector(".odd")).getText().trim();
 
-            List<WebElement> extra = event.findElements(By.cssSelector("dd.col-04.event-row .cell"));
-            for (int i = 0; i < extra.size() && i < 4; i++)
-                o[5 + i] = extra.get(i).findElement(By.cssSelector(".odd")).getText().trim();
+            
         } catch (Exception e) {
             System.out.println("Oran hatası: " + e.getMessage());
         }
