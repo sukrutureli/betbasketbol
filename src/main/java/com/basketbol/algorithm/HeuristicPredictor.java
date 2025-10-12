@@ -25,7 +25,7 @@ public class HeuristicPredictor implements BettingAlgorithm {
         BasketballStats a = match.getAwayStats();
 
         // barem
-        double barem = 160.0;
+        double barem = -1.0;
         if (match.getOdds() != null && match.getOdds().gethOverUnderValue() > 0)
             barem = match.getOdds().gethOverUnderValue();
 
@@ -38,20 +38,22 @@ public class HeuristicPredictor implements BettingAlgorithm {
             h2hAvgForAway = match.getAvgPointsForAway();
             h2hTotal = match.getH2hAvgTotalPoints();
         }
+        
+        double forWeight = h2hTotal > 0 ? 0.55 : 0.6;
+        double againstWeight = h2hTotal > 0 ? 0.35 : 0.4;
+        double h2hWeight = h2hTotal > 0 ? 0.1 : 0.0;
 
         // ---- Beklenen skor hesaplama ----
         // Ev: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı + ev avantajı
-        double expectedHome = (0.55 * h.getAvgPointsFor()) +
-                              (0.35 * a.getAvgPointsAgainst()) +
-                              (0.10 * h2hAvgForHome) +
+        double expectedHome = (forWeight * h.getAvgPointsFor()) +
+                              (againstWeight * a.getAvgPointsAgainst()) +
+                              (h2hWeight * h2hAvgForHome) +
                               4.0; // ev avantajı
 
         // Deplasman: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı
-        double expectedAway = (0.55 * a.getAvgPointsFor()) +
-                              (0.35 * h.getAvgPointsAgainst()) +
-                              (0.10 * h2hAvgForAway);
-        
-        System.out.println(h2hAvgForHome + " - " + h2hAvgForAway + " - " + h2hTotal);
+        double expectedAway = (forWeight * a.getAvgPointsFor()) +
+                              (againstWeight * h.getAvgPointsAgainst()) +
+                              (h2hWeight * h2hAvgForAway);
 
         // H2H toplam skor ortalamasıyla uyumlu hale getir (stabilizasyon)
         if (h2hTotal > 0) {
@@ -61,8 +63,6 @@ public class HeuristicPredictor implements BettingAlgorithm {
             expectedAway += diff * 0.25;
         }
         
-        
-        System.out.println("-----" + expectedHome + " - " + expectedAway + " - " + (expectedHome + expectedAway));
 
         // ---- Tahmin hesaplama ----
         double diff = expectedHome - expectedAway;
@@ -74,6 +74,10 @@ public class HeuristicPredictor implements BettingAlgorithm {
         // Alt/Üst tahmini
         String ouPick = total > barem + 3 ? "ÜST"
                          : total < barem - 3 ? "ALT" : "Sınırda";
+        
+        if (barem < 0) {
+        	ouPick = "-";
+        }
 
         // Skor tahmini (yuvarlanmış)
         String score = String.format("%d-%d",
