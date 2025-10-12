@@ -274,7 +274,7 @@ public class BasketballScraper {
 		try {
 			driver.get(url);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
-			Thread.sleep(1500);
+			Thread.sleep(2000);
 
 			int retries = 0;
 			while (driver.findElements(By.cssSelector("a[data-test-id='TeamLink'] span[data-test-id='HeaderTeams']"))
@@ -308,7 +308,7 @@ public class BasketballScraper {
 		try {
 			driver.get(url);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
-			Thread.sleep(1500);
+			Thread.sleep(2000);
 
 			List<WebElement> container = driver
 					.findElements(By.cssSelector("div[data-test-id='CompitionHistoryTable']"));
@@ -372,7 +372,7 @@ public class BasketballScraper {
 		try {
 			driver.get(url);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
-			Thread.sleep(1500);
+			Thread.sleep(2000);
 
 			String selectorString = "";
 			if (homeOrAway == 1) {
@@ -465,12 +465,12 @@ public class BasketballScraper {
 			WebElement dropdown = new WebDriverWait(driver, Duration.ofSeconds(15)).until(
 					ExpectedConditions.elementToBeClickable(By.cssSelector("div[data-test-id='CustomDropdown']")));
 			dropdown.click();
-			Thread.sleep(300); // 1000'den 300'e
+			Thread.sleep(1000); // 1000'den 300'e
 
 			WebElement option = new WebDriverWait(driver, Duration.ofSeconds(15)).until(ExpectedConditions
 					.elementToBeClickable(By.xpath("//div[@role='option']//span[contains(text(), 'Bu Turnuva')]")));
 			option.click();
-			Thread.sleep(200); // 1500'den 500'e
+			Thread.sleep(1000); // 1500'den 500'e
 		} catch (Exception e) {
 			// Hızla geç, takılma
 			System.out.println("Turnuva seçimi atlandı");
