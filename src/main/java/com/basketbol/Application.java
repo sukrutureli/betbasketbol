@@ -43,28 +43,30 @@ public class Application {
 
 				// Detay URL'si varsa geçmiş verilerini çek
 				if (match.hasDetailUrl()) {
-					System.out.println("Geçmiş çekiliyor " + (i + 1) + "/" + matches.size() + ": " + match.getName());
+				    try {
+				        String url = match.getDetailUrl();
+				        if (url == null || !url.startsWith("http")) {
+				            System.out.println("⚠️ Geçersiz URL: " + url);
+				            continue;
+				        }
 
-					try {
-						TeamMatchHistory teamHistory = scraper.scrapeTeamHistory(match.getDetailUrl(), match.getName(),
-								match.getOdds());
+				        TeamMatchHistory teamHistory = scraper.scrapeTeamHistory(url, match.getName(), match.getOdds());
+				        if (teamHistory != null) {
+				            historyManager.addTeamHistory(teamHistory);
+				            matchStats.add(teamHistory.createStats(match));
+				        } else {
+				            System.out.println("⚠️ Veri yok veya boş döndü: " + match.getName());
+				        }
 
-						if (teamHistory != null) {
-							historyManager.addTeamHistory(teamHistory);
-                            matchStats.add(teamHistory.createStats(match));
-						}
+				        Thread.sleep(2000);
+				        if ((i + 1) % 5 == 0) System.gc();
 
-						// Rate limiting - 3 saniye bekle
-						Thread.sleep(1000);
-
-						if ((i + 1) % 5 == 0) {
-							System.gc(); // Garbage collection tetikle
-						}
-
-					} catch (Exception e) {
-						System.out.println("Geçmiş çekme hatası: " + e.getMessage());
-					}
+				    } catch (Exception e) {
+				        System.out.println("Geçmiş çekme hatası: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+				        e.printStackTrace();
+				    }
 				}
+
 
 				// Her 20 maçta bir progress yazdır
 				if ((i + 1) % 20 == 0) {
