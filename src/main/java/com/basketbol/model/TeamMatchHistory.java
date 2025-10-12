@@ -146,17 +146,17 @@ public class TeamMatchHistory {
 
 		BasketballStats homeStats = new BasketballStats(getForAgainstAndTotal(sonMaclarHome, teamEv)[0],
 				getForAgainstAndTotal(sonMaclarHome, teamEv)[1], getForAgainstAndTotal(sonMaclarHome, teamEv)[2]);
-		
+
 		BasketballStats awayStats = new BasketballStats(getForAgainstAndTotal(sonMaclarAway, teamDep)[0],
 				getForAgainstAndTotal(sonMaclarAway, teamDep)[1], getForAgainstAndTotal(sonMaclarAway, teamDep)[2]);
-		
+
 		currentMatch.setHomeStats(homeStats);
 		currentMatch.setAwayStats(awayStats);
-		
+
 		currentMatch.setAvgPointsForHome(getForAgainstAndTotal(rekabetGecmisi, teamEv)[0]);
 		currentMatch.setAvgPointsForAway(getForAgainstAndTotal(rekabetGecmisi, teamEv)[1]);
 		currentMatch.setH2hAvgTotalPoints(getForAgainstAndTotal(rekabetGecmisi, teamEv)[2]);
-		
+
 		return currentMatch;
 	}
 
@@ -176,9 +176,11 @@ public class TeamMatchHistory {
 			points[2] = points[2] + macResult.get(i).getHomeScore() + macResult.get(i).getAwayScore();
 		}
 
-		points[0] /= size;
-		points[1] /= size;
-		points[2] /= size;
+		if (size > 0) {
+			points[0] /= size;
+			points[1] /= size;
+			points[2] /= size;
+		}
 
 		return points;
 	}
@@ -186,7 +188,7 @@ public class TeamMatchHistory {
 	public String getStyle(int value, String type, String pick) {
 		String colorH = "background-color: #deded1;";
 		String color = "background-color: #c8facc;";
-		
+
 		if (value == -1) {
 			return colorH;
 		} else {
