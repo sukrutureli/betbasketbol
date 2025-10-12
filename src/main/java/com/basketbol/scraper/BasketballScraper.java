@@ -211,7 +211,7 @@ public class BasketballScraper {
 			List<WebElement> extraOdds = event.findElements(By.cssSelector("dd.col-04.event-row .cell"));
 			for (int i = 0; i < 4; i++) {
 				try {
-					WebElement oddLink = extraOdds.get(i).findElement(By.cssSelector("a.odd"));
+					WebElement oddLink = extraOdds.get(i).findElement(By.cssSelector(".odd"));
 					String text = oddLink.getText().trim();
 					odds[2 + i] = text.isEmpty() ? "-" : text;
 				} catch (IndexOutOfBoundsException | NoSuchElementException e) {
