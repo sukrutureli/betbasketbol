@@ -239,6 +239,7 @@ public class BasketballScraper {
 	}
 
 	public Double toDouble(String oddInString) {
+		oddInString = oddInString.replaceAll(",", ".");
 		if (oddInString.equals("-")) {
 			return 0.0;
 		} else {
