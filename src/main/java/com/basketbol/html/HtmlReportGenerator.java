@@ -114,9 +114,9 @@ public class HtmlReportGenerator {
 					html.append("<tr>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(-1, "H1", results.get(i).getPick())
 							+ "'>H1<br><strong>").append(match.getOdds().getH1Value()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "1", results.get(i).getPick())
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "1_", results.get(i).getPick())
 							+ "'>1<br><strong>").append(match.getOdds().getH1()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "2", results.get(i).getPick())
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "2_", results.get(i).getPick())
 							+ "'>2<br><strong>").append(match.getOdds().getH2()).append("</strong></td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(-1, "H2", results.get(i).getPick())
 							+ "'>H2<br><strong>").append(match.getOdds().getH2Value()).append("</strong></td>");
