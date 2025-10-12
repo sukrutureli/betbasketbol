@@ -14,7 +14,7 @@ import java.util.Optional;
 public class HeuristicPredictor implements BettingAlgorithm {
 
     @Override
-    public String name() { return "BasketballHeuristicModel"; }
+    public String name() { return "HeuristicPredictor"; }
 
     @Override
     public double weight() { return 1.0; }
