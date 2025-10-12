@@ -7,6 +7,7 @@ import com.basketbol.model.TeamMatchHistory;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -20,25 +21,25 @@ public class BasketballScraper {
 
     private WebDriver driver;
     private JavascriptExecutor js;
-    
+    private WebDriverWait wait;
+
     public BasketballScraper() {
         setupDriver();
     }
 
     private void setupDriver() {
-        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver"); // Windows'taysan değiştir
+        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
-                "--disable-gpu", "--window-size=1920,1080", "--disable-extensions",
-                "--disable-blink-features=AutomationControlled");
-        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-        options.setExperimentalOption("useAutomationExtension", false);
+                "--disable-gpu", "--window-size=1920,1080");
         driver = new ChromeDriver(options);
         js = (JavascriptExecutor) driver;
-        new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
-    // ============================ ANA SAYFA ============================
+    // =============================================================
+    // ANA SAYFA MAÇLARINI ÇEK
+    // =============================================================
     public List<MatchInfo> fetchMatches() {
         List<MatchInfo> list = new ArrayList<>();
         try {
@@ -56,9 +57,8 @@ public class BasketballScraper {
                 MatchInfo info = extractMatchInfo(e, i);
                 if (info != null) list.add(info);
             }
-
         } catch (Exception e) {
-            System.out.println("fetchMatches hatası: " + e.getMessage());
+            System.out.println("fetchMatches hata: " + e.getMessage());
         }
         return list;
     }
@@ -79,7 +79,7 @@ public class BasketballScraper {
         try {
             js.executeScript("arguments[0].scrollIntoView({block:'center'});", event);
             Thread.sleep(100);
-            String name = "İsim bulunamadı", url = null;
+            String name = "?", url = null;
 
             List<WebElement> nameLinks = event.findElements(By.cssSelector("div.name a"));
             if (!nameLinks.isEmpty()) {
@@ -115,7 +115,6 @@ public class BasketballScraper {
         }
     }
 
-    // ============================ ODDS ============================
     private Odds extractOdds(WebElement event) {
         String[] o = {"-", "-", "-", "-", "-", "-", "-", "-", "-"};
         try {
@@ -130,11 +129,9 @@ public class BasketballScraper {
             List<WebElement> extra = event.findElements(By.cssSelector("dd.col-04.event-row .cell"));
             for (int i = 0; i < extra.size() && i < 4; i++)
                 o[5 + i] = extra.get(i).findElement(By.cssSelector(".odd")).getText().trim();
-
         } catch (Exception e) {
             System.out.println("Oran hatası: " + e.getMessage());
         }
-
         return new Odds(toDouble(o[0]), toDouble(o[1]), toDouble(o[2]),
                 toDouble(o[3]), toDouble(o[4]), toDouble(o[5]),
                 toDouble(o[6]), toDouble(o[7]), toDouble(o[8]));
@@ -149,10 +146,11 @@ public class BasketballScraper {
         }
     }
 
-    // ============================ TAKIM GEÇMİŞİ ============================
+    // =============================================================
+    // TAKIM GEÇMİŞİ (REKABET + SON MAÇLAR)
+    // =============================================================
     public TeamMatchHistory scrapeTeamHistory(String detailUrl, String name, Odds odds) {
         if (detailUrl == null || !detailUrl.startsWith("http")) return null;
-
         TeamMatchHistory th = new TeamMatchHistory(name, name, name, detailUrl, odds);
         try {
             List<MatchResult> rekabet = scrapeRekabetGecmisi(detailUrl + "/rekabet-gecmisi");
@@ -163,7 +161,6 @@ public class BasketballScraper {
 
             List<MatchResult> sonAway = scrapeSonMaclar(detailUrl + "/son-maclari", 2);
             sonAway.forEach(m -> th.addSonMacMatch(m, 2));
-
         } catch (Exception e) {
             System.out.println("scrapeTeamHistory hata: " + e.getMessage());
         }
@@ -176,6 +173,7 @@ public class BasketballScraper {
             driver.get(url);
             PageWaitUtils.safeWaitForLoad(driver, 10);
             selectTournament();
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div[data-test-id='CompitionHistoryTable']")));
             list = extractCompetitionHistoryResults("rekabet", url);
         } catch (Exception e) {
             System.out.println("Rekabet geçmişi hatası: " + e.getMessage());
@@ -188,8 +186,11 @@ public class BasketballScraper {
         try {
             driver.get(url);
             PageWaitUtils.safeWaitForLoad(driver, 10);
-            Thread.sleep(700);
             selectTournament();
+            String sel = (side == 1)
+                    ? "div[data-test-id='LastMatchesTableFirst'] tbody tr"
+                    : "div[data-test-id='LastMatchesTableSecond'] tbody tr";
+            wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(sel)));
             list = extractMatchResults("sonmaclar", url, side);
         } catch (Exception e) {
             System.out.println("Son maç hatası: " + e.getMessage());
@@ -197,25 +198,19 @@ public class BasketballScraper {
         return list;
     }
 
-    // ============================ TABLO PARSING ============================
     private List<MatchResult> extractCompetitionHistoryResults(String type, String url) {
         List<MatchResult> list = new ArrayList<>();
         try {
             List<WebElement> rows = driver.findElements(By.cssSelector("div[data-test-id='CompitionHistoryTableItem']"));
-            if (rows.isEmpty()) {
-                System.out.println("⚠️ Rekabet tablosu bulunamadı: " + url);
-                return list;
-            }
-
             for (WebElement r : rows) {
                 try {
-                    String league = getTextSafe(r, "[data-test-id='CompitionTableItemLeague']");
-                    String season = getTextSafe(r, "[data-test-id='CompitionTableItemSeason']");
-                    String home = getTextSafe(r, "div[data-test-id='HomeTeam']");
-                    String away = getTextSafe(r, "div[data-test-id='AwayTeam']");
+                    String league = safeText(r, "[data-test-id='CompitionTableItemLeague']");
+                    String date = safeText(r, "[data-test-id='CompitionTableItemSeason']");
+                    String home = safeText(r, "div[data-test-id='HomeTeam']");
+                    String away = safeText(r, "div[data-test-id='AwayTeam']");
                     String score = extractScore(r);
                     int[] sc = parseScore(score);
-                    list.add(new MatchResult(home, away, sc[0], sc[1], season, league, type));
+                    list.add(new MatchResult(home, away, sc[0], sc[1], date, league, type));
                 } catch (Exception ex) {
                     System.out.println("Rekabet satırı hatası: " + ex.getMessage());
                 }
@@ -229,22 +224,17 @@ public class BasketballScraper {
     private List<MatchResult> extractMatchResults(String type, String url, int side) {
         List<MatchResult> list = new ArrayList<>();
         String sel = (side == 1)
-                ? "div[data-test-id='LastMatchesTableFirst'] table"
-                : "div[data-test-id='LastMatchesTableSecond'] table";
+                ? "div[data-test-id='LastMatchesTableFirst'] tbody tr"
+                : "div[data-test-id='LastMatchesTableSecond'] tbody tr";
         try {
-            List<WebElement> tables = driver.findElements(By.cssSelector(sel));
-            if (tables.isEmpty()) {
-                System.out.println("⚠️ Tablo bulunamadı: " + sel);
-                return list;
-            }
-
-            for (WebElement r : tables.get(0).findElements(By.cssSelector("tbody tr"))) {
+            List<WebElement> rows = driver.findElements(By.cssSelector(sel));
+            for (WebElement r : rows) {
                 try {
-                    String home = getTextSafe(r, "div[data-test-id='HomeTeam']");
-                    String away = getTextSafe(r, "div[data-test-id='AwayTeam']");
+                    String league = safeText(r, "td[data-test-id='TableBodyLeague']");
+                    String home = safeText(r, "div[data-test-id='HomeTeam']");
+                    String away = safeText(r, "div[data-test-id='AwayTeam']");
                     String score = extractScore(r);
                     int[] sc = parseScore(score);
-                    String league = getTextSafe(r, "td[data-test-id='TableBodyLeague']");
                     list.add(new MatchResult(home, away, sc[0], sc[1], league, "", type));
                 } catch (Exception ex) {
                     System.out.println("Son maç satırı hatası: " + ex.getMessage());
@@ -262,7 +252,9 @@ public class BasketballScraper {
                 String t = s.getText().replaceAll("\\(.*?\\)", "").trim();
                 if (t.matches("\\d+\\s*-\\s*\\d+")) return t;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            return "-";
+        }
         return "-";
     }
 
@@ -275,7 +267,7 @@ public class BasketballScraper {
         }
     }
 
-    private String getTextSafe(WebElement parent, String css) {
+    private String safeText(WebElement parent, String css) {
         try {
             return parent.findElement(By.cssSelector(css)).getText().trim();
         } catch (Exception e) {
@@ -283,13 +275,12 @@ public class BasketballScraper {
         }
     }
 
-    // ============================ TURNUVA SEÇİMİ ============================
     private void selectTournament() {
         try {
             PageWaitUtils.safeClick(driver, By.cssSelector("div[data-test-id='CustomDropdown']"), 5);
-            Thread.sleep(300);
-            PageWaitUtils.safeClick(driver,
-                    By.xpath("//div[@role='option']//span[contains(text(),'Bu Turnuva')]"), 5);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//div[@role='option']//span[contains(text(),'Bu Turnuva')]")));
+            driver.findElement(By.xpath("//div[@role='option']//span[contains(text(),'Bu Turnuva')]")).click();
             Thread.sleep(300);
         } catch (Exception e) {
             System.out.println("Turnuva seçimi atlandı");
@@ -297,6 +288,6 @@ public class BasketballScraper {
     }
 
     public void close() {
-        try { driver.quit(); } catch (Exception ignored) {}
+        try { driver.quit(); } catch (Exception ignore) {}
     }
 }
