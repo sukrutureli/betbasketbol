@@ -173,7 +173,7 @@ public class TeamMatchHistory {
 				points[1] += macResult.get(i).getHomeScore();
 				points[0] += macResult.get(i).getAwayScore();
 			}
-			points[2] = macResult.get(i).getHomeScore() + macResult.get(i).getAwayScore();
+			points[2] = points[2] + macResult.get(i).getHomeScore() + macResult.get(i).getAwayScore();
 		}
 
 		points[0] /= size;
