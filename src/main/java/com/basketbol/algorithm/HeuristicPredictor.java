@@ -54,9 +54,6 @@ public class HeuristicPredictor implements BettingAlgorithm {
         double expectedAway = (forWeight * a.getAvgPointsFor()) +
                               (againstWeight * h.getAvgPointsAgainst()) +
                               (h2hWeight * h2hAvgForAway);
-        
-        System.out.println(expectedHome + " - " + expectedAway);
-        System.out.println(h2hTotal + " - " + h2hAvgForHome + " - " + h2hAvgForAway);
 
         // H2H toplam skor ortalamasıyla uyumlu hale getir (stabilizasyon)
         if (h2hTotal > 0) {
