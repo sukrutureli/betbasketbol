@@ -39,6 +39,7 @@ public class Application {
                 MatchInfo match = matches.get(i);
 
                 if (match.hasDetailUrl()) {
+                	System.out.println("Geçmiş çekiliyor " + (i+1) + "/" + matches.size() + ": " + match.getName());
                     try {
                         String url = match.getDetailUrl();
                         if (url == null || !url.startsWith("http")) {
