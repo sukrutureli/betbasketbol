@@ -323,6 +323,7 @@ public class BasketballScraper {
 			matches = extractCompetitionHistoryResults("rekabet-gecmisi", url);
 		} catch (Exception e) {
 			System.out.println("Rekabet geçmişi hatası: " + e.getMessage());
+			return matches;
 		}
 		return matches;
 	}
@@ -392,6 +393,7 @@ public class BasketballScraper {
 			matches = extractMatchResults("son-maclari", url, homeOrAway);
 		} catch (Exception e) {
 			System.out.println("Son maçlar hatası: " + e.getMessage());
+			return matches;
 		}
 		return matches;
 	}

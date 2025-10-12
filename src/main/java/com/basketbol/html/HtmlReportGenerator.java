@@ -96,7 +96,7 @@ public class HtmlReportGenerator {
 
 				TeamMatchHistory teamHistory = historyManager.getTeamHistories().get(i);
 
-				if (teamHistory != null && teamHistory.getTotalMatches() > 0) {
+				if (teamHistory != null) {
 					html.append("<div class='odds' style='margin-top:10px;'>");
 					html.append("<strong>Güncel Oranlar:</strong>");
 					html.append(
