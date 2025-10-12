@@ -165,12 +165,7 @@ public class TeamMatchHistory {
 
 		int size = macResult.size();
 
-		System.out.println(size);
-
 		for (int i = 0; i < size; i++) {
-			System.out.println(macResult.get(i).getHomeTeam());
-			System.out.println(macResult.get(i).getAwayTeam());
-			System.out.println(teamName);
 			if (macResult.get(i).getHomeTeam().contains(teamName)) {
 				points[0] += macResult.get(i).getHomeScore();
 				points[1] += macResult.get(i).getAwayScore();

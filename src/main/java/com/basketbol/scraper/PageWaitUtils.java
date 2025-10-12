@@ -27,4 +27,12 @@ public class PageWaitUtils {
             return false;
         }
     }
+    
+    public static void waitForPageLoad(WebDriver driver, int timeoutSeconds) {
+        new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
+            .until(webDriver ->
+                ((JavascriptExecutor) webDriver)
+                    .executeScript("return document.readyState").equals("complete"));
+    }
+
 }
