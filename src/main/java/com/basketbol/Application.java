@@ -1,9 +1,13 @@
 package com.basketbol;
 
 import com.basketbol.scraper.BasketballScraper;
+import com.basketbol.algorithm.BettingAlgorithm;
+import com.basketbol.algorithm.EnsembleModel;
 import com.basketbol.algorithm.HeuristicPredictor;
 import com.basketbol.html.HtmlReportGenerator;
+import com.basketbol.model.Match;
 import com.basketbol.model.MatchInfo;
+import com.basketbol.model.PredictionResult;
 import com.basketbol.model.TeamMatchHistory;
 
 import java.time.LocalDateTime;
@@ -18,6 +22,7 @@ public class Application {
 		BasketballScraper scraper = null;
 		MatchHistoryManager historyManager = new MatchHistoryManager();
 		List<MatchInfo> matches = null;
+		List<Match> matchStats = new ArrayList<Match>();
 		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
 
 		try {
@@ -46,6 +51,7 @@ public class Application {
 
 						if (teamHistory != null) {
 							historyManager.addTeamHistory(teamHistory);
+                            matchStats.add(teamHistory.createStats(match));
 						}
 
 						// Rate limiting - 3 saniye bekle
@@ -65,8 +71,16 @@ public class Application {
 					System.out.println("İşlendi: " + (i + 1) + "/" + matches.size());
 				}
 			}
+			
+            BettingAlgorithm heur = new HeuristicPredictor();
+            EnsembleModel ensemble = new EnsembleModel(List.of(heur));
 
-			HtmlReportGenerator.generateHtml(matches, historyManager, "basketbol.html");
+            List<PredictionResult> results = new ArrayList<>();
+            for (Match m : matchStats) {
+                results.add(ensemble.predict(m, Optional.empty()));
+            }
+
+			HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol.html");
 
 			System.out.println("basketbol.html oluşturuldu.");
 

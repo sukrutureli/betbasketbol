@@ -18,37 +18,37 @@ public class TeamMatchHistory {
 		this.teamEv = teamEv;
 		this.teamDep = teamDep;
 		this.setDetailUrl(detailUrl);
-        this.rekabetGecmisi = new ArrayList<>();
-        this.sonMaclarHome = new ArrayList<>();
-        this.sonMaclarAway = new ArrayList<>();
+		this.rekabetGecmisi = new ArrayList<>();
+		this.sonMaclarHome = new ArrayList<>();
+		this.sonMaclarAway = new ArrayList<>();
 		this.odds = odds;
 	}
-	
-    // Add methods
-    public void addRekabetGecmisiMatch(MatchResult match) {
-        rekabetGecmisi.add(match);
-    }
-    
-    public void addSonMacMatch(MatchResult match, int homeOrAway) {
-        if (homeOrAway == 1) {
-            sonMaclarHome.add(match);
-        } else if (homeOrAway == 2) {
-            sonMaclarAway.add(match);
-        } 
-    }
-    
-    // Utility methods
-    public int getTotalMatches() {
-        return rekabetGecmisi.size() + sonMaclarHome.size() + sonMaclarAway.size();
-    }
-    
-    public List<MatchResult> getAllMatches() {
-        List<MatchResult> allMatches = new ArrayList<>();
-        allMatches.addAll(rekabetGecmisi);
-        allMatches.addAll(sonMaclarHome);
-        allMatches.addAll(sonMaclarAway);
-        return allMatches;
-    }
+
+	// Add methods
+	public void addRekabetGecmisiMatch(MatchResult match) {
+		rekabetGecmisi.add(match);
+	}
+
+	public void addSonMacMatch(MatchResult match, int homeOrAway) {
+		if (homeOrAway == 1) {
+			sonMaclarHome.add(match);
+		} else if (homeOrAway == 2) {
+			sonMaclarAway.add(match);
+		}
+	}
+
+	// Utility methods
+	public int getTotalMatches() {
+		return rekabetGecmisi.size() + sonMaclarHome.size() + sonMaclarAway.size();
+	}
+
+	public List<MatchResult> getAllMatches() {
+		List<MatchResult> allMatches = new ArrayList<>();
+		allMatches.addAll(rekabetGecmisi);
+		allMatches.addAll(sonMaclarHome);
+		allMatches.addAll(sonMaclarAway);
+		return allMatches;
+	}
 
 	public String getTeamName() {
 		return teamName;
@@ -97,7 +97,7 @@ public class TeamMatchHistory {
 	public void setSonMaclarAway(List<MatchResult> sonMaclarAway) {
 		this.sonMaclarAway = sonMaclarAway;
 	}
-	
+
 	public String getDetailUrl() {
 		return detailUrl;
 	}
@@ -107,50 +107,96 @@ public class TeamMatchHistory {
 	}
 
 	public int getUst() {
-        int ust = 0;
+		int ust = 0;
 
-        for (int i = 0; i < rekabetGecmisi.size(); i++) {
-            if ((rekabetGecmisi.get(i).getHomeScore() + rekabetGecmisi.get(i).getAwayScore()) > odds.gethOverUnderValue()) {
-                ust++;
-            } 
-        }
-        
-        for (int i = 0; i < sonMaclarHome.size(); i++) {
-            if ((sonMaclarHome.get(i).getHomeScore() + sonMaclarHome.get(i).getAwayScore()) > odds.gethOverUnderValue()) {
-                ust++;
-            } 
-        }
-        
-        for (int i = 0; i < sonMaclarAway.size(); i++) {
-            if ((sonMaclarAway.get(i).getHomeScore() + sonMaclarAway.get(i).getAwayScore()) > odds.gethOverUnderValue()) {
-                ust++;
-            } 
-        }
-        return ust;
-    }
-	
-    public int getAlt() {
-        return getTotalMatches() - getUst();
-    }
-	
-    public String toStringAsPercentage(int value, String type) {
-        return type + " : %" + ((int)(((value * 1.0) / getTotalMatches()) * 100));
-    }
-	
-    public String getStyle(int value, String type) {
-        String color = "background-color: #c8facc;";
-        //int percentage = ((int)(((value * 1.0) / getTotalMatchesIn10()) * 100));
-        int percentage = 0;
+		for (int i = 0; i < rekabetGecmisi.size(); i++) {
+			if ((rekabetGecmisi.get(i).getHomeScore() + rekabetGecmisi.get(i).getAwayScore()) > odds
+					.gethOverUnderValue()) {
+				ust++;
+			}
+		}
 
-        if (type.startsWith("MS")) {
-            if (percentage >= 50) {
-                return color;
-            }
-        } else {
-            if (percentage >= 70) {
-                return color;
-            }
-        }
-        return "";
-    }
+		for (int i = 0; i < sonMaclarHome.size(); i++) {
+			if ((sonMaclarHome.get(i).getHomeScore() + sonMaclarHome.get(i).getAwayScore()) > odds
+					.gethOverUnderValue()) {
+				ust++;
+			}
+		}
+
+		for (int i = 0; i < sonMaclarAway.size(); i++) {
+			if ((sonMaclarAway.get(i).getHomeScore() + sonMaclarAway.get(i).getAwayScore()) > odds
+					.gethOverUnderValue()) {
+				ust++;
+			}
+		}
+		return ust;
+	}
+
+	public int getAlt() {
+		return getTotalMatches() - getUst();
+	}
+
+	public String toStringAsPercentage(int value, String type) {
+		return type + " : %" + ((int) (((value * 1.0) / getTotalMatches()) * 100));
+	}
+
+	public Match createStats(MatchInfo pMatch) {
+		Match currentMatch = new Match(teamEv, teamDep);
+		currentMatch.setOdds(pMatch.getOdds());
+
+		BasketballStats homeStats = new BasketballStats(getForAgainstAndTotal(sonMaclarHome, teamEv)[0],
+				getForAgainstAndTotal(sonMaclarHome, teamEv)[1], getForAgainstAndTotal(sonMaclarHome, teamEv)[2]);
+		
+		BasketballStats awayStats = new BasketballStats(getForAgainstAndTotal(sonMaclarAway, teamDep)[0],
+				getForAgainstAndTotal(sonMaclarAway, teamDep)[1], getForAgainstAndTotal(sonMaclarAway, teamDep)[2]);
+		
+		currentMatch.setHomeStats(homeStats);
+		currentMatch.setAwayStats(awayStats);
+		
+		currentMatch.setAvgPointsForHome(getForAgainstAndTotal(rekabetGecmisi, teamEv)[0]);
+		currentMatch.setAvgPointsForAway(getForAgainstAndTotal(rekabetGecmisi, teamEv)[1]);
+		currentMatch.setH2hAvgTotalPoints(getForAgainstAndTotal(rekabetGecmisi, teamEv)[2]);
+
+		return currentMatch;
+	}
+
+	public double[] getForAgainstAndTotal(List<MatchResult> macResult, String teamName) {
+		double[] points = { 0.0, 0.0, 0.0 };
+
+		int size = macResult.size();
+
+		for (int i = 0; i < size; i++) {
+			if (macResult.get(i).getHomeTeam().contains(teamName)) {
+				points[0] += macResult.get(i).getHomeScore();
+				points[1] += macResult.get(i).getAwayScore();
+			} else if (macResult.get(i).getAwayTeam().contains(teamName)) {
+				points[1] += macResult.get(i).getHomeScore();
+				points[0] += macResult.get(i).getAwayScore();
+			}
+			points[2] = macResult.get(i).getHomeScore() + macResult.get(i).getAwayScore();
+		}
+
+		points[0] /= size;
+		points[1] /= size;
+		points[2] /= size;
+
+		return points;
+	}
+
+	public String getStyle(int value, String type) {
+		String color = "background-color: #c8facc;";
+		// int percentage = ((int)(((value * 1.0) / getTotalMatchesIn10()) * 100));
+		int percentage = 0;
+
+		if (type.startsWith("MS")) {
+			if (percentage >= 50) {
+				return color;
+			}
+		} else {
+			if (percentage >= 70) {
+				return color;
+			}
+		}
+		return "";
+	}
 }

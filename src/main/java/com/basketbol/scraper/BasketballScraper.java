@@ -194,7 +194,6 @@ public class BasketballScraper {
 	}
 
 	private Odds extractOdds(WebElement event) {
-		// 1X2 + Alt/Üst + Var/Yok = toplam 7 oran
 		String[] odds = { "-", "-", "-", "-", "-", "-", "-", "-", "-" };
 
 		try {
@@ -223,7 +222,7 @@ public class BasketballScraper {
 			List<WebElement> overUnderOdds = event.findElements(By.cssSelector("dd.col-03.event-row .cell"));
 			for (int i = 0; i < 3; i++) {
 				try {
-					WebElement oddLink = overUnderOdds.get(i).findElement(By.cssSelector("a.odd"));
+					WebElement oddLink = overUnderOdds.get(i).findElement(By.cssSelector(".odd"));
 					String text = oddLink.getText().trim();
 					odds[6 + i] = text.isEmpty() ? "-" : text;
 				} catch (IndexOutOfBoundsException | NoSuchElementException e) {

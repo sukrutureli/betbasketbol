@@ -1,10 +1,11 @@
 package com.basketbol.html;
 
 import com.basketbol.MatchHistoryManager;
+import com.basketbol.model.Match;
 import com.basketbol.model.MatchInfo;
 import com.basketbol.model.MatchResult;
+import com.basketbol.model.PredictionResult;
 import com.basketbol.model.TeamMatchHistory;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,7 +15,8 @@ import java.util.List;
 
 public class HtmlReportGenerator {
 
-	public static void generateHtml(List<MatchInfo> matches, MatchHistoryManager historyManager, String fileName) {
+	public static void generateHtml(List<MatchInfo> matches, MatchHistoryManager historyManager, List<Match> matchStats,
+			List<PredictionResult> results, String fileName) {
 
 		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
 
@@ -111,20 +113,20 @@ public class HtmlReportGenerator {
 					// 2️⃣ İkinci satır: H1 – 1 – 2 – H2
 					html.append("<tr>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "H1")
-							+ "'>H1<br><strong>").append(match.getOdds().getH1()).append("</strong></td>");
+							+ "'>H1<br><strong>").append(match.getOdds().getH1Value()).append("</strong></td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "1")
-							+ "'>1<br><strong>").append(match.getOdds().getMs1()).append("</strong></td>");
+							+ "'>1<br><strong>").append(match.getOdds().getH1()).append("</strong></td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "2")
-							+ "'>2<br><strong>").append(match.getOdds().getMs2()).append("</strong></td>");
+							+ "'>2<br><strong>").append(match.getOdds().getH2()).append("</strong></td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "H2")
-							+ "'>H2<br><strong>").append(match.getOdds().getH2()).append("</strong></td>");
+							+ "'>H2<br><strong>").append(match.getOdds().getH2Value()).append("</strong></td>");
 					html.append("</tr>");
 
 					// 3️⃣ Son satır: Alt – Baren – Üst
 					html.append("<tr>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "Alt")
 							+ "'>Alt<br><strong>").append(match.getOdds().getUnder()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc;'>Baren<br><strong>")
+					html.append("<td style='padding:6px; border:1px solid #ccc;'>Barem<br><strong>")
 							.append(match.getOdds().gethOverUnderValue()).append("</strong></td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "Üst")
 							+ "'>Üst<br><strong>").append(match.getOdds().getOver()).append("</strong></td>");
@@ -132,6 +134,30 @@ public class HtmlReportGenerator {
 
 					html.append("</table>");
 					html.append("</div>");
+
+					if (!Double.isNaN(results.get(i).getpHome())) { // herhangi biri NaN ise bu tabloyu ekleme
+						// stats eklendi
+						html.append("<div class='quick-summary'>");
+						html.append("<table class='qs'>");
+						html.append("<thead>");
+						html.append("<tr>");
+						html.append("<th>Tahmin</th>");
+						html.append("<th>Skor</th>");
+						html.append("<th>Güven</th>");
+						html.append("</tr>");
+						html.append("</thead>");
+						html.append("<tbody>");
+						html.append("<tr>");
+						html.append(
+								"<td class='qs-pick'><span class='pick'>" + results.get(i).getPick() + "</span></td>");
+						html.append("<td class='qs-score'>" + results.get(i).getScoreline() + "</td>");
+						html.append("<td class='qs-odd'>"
+								+ String.format("%.0f%%", results.get(i).getConfidence() * 100) + "</td>");
+						html.append("</tr>");
+						html.append("</tbody>");
+						html.append("</table>");
+						html.append("</div>");
+					}
 
 					int rekabetMacCount = teamHistory.getRekabetGecmisi().size();
 					int sonMaclarCount = teamHistory.getSonMaclarHome().size() + teamHistory.getSonMaclarAway().size();
@@ -143,7 +169,7 @@ public class HtmlReportGenerator {
 					html.append("<div class='team-stats'>");
 					html.append("<strong>").append(teamHistory.getTeamName()).append("</strong>");
 					html.append("<table style='width:100%; border-collapse: collapse; margin-top:10px;'>");
-		
+
 					html.append("<tr>");
 					html.append("<td style='padding:4px; border:1px solid #ccc;'>")
 							.append(teamHistory.toStringAsPercentage(teamHistory.getAlt(), "Alt")).append("</td>");
@@ -151,7 +177,7 @@ public class HtmlReportGenerator {
 							.append(teamHistory.toStringAsPercentage(teamHistory.getUst(), "Üst")).append("</td>");
 					html.append("<td style='padding:4px; border:1px solid #ccc;'>-</td>");
 					html.append("</tr>");
-					
+
 					html.append("</table>");
 					html.append("<p style='margin-top:8px; font-size:0.9em;'>");
 					html.append("Bakılan maç sayısı: Rekabet - ").append(rekabetMacCount).append(" | Son maçlar - ")
@@ -281,18 +307,18 @@ public class HtmlReportGenerator {
 		}
 	}
 
-    private static String getResultClass(MatchResult match, String teamName) {
-        String result = match.getResult();
-        
-        // Takımın ev sahibi mi deplasman mı olduğunu kontrol et
-        boolean isHome = teamName.contains(match.getHomeTeam());
-        
-        if (result.equals("D")) {
-            return "draw";
-        } else if ((isHome && result.equals("H")) || (!isHome && result.equals("A"))) {
-            return "win";
-        } else {
-            return "loss";
-        }
-    }
+	private static String getResultClass(MatchResult match, String teamName) {
+		String result = match.getResult();
+
+		// Takımın ev sahibi mi deplasman mı olduğunu kontrol et
+		boolean isHome = teamName.contains(match.getHomeTeam());
+
+		if (result.equals("D")) {
+			return "draw";
+		} else if ((isHome && result.equals("H")) || (!isHome && result.equals("A"))) {
+			return "win";
+		} else {
+			return "loss";
+		}
+	}
 }
