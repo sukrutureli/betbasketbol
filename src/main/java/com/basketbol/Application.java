@@ -2,7 +2,6 @@ package com.basketbol;
 
 import com.basketbol.scraper.BasketballScraper;
 import com.basketbol.algorithm.BettingAlgorithm;
-import com.basketbol.algorithm.EnsembleModel;
 import com.basketbol.algorithm.HeuristicPredictor;
 import com.basketbol.html.HtmlReportGenerator;
 import com.basketbol.model.Match;
@@ -69,11 +68,10 @@ public class Application {
             }
 
             BettingAlgorithm heur = new HeuristicPredictor();
-            EnsembleModel ensemble = new EnsembleModel(List.of(heur));
 
             List<PredictionResult> results = new ArrayList<>();
             for (Match m : matchStats) {
-                results.add(ensemble.predict(m, Optional.empty()));
+                results.add(heur.predict(m, Optional.empty()));
             }
 
             HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol.html");
