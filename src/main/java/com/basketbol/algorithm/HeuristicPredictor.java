@@ -39,9 +39,9 @@ public class HeuristicPredictor implements BettingAlgorithm {
             h2hTotal = match.getH2hAvgTotalPoints();
         }
         
-        double forWeight = h2hTotal > 0 ? 0.55 : 0.6;
-        double againstWeight = h2hTotal > 0 ? 0.35 : 0.4;
-        double h2hWeight = h2hTotal > 0 ? 0.1 : 0.0;
+        double forWeight = (h2hTotal > 0) ? 0.55 : 0.6;
+        double againstWeight = (h2hTotal > 0) ? 0.35 : 0.4;
+        double h2hWeight = (h2hTotal > 0) ? 0.1 : 0.0;
 
         // ---- Beklenen skor hesaplama ----
         // Ev: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı + ev avantajı
