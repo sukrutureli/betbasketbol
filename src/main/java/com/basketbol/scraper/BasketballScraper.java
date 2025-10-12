@@ -273,8 +273,7 @@ public class BasketballScraper {
 		List<String> names = new ArrayList<>();
 		try {
 			driver.get(url);
-			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
-			Thread.sleep(2000);
+			waitForPageLoad(driver, 10);
 
 			int retries = 0;
 			while (driver.findElements(By.cssSelector("a[data-test-id='TeamLink'] span[data-test-id='HeaderTeams']"))
@@ -307,8 +306,7 @@ public class BasketballScraper {
 		List<MatchResult> matches = new ArrayList<>();
 		try {
 			driver.get(url);
-			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
-			Thread.sleep(2000);
+			waitForPageLoad(driver, 10);
 
 			List<WebElement> container = driver
 					.findElements(By.cssSelector("div[data-test-id='CompitionHistoryTable']"));
@@ -317,6 +315,8 @@ public class BasketballScraper {
 					System.out.println("Bu müsabaka için veri yok, tablo beklenmeyecek.");
 					return matches;
 				}
+			} else {
+				return matches;
 			}
 
 			selectTournament();
@@ -372,8 +372,7 @@ public class BasketballScraper {
 		List<MatchResult> matches = new ArrayList<>();
 		try {
 			driver.get(url);
-			wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
-			Thread.sleep(2000);
+			waitForPageLoad(driver, 10);
 
 			String selectorString = "";
 			if (homeOrAway == 1) {
@@ -387,6 +386,8 @@ public class BasketballScraper {
 					System.out.println("Bu müsabaka için veri yok, tablo beklenmeyecek.");
 					return matches;
 				}
+			} else {
+				return matches;
 			}
 
 			selectTournament();
@@ -399,83 +400,95 @@ public class BasketballScraper {
 	}
 
 	private List<MatchResult> extractMatchResults(String matchType, String originalUrl, int homeOrAway) {
-	    List<MatchResult> matches = new ArrayList<>();
+		List<MatchResult> matches = new ArrayList<>();
 
-	    String selectorString = (homeOrAway == 1)
-	            ? "div[data-test-id='LastMatchesTableFirst'] div[data-test-id='LastMatchesTable'] table"
-	            : "div[data-test-id='LastMatchesTableSecond'] div[data-test-id='LastMatchesTable'] table";
+		String selectorString = (homeOrAway == 1)
+				? "div[data-test-id='LastMatchesTableFirst'] div[data-test-id='LastMatchesTable'] table"
+				: "div[data-test-id='LastMatchesTableSecond'] div[data-test-id='LastMatchesTable'] table";
 
-	    try {
-	        int retries = 0;
-	        while (driver.findElements(By.cssSelector(selectorString)).isEmpty() && retries < 20) {
-	            Thread.sleep(500);
-	            retries++;
-	        }
+		try {
+			int retries = 0;
+			while (driver.findElements(By.cssSelector(selectorString)).isEmpty() && retries < 20) {
+				Thread.sleep(500);
+				retries++;
+			}
 
-	        List<WebElement> table = driver.findElements(By.cssSelector(selectorString));
-	        if (table.isEmpty()) {
-	            System.out.println("⚠️ Tablo bulunamadı: " + selectorString);
-	            return matches;
-	        }
+			List<WebElement> table = driver.findElements(By.cssSelector(selectorString));
+			if (table.isEmpty()) {
+				System.out.println("⚠️ Tablo bulunamadı: " + selectorString);
+				return matches;
+			}
 
-	        if (hasNoData(table.get(0))) {
-	            System.out.println("Bu müsabaka için veri yok, tablo beklenmeyecek.");
-	            return matches;
-	        }
+			if (hasNoData(table.get(0))) {
+				System.out.println("Bu müsabaka için veri yok, tablo beklenmeyecek.");
+				return matches;
+			}
 
-	        List<WebElement> rows = table.get(0).findElements(By.cssSelector("tbody tr"));
-	        if (rows.isEmpty()) {
-	            System.out.println("⚠️ Tablo satırları bulunamadı, muhtemelen boş sayfa.");
-	            return matches;
-	        }
+			List<WebElement> rows = table.get(0).findElements(By.cssSelector("tbody tr"));
+			if (rows.isEmpty()) {
+				System.out.println("⚠️ Tablo satırları bulunamadı, muhtemelen boş sayfa.");
+				return matches;
+			}
 
-	        for (WebElement row : rows) {
-	            try {
-	                String homeTeam = row.findElement(By.cssSelector("div[data-test-id='HomeTeam'] span")).getText().trim();
-	                String awayTeam = row.findElement(By.cssSelector("div[data-test-id='AwayTeam'] span")).getText().trim();
+			for (WebElement row : rows) {
+				try {
+					String homeTeam = row.findElement(By.cssSelector("div[data-test-id='HomeTeam'] span")).getText()
+							.trim();
+					String awayTeam = row.findElement(By.cssSelector("div[data-test-id='AwayTeam'] span")).getText()
+							.trim();
 
-	                String scoreText = extractScore(row);
-	                int homeScore = -1, awayScore = -1;
-	                if (!scoreText.equals("-")) {
-	                    String[] parts = scoreText.split("-");
-	                    if (parts.length == 2) {
-	                        homeScore = Integer.parseInt(parts[0].trim());
-	                        awayScore = Integer.parseInt(parts[1].trim());
-	                    }
-	                }
+					String scoreText = extractScore(row);
+					int homeScore = -1, awayScore = -1;
+					if (!scoreText.equals("-")) {
+						String[] parts = scoreText.split("-");
+						if (parts.length == 2) {
+							homeScore = Integer.parseInt(parts[0].trim());
+							awayScore = Integer.parseInt(parts[1].trim());
+						}
+					}
 
-	                String leagueAndDate = row.findElement(By.cssSelector("td[data-test-id='TableBodyLeague']")).getText();
+					String leagueAndDate = row.findElement(By.cssSelector("td[data-test-id='TableBodyLeague']"))
+							.getText();
 
-	                MatchResult match = new MatchResult(homeTeam, awayTeam, homeScore, awayScore, leagueAndDate, "", matchType);
-	                matches.add(match);
+					MatchResult match = new MatchResult(homeTeam, awayTeam, homeScore, awayScore, leagueAndDate, "",
+							matchType);
+					matches.add(match);
 
-	            } catch (Exception e) {
-	                System.out.println("Satır işlenemedi: " + e.getMessage());
-	            }
-	        }
+				} catch (Exception e) {
+					System.out.println("Satır işlenemedi: " + e.getMessage());
+				}
+			}
 
-	    } catch (Exception e) {
-	        System.out.println("extractMatchResults hatası: " + e.getMessage());
-	    }
+		} catch (Exception e) {
+			System.out.println("extractMatchResults hatası: " + e.getMessage());
+		}
 
-	    return matches;
+		return matches;
 	}
 
 	private void selectTournament() {
 		try {
-			// Timeout'u 5 saniyeye düşür
-			WebElement dropdown = new WebDriverWait(driver, Duration.ofSeconds(15)).until(
+			WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(8));
+
+			// Dropdown tıklanabilir hale gelsin
+			WebElement dropdown = wait.until(
 					ExpectedConditions.elementToBeClickable(By.cssSelector("div[data-test-id='CustomDropdown']")));
 			dropdown.click();
-			Thread.sleep(1000); // 1000'den 300'e
 
-			WebElement option = new WebDriverWait(driver, Duration.ofSeconds(15)).until(ExpectedConditions
-					.elementToBeClickable(By.xpath("//div[@role='option']//span[contains(text(), 'Bu Turnuva')]")));
+			// Seçenekler görünene kadar bekle
+			wait.until(ExpectedConditions.visibilityOfElementLocated(
+					By.xpath("//div[@role='option']//span[contains(text(), 'Bu Turnuva')]")));
+
+			// İlgili seçeneği tıkla
+			WebElement option = driver
+					.findElement(By.xpath("//div[@role='option']//span[contains(text(), 'Bu Turnuva')]"));
 			option.click();
-			Thread.sleep(1000); // 1500'den 500'e
+
+			// Sayfa yüklenmesini kontrol et
+			waitForPageLoad(driver, 5);
+
 		} catch (Exception e) {
-			// Hızla geç, takılma
-			System.out.println("Turnuva seçimi atlandı");
+			System.out.println("Turnuva seçimi atlandı: " + e.getClass().getSimpleName() + " - " + e.getMessage());
 		}
 	}
 
@@ -507,7 +520,17 @@ public class BasketballScraper {
 	}
 
 	public void close() {
-		if (driver != null)
-			driver.quit();
+		try {
+			if (driver != null)
+				driver.quit();
+		} catch (Exception ignore) {
+		}
 	}
+
+	private void waitForPageLoad(WebDriver driver, int timeoutSeconds) {
+		new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
+				.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState")
+						.equals("complete"));
+	}
+
 }
