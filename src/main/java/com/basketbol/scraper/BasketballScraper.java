@@ -44,7 +44,7 @@ public class BasketballScraper {
         List<MatchInfo> list = new ArrayList<>();
         try {
             String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Popüler";
+            String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + "13.10.2025" + "&le=2&ocg=MS&gt=Popüler";
             driver.get(url);
             PageWaitUtils.safeWaitForLoad(driver, 10);
             scrollToEnd();
@@ -154,7 +154,8 @@ public class BasketballScraper {
     public TeamMatchHistory scrapeTeamHistory(String detailUrl, String name, Odds odds) {
         if (detailUrl == null || !detailUrl.startsWith("http")) return null;
         
-        String[] teams = scrapeDetailTeams(detailUrl, name);
+        //String[] teams = scrapeDetailTeams(detailUrl, name);
+        String[] teams = extractTeamsFromHeader(detailUrl);
         String homeTeam = teams[0];
         String awayTeam = teams[1];
         String title    = teams[2]; // "Home - Away"
@@ -382,5 +383,33 @@ public class BasketballScraper {
             return "-";
         }
     }
+    
+    private String[] extractTeamsFromHeader(String url) {
+        String home = "-";
+        String away = "-";
+        String name = "";
+        try {
+            driver.get(url);
+            PageWaitUtils.waitForPageLoad(driver, 12);
+            // Sayfanın tamamen yüklendiğinden emin ol
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div[data-test-id='HeaderTeams']")));
+
+            WebElement header = driver.findElement(By.cssSelector("div[data-test-id='HeaderTeams']"));
+            List<WebElement> teams = header.findElements(By.cssSelector("a[data-test-id='TeamLink'] span[data-test-id='HeaderTeams']"));
+
+            if (teams.size() >= 2) {
+                home = teams.get(0).getText().trim();
+                away = teams.get(1).getText().trim();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Takım adları çekilemedi: " + e.getMessage());
+        }
+        
+        name = home + " - " + away;
+        
+        return new String[]{home, away, name};
+    }
+
 
 }
