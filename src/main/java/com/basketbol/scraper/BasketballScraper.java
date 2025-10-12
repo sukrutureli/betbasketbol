@@ -44,7 +44,7 @@ public class BasketballScraper {
         List<MatchInfo> list = new ArrayList<>();
         try {
             String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + "13.10.2025" + "&le=2&ocg=MS&gt=Popüler";
+            String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Popüler";
             driver.get(url);
             PageWaitUtils.safeWaitForLoad(driver, 10);
             scrollToEnd();
@@ -52,7 +52,7 @@ public class BasketballScraper {
             List<WebElement> events = driver.findElements(By.cssSelector("div.odd-col.event-list.pre-event"));
             System.out.println("Final element sayısı: " + events.size());
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < events.size(); i++) {
                 WebElement e = events.get(i);
                 MatchInfo info = extractMatchInfo(e, i);
                 if (info != null) list.add(info);
