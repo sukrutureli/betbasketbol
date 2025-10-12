@@ -156,9 +156,6 @@ public class TeamMatchHistory {
 		currentMatch.setAvgPointsForHome(getForAgainstAndTotal(rekabetGecmisi, teamEv)[0]);
 		currentMatch.setAvgPointsForAway(getForAgainstAndTotal(rekabetGecmisi, teamEv)[1]);
 		currentMatch.setH2hAvgTotalPoints(getForAgainstAndTotal(rekabetGecmisi, teamEv)[2]);
-		
-		System.out.println(currentMatch.getAvgPointsForHome());
-		System.out.println(currentMatch.getAvgPointsForAway());
 
 		return currentMatch;
 	}
@@ -168,7 +165,12 @@ public class TeamMatchHistory {
 
 		int size = macResult.size();
 
+		System.out.println(size);
+
 		for (int i = 0; i < size; i++) {
+			System.out.println(macResult.get(i).getHomeTeam());
+			System.out.println(macResult.get(i).getAwayTeam());
+			System.out.println(teamName);
 			if (macResult.get(i).getHomeTeam().contains(teamName)) {
 				points[0] += macResult.get(i).getHomeScore();
 				points[1] += macResult.get(i).getAwayScore();
@@ -178,6 +180,7 @@ public class TeamMatchHistory {
 			}
 			points[2] = points[2] + macResult.get(i).getHomeScore() + macResult.get(i).getAwayScore();
 		}
+		
 
 		if (size > 0) {
 			points[0] /= size;
