@@ -156,6 +156,9 @@ public class TeamMatchHistory {
 		currentMatch.setAvgPointsForHome(getForAgainstAndTotal(rekabetGecmisi, teamEv)[0]);
 		currentMatch.setAvgPointsForAway(getForAgainstAndTotal(rekabetGecmisi, teamEv)[1]);
 		currentMatch.setH2hAvgTotalPoints(getForAgainstAndTotal(rekabetGecmisi, teamEv)[2]);
+		
+		System.out.println(currentMatch.getAvgPointsForHome());
+		System.out.println(currentMatch.getAvgPointsForAway());
 
 		return currentMatch;
 	}

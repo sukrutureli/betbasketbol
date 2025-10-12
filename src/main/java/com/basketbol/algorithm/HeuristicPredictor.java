@@ -66,8 +66,6 @@ public class HeuristicPredictor implements BettingAlgorithm {
             expectedAway += diff * 0.25;
         }
         
-        System.out.println(expectedHome + " - " + expectedAway);
-        
         // ---- Tahmin hesaplama ----
         double diff = expectedHome - expectedAway;
         double total = expectedHome + expectedAway;
