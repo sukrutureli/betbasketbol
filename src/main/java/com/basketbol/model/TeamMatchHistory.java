@@ -183,20 +183,18 @@ public class TeamMatchHistory {
 		return points;
 	}
 
-	public String getStyle(int value, String type) {
+	public String getStyle(int value, String type, String pick) {
+		String colorH = "background-color: #deded1;";
 		String color = "background-color: #c8facc;";
-		// int percentage = ((int)(((value * 1.0) / getTotalMatchesIn10()) * 100));
-		int percentage = 0;
-
-		if (type.startsWith("MS")) {
-			if (percentage >= 50) {
-				return color;
-			}
+		
+		if (value == -1) {
+			return colorH;
 		} else {
-			if (percentage >= 70) {
+			if (pick.contains(type)) {
 				return color;
 			}
 		}
+
 		return "";
 	}
 }

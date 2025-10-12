@@ -72,8 +72,8 @@ public class HeuristicPredictor implements BettingAlgorithm {
         String msPick = diff > 3 ? "MS1" : (diff < -3 ? "MS2" : "Yakın");
 
         // Alt/Üst tahmini
-        String ouPick = total > barem + 3 ? "ÜST"
-                         : total < barem - 3 ? "ALT" : "Sınırda";
+        String ouPick = total > barem + 3 ? "Üst"
+                         : total < barem - 3 ? "Alt" : "Sınırda";
         
         if (barem < 0) {
         	ouPick = "-";

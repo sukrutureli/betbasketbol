@@ -104,31 +104,31 @@ public class HtmlReportGenerator {
 
 					// 1️⃣ İlk satır: MS1 – MS2
 					html.append("<tr>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "MS1")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "MS1", results.get(i).getPick())
 							+ "'>MS1<br><strong>").append(match.getOdds().getMs1()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "MS2")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "MS2", results.get(i).getPick())
 							+ "'>MS2<br><strong>").append(match.getOdds().getMs2()).append("</strong></td>");
 					html.append("</tr>");
 
 					// 2️⃣ İkinci satır: H1 – 1 – 2 – H2
 					html.append("<tr>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "H1")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(-1, "H1", results.get(i).getPick())
 							+ "'>H1<br><strong>").append(match.getOdds().getH1Value()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "1")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "1", results.get(i).getPick())
 							+ "'>1<br><strong>").append(match.getOdds().getH1()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "2")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "2", results.get(i).getPick())
 							+ "'>2<br><strong>").append(match.getOdds().getH2()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "H2")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(-1, "H2", results.get(i).getPick())
 							+ "'>H2<br><strong>").append(match.getOdds().getH2Value()).append("</strong></td>");
 					html.append("</tr>");
 
 					// 3️⃣ Son satır: Alt – Baren – Üst
 					html.append("<tr>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "Alt")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "Alt", results.get(i).getPick())
 							+ "'>Alt<br><strong>").append(match.getOdds().getUnder()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc;'>Barem<br><strong>")
-							.append(match.getOdds().gethOverUnderValue()).append("</strong></td>");
-					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(123, "Üst")
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(-1, "Barem", results.get(i).getPick())
+					+ "'>Barem<br><strong>").append(match.getOdds().gethOverUnderValue()).append("</strong></td>");
+					html.append("<td style='padding:6px; border:1px solid #ccc; " + teamHistory.getStyle(0, "Üst", results.get(i).getPick())
 							+ "'>Üst<br><strong>").append(match.getOdds().getOver()).append("</strong></td>");
 					html.append("</tr>");
 
