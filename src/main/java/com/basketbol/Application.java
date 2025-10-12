@@ -73,7 +73,7 @@ public class Application {
 
             List<PredictionResult> results = new ArrayList<>();
             for (Match m : matchStats) {
-                results.add(ensemble.predict(m, Optional.of(m.getOdds())));
+                results.add(ensemble.predict(m, Optional.empty()));
             }
 
             HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol.html");
