@@ -23,7 +23,7 @@ public class HtmlReportGenerator {
 		// HTML oluşturmaya başla
 		StringBuilder html = new StringBuilder();
 		html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
-		html.append("<title>İddaa Bülteni</title>");
+		html.append("<title>🏀 Basketbol Tahminleri</title>");
 		html.append("<style>");
 		html.append("body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }");
 		html.append(
@@ -60,7 +60,7 @@ public class HtmlReportGenerator {
 
 		html.append("</style>");
 		html.append("</head><body>");
-		html.append("<h1>İddaa Maç Geçmişi Analizi</h1>");
+		html.append("<h1>🏀 Basketbol Tahminleri</h1>");
 		html.append("<p>Son güncelleme: " + LocalDateTime.now(istanbulZone) + "</p>");
 
 		// İstatistik bilgileri
