@@ -115,12 +115,12 @@ public class HtmlReportGenerator {
 					// 2️⃣ İkinci satır: H1 – 1 – 2 – H2
 					html.append("<tr>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "1_", results.get(i).getPick()) + "'>1<br><strong>")
-							.append("(H1: " + match.getOdds().getH1Value() + ") ").append(match.getOdds().getH1())
+							+ teamHistory.getStyle(0, "1_", results.get(i).getPick()) + "'>H1 "
+							+ match.getOdds().getH1Value() + "<br><strong>").append(match.getOdds().getH1())
 							.append("</strong></td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "2_", results.get(i).getPick()) + "'>2<br><strong>")
-							.append(match.getOdds().getH2()).append("(H2: " + match.getOdds().getH2Value() + ") ")
+							+ teamHistory.getStyle(0, "2_", results.get(i).getPick()) + "'>H2 "
+							+ match.getOdds().getH2Value() + "<br><strong>").append(match.getOdds().getH2())
 							.append("</strong></td>");
 					html.append("</tr>");
 

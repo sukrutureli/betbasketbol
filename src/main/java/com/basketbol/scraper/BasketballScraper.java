@@ -46,7 +46,7 @@ public class BasketballScraper {
             String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Popüler";
             driver.get(url);
-            PageWaitUtils.safeWaitForLoad(driver, 10);
+            PageWaitUtils.safeWaitForLoad(driver, 15);
             scrollToEnd();
 
             List<WebElement> events = driver.findElements(By.cssSelector("div.odd-col.event-list.pre-event"));
