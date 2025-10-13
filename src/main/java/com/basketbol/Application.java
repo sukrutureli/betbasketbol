@@ -74,7 +74,7 @@ public class Application {
                 results.add(heur.predict(m, Optional.empty()));
             }
 
-            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol_.html");
+            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol.html");
             System.out.println("✅ basketbol.html oluşturuldu.");
 
         } catch (Exception e) {
