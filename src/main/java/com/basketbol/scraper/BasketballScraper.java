@@ -120,7 +120,7 @@ public class BasketballScraper {
         try {
             List<WebElement> main = event.findElements(By.cssSelector("dd.col-02.event-row .cell"));
             for (int i = 0; i < main.size() && i < 2; i++)
-                o[i] = main.get(i).findElement(By.cssSelector("a.odd")).getText().trim();
+                o[i] = main.get(i).findElement(By.cssSelector(".odd")).getText().trim();
             
             List<WebElement> extra = event.findElements(By.cssSelector("dd.col-04.event-row .cell"));
             for (int i = 0; i < extra.size() && i < 4; i++)
@@ -140,13 +140,14 @@ public class BasketballScraper {
     }
 
     private double toDouble(String s) {
-        try {
-            s = s.replace(",", ".");
-            return s.equals("-") ? 0.0 : Double.parseDouble(s);
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
+		try {
+			if (s == null || s.equals("-") || s.isEmpty())
+				return 0.0;
+			return Double.parseDouble(s.replace(",", "."));
+		} catch (Exception e) {
+			return 0.0;
+		}
+	}
 
     // =============================================================
     // TAKIM GEÇMİŞİ (REKABET + SON MAÇLAR)

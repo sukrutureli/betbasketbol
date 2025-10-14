@@ -98,28 +98,35 @@ public class HtmlReportGenerator {
 
 				if (teamHistory != null) {
 					html.append("<div class='odds' style='margin-top:10px;'>");
-					html.append("<strong>Güncel Oranlar:</strong>");
+					html.append("<strong>Güncel Oranlar ve Yüzdeler:</strong>");
+
+					if (!teamHistory.isInfoEnough()) {
+						html.append(" DİKKAT! Yeterli geçmiş veri yok");
+					}
+
 					html.append(
 							"<table style='width:100%; border-collapse: collapse; margin-top:6px; text-align:center;'>");
 
 					// 1️⃣ İlk satır: MS1 – MS2
 					html.append("<tr>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "MS1", results.get(i).getPick()) + "'>MS1<br><strong>")
-							.append(match.getOdds().getMs1()).append("</strong></td>");
+							+ teamHistory.getStyle("MS1", results.get(i).getPick()) + "'>MS1<br><strong>")
+							.append(match.getOdds().getMs1()).append("</strong><br>")
+							.append(teamHistory.toStringAsPercentage(teamHistory.getMs1())).append("</td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "MS2", results.get(i).getPick()) + "'>MS2<br><strong>")
-							.append(match.getOdds().getMs2()).append("</strong></td>");
+							+ teamHistory.getStyle("MS2", results.get(i).getPick()) + "'>MS2<br><strong>")
+							.append(match.getOdds().getMs2()).append("</strong><br>")
+							.append(teamHistory.toStringAsPercentage(teamHistory.getMs2())).append("</td>");
 					html.append("</tr>");
 
 					// 2️⃣ İkinci satır: H1 – 1 – 2 – H2
 					html.append("<tr>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "1_", results.get(i).getPick()) + "'>H1 "
+							+ teamHistory.getStyle("1_", results.get(i).getPick()) + "'>H1 "
 							+ match.getOdds().getH1Value() + "<br><strong>").append(match.getOdds().getH1())
 							.append("</strong></td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "2_", results.get(i).getPick()) + "'>H2 "
+							+ teamHistory.getStyle("2_", results.get(i).getPick()) + "'>H2 "
 							+ match.getOdds().getH2Value() + "<br><strong>").append(match.getOdds().getH2())
 							.append("</strong></td>");
 					html.append("</tr>");
@@ -127,13 +134,15 @@ public class HtmlReportGenerator {
 					// 3️⃣ Son satır: Alt – Baren – Üst
 					html.append("<tr>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "Alt", results.get(i).getPick()) + "'>"
+							+ teamHistory.getStyle("Alt", results.get(i).getPick()) + "'>"
 							+ match.getOdds().gethOverUnderValue() + " Alt<br><strong>")
-							.append(match.getOdds().getUnder()).append("</strong></td>");
+							.append(match.getOdds().getUnder()).append("</strong><br>")
+							.append(teamHistory.toStringAsPercentage(teamHistory.getAlt())).append("</td>");
 					html.append("<td style='padding:6px; border:1px solid #ccc; "
-							+ teamHistory.getStyle(0, "Üst", results.get(i).getPick()) + "'>"
+							+ teamHistory.getStyle("Üst", results.get(i).getPick()) + "'>"
 							+ match.getOdds().gethOverUnderValue() + " Üst<br><strong>")
-							.append(match.getOdds().getOver()).append("</strong></td>");
+							.append(match.getOdds().getOver()).append("</strong><br>")
+							.append(teamHistory.toStringAsPercentage(teamHistory.getUst())).append("</td>");
 					html.append("</tr>");
 
 					html.append("</table>");
@@ -164,29 +173,22 @@ public class HtmlReportGenerator {
 					}
 
 					int rekabetMacCount = teamHistory.getRekabetGecmisi().size();
-					int sonMaclarCount = teamHistory.getSonMaclarHome().size() + teamHistory.getSonMaclarAway().size();
+					int sonMaclarHomeCount = teamHistory.getSonMaclarHome().size();
+					int sonMaclarAwayCount = teamHistory.getSonMaclarAway().size();
 
 					html.append("<div class='history'>");
-					html.append("<h4>Geçmiş Maç Analizi:</h4>");
 
 					// Takım istatistikleri
 					html.append("<div class='team-stats'>");
-					html.append("<strong>").append(teamHistory.getTeamName()).append("</strong>");
-					html.append("<table style='width:100%; border-collapse: collapse; margin-top:10px;'>");
-
-					html.append("<tr>");
-					html.append("<td style='padding:4px; border:1px solid #ccc;'>")
-							.append(teamHistory.toStringAsPercentage(teamHistory.getAlt(), "Alt")).append("</td>");
-					html.append("<td style='padding:4px; border:1px solid #ccc;'>")
-							.append(teamHistory.toStringAsPercentage(teamHistory.getUst(), "Üst")).append("</td>");
-					html.append("<td style='padding:4px; border:1px solid #ccc;'>-</td>");
-					html.append("</tr>");
-
-					html.append("</table>");
 					html.append("<p style='margin-top:8px; font-size:0.9em;'>");
-					html.append("Bakılan maç sayısı: Rekabet - ").append(rekabetMacCount).append(" | Son maçlar - ")
-							.append(sonMaclarCount);
+					html.append("Bakılan maç sayısı: Rekabet - ").append(rekabetMacCount)
+							.append(" | Ev sahibi son maçlar  - ").append(sonMaclarHomeCount)
+							.append(" | Deplasman son maçlar  - ").append(sonMaclarAwayCount);
 					html.append("</p>");
+					html.append("</div>");
+
+					html.append("<div class='history-section'>");
+					html.append("<strong>").append(teamHistory.getTeamName()).append("</strong>");
 					html.append("</div>");
 
 					// Rekabet Geçmişi
@@ -195,7 +197,6 @@ public class HtmlReportGenerator {
 						html.append("<h5>Rekabet Geçmişi (").append(teamHistory.getRekabetGecmisi().size())
 								.append(" maç):</h5>");
 
-						int count = 0;
 						for (MatchResult matchResult : teamHistory.getRekabetGecmisi()) {
 							String resultClass = getResultClass(matchResult, teamHistory.getTeamName());
 							html.append("<div class='match-result ").append(resultClass).append("'>");
@@ -205,7 +206,6 @@ public class HtmlReportGenerator {
 							html.append(matchResult.getAwayTeam());
 							html.append(" [").append(matchResult.getTournament()).append("]");
 							html.append("</div>");
-							count++;
 						}
 						html.append("</div>");
 					}
@@ -216,7 +216,6 @@ public class HtmlReportGenerator {
 						html.append("<h5>Ev Sahibi Son Maçlar (").append(teamHistory.getSonMaclarHome().size())
 								.append(" maç):</h5>");
 
-						int count = 0;
 						for (MatchResult matchResult : teamHistory.getSonMaclarHome()) {
 							String resultClass = getResultClass(matchResult, teamHistory.getTeamName());
 							html.append("<div class='match-result ").append(resultClass).append("'>");
@@ -225,7 +224,6 @@ public class HtmlReportGenerator {
 							html.append(matchResult.getScoreString()).append(" ");
 							html.append(matchResult.getAwayTeam());
 							html.append("</div>");
-							count++;
 						}
 						html.append("</div>");
 					}
@@ -236,7 +234,6 @@ public class HtmlReportGenerator {
 						html.append("<h5>Deplasman Son Maçlar (").append(teamHistory.getSonMaclarAway().size())
 								.append(" maç):</h5>");
 
-						int count = 0;
 						for (MatchResult matchResult : teamHistory.getSonMaclarAway()) {
 							String resultClass = getResultClass(matchResult, teamHistory.getTeamName());
 							html.append("<div class='match-result ").append(resultClass).append("'>");
@@ -245,7 +242,6 @@ public class HtmlReportGenerator {
 							html.append(matchResult.getScoreString()).append(" ");
 							html.append(matchResult.getAwayTeam());
 							html.append("</div>");
-							count++;
 						}
 						html.append("</div>");
 					}
