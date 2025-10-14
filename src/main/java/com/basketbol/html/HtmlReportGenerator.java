@@ -92,12 +92,12 @@ public class HtmlReportGenerator {
 			if (match.hasDetailUrl()) {
 
 				TeamMatchHistory teamHistory = historyManager.getTeamHistories().get(i);
-				
+
 				boolean insufficient = (teamHistory != null && !teamHistory.isInfoEnough());
-			    
-			    html.append("<div class='match").append(insufficient ? " insufficient" : "").append("'>");
-				//html.append("<div class='match'>");
-			    
+
+				html.append("<div class='match").append(insufficient ? " insufficient" : "").append("'>");
+				// html.append("<div class='match'>");
+
 				html.append("<div class='match-header'>");
 				html.append("<div class='match-name'>").append(match.getName()).append("</div>");
 				html.append("<div class='match-time'>").append(match.getTime()).append("</div>");
@@ -173,14 +173,14 @@ public class HtmlReportGenerator {
 						html.append("</thead>");
 						html.append("<tbody>");
 						html.append("<tr>");
-						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(results.get(i).getpHome()))
+						html.append("<td class='qs-odd'>").append(MathUtils.fmtPct(results.get(i).getpHome()))
 								.append("</td>");
-						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(results.get(i).getpAway()))
-						.append("</td>");
-						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(1 - results.get(i).getpOver25()))
-						.append("</td>");
-						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(results.get(i).getpOver25()))
-						.append("</td>");
+						html.append("<td class='qs-odd'>").append(MathUtils.fmtPct(results.get(i).getpAway()))
+								.append("</td>");
+						html.append("<td class='qs-odd'>").append(MathUtils.fmtPct(1 - results.get(i).getpOver25()))
+								.append("</td>");
+						html.append("<td class='qs-odd'>").append(MathUtils.fmtPct(results.get(i).getpOver25()))
+								.append("</td>");
 						html.append(
 								"<td class='qs-pick'><span class='pick'>" + results.get(i).getPick() + "</span></td>");
 						html.append("<td class='qs-score'>" + results.get(i).getScoreline() + "</td>");
