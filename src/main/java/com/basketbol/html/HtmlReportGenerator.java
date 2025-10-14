@@ -87,17 +87,21 @@ public class HtmlReportGenerator {
 		for (int i = 0; i < matches.size(); i++) {
 			MatchInfo match = matches.get(i);
 
-			html.append("<div class='match'>");
-			html.append("<div class='match-header'>");
-			html.append("<div class='match-name'>").append(match.getName()).append("</div>");
-			html.append("<div class='match-time'>").append(match.getTime()).append("</div>");
-			html.append("<button onclick=\"toggleHistory(this)\">Göster/Gizle</button>");
-			html.append("</div>");
-
 			// Detay URL'si varsa geçmiş verilerini çek
 			if (match.hasDetailUrl()) {
 
 				TeamMatchHistory teamHistory = historyManager.getTeamHistories().get(i);
+				
+				boolean insufficient = (teamHistory != null && !teamHistory.isInfoEnough());
+			    
+			    html.append("<div class='match").append(insufficient ? " insufficient" : "").append("'>");
+				//html.append("<div class='match'>");
+			    
+				html.append("<div class='match-header'>");
+				html.append("<div class='match-name'>").append(match.getName()).append("</div>");
+				html.append("<div class='match-time'>").append(match.getTime()).append("</div>");
+				html.append("<button onclick=\"toggleHistory(this)\">Göster/Gizle</button>");
+				html.append("</div>");
 
 				if (teamHistory != null) {
 					html.append("<div class='odds' style='margin-top:10px;'>");
