@@ -31,6 +31,7 @@ public class HtmlReportGenerator {
 		html.append("body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }");
 		html.append(
 				".match { background: white; border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 8px; }");
+		html.append(".match.insufficient { background-color: #ffe5e5; }"); // açık kırmızı arka plan
 		html.append(
 				".match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }");
 		html.append(".match-name { font-weight: bold; color: #333; font-size: 1.1em; }");
