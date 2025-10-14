@@ -7,6 +7,8 @@ import com.basketbol.model.MatchInfo;
 import com.basketbol.model.MatchResult;
 import com.basketbol.model.PredictionResult;
 import com.basketbol.model.TeamMatchHistory;
+import com.basketbol.util.MathUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -155,6 +157,10 @@ public class HtmlReportGenerator {
 						html.append("<table class='qs'>");
 						html.append("<thead>");
 						html.append("<tr>");
+						html.append("<th>MS1</th>");
+						html.append("<th>MS2</th>");
+						html.append("<th>Alt</th>");
+						html.append("<th>Üst</th>");
 						html.append("<th>Tahmin</th>");
 						html.append("<th>Skor</th>");
 						html.append("<th>Güven</th>");
@@ -162,6 +168,14 @@ public class HtmlReportGenerator {
 						html.append("</thead>");
 						html.append("<tbody>");
 						html.append("<tr>");
+						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(results.get(i).getpHome()))
+								.append("</td>");
+						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(results.get(i).getpAway()))
+						.append("</td>");
+						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(1 - results.get(i).getpOver25()))
+						.append("</td>");
+						html.append("<td class='qs-odd>").append(MathUtils.fmtPct(results.get(i).getpOver25()))
+						.append("</td>");
 						html.append(
 								"<td class='qs-pick'><span class='pick'>" + results.get(i).getPick() + "</span></td>");
 						html.append("<td class='qs-score'>" + results.get(i).getScoreline() + "</td>");
@@ -307,7 +321,7 @@ public class HtmlReportGenerator {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void generateHtmlForSublist(List<LastPrediction> predictions, String fileName) {
 		StringBuilder html = new StringBuilder();
 
@@ -317,11 +331,13 @@ public class HtmlReportGenerator {
 		html.append("<meta charset='UTF-8'>\n");
 		html.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n");
 		html.append("<title>✅ Hazır Kupon</title>\n");
-		html.append("<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'>\n");
+		html.append(
+				"<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'>\n");
 		html.append("<style>\n");
 
 		/* --- Genel Stil --- */
-		html.append("body { font-family: Arial, sans-serif; background-color: #f7f8fa; margin: 0; padding: 20px; color: #222; }\n");
+		html.append(
+				"body { font-family: Arial, sans-serif; background-color: #f7f8fa; margin: 0; padding: 20px; color: #222; }\n");
 		html.append("h1 { text-align: center; margin-bottom: 20px; color: #333; font-size: 22px; }\n");
 
 		/* --- Tablo --- */
@@ -334,13 +350,16 @@ public class HtmlReportGenerator {
 		html.append("td { font-size: 14px; border-bottom: 1px solid #ddd; }\n");
 
 		/* --- İkon hizalama --- */
-		html.append("td i, td svg, td img { display:inline-block; vertical-align:middle; margin-right:4px; color:#0077cc; }\n");
+		html.append(
+				"td i, td svg, td img { display:inline-block; vertical-align:middle; margin-right:4px; color:#0077cc; }\n");
 
 		/* --- Sütun oranları --- */
 		html.append("th:nth-child(1), td:nth-child(1) { width: 60px; text-align: center; white-space: nowrap; }\n");
-		html.append("th:nth-child(2), td:nth-child(2) { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n");
+		html.append(
+				"th:nth-child(2), td:nth-child(2) { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n");
 		html.append("th:nth-child(3), td:nth-child(3) { width: auto; }\n");
-		html.append("th:nth-child(4), td:nth-child(4) { width: 120px; text-align: center; color: #333; font-weight: bold; }\n");
+		html.append(
+				"th:nth-child(4), td:nth-child(4) { width: 120px; text-align: center; color: #333; font-weight: bold; }\n");
 
 		html.append(".match { font-weight: bold; color: #1a1a1a; }\n");
 		html.append(".prediction { color: #444; white-space: pre-line; }\n");
@@ -349,7 +368,8 @@ public class HtmlReportGenerator {
 		html.append("@media (max-width: 600px) {\n");
 		html.append("  table, thead, tbody, th, td, tr { display: block; width: 100%; }\n");
 		html.append("  thead { display: none; }\n");
-		html.append("  tr { margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); background: #fff; padding: 8px; }\n");
+		html.append(
+				"  tr { margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); background: #fff; padding: 8px; }\n");
 		html.append("  td { border: none; padding: 6px 8px; }\n");
 		html.append("  td i { margin-right: 6px; }\n");
 		html.append("  td span.label { display:block; font-weight:bold; color:#0077cc; margin-bottom:3px; }\n");
@@ -360,18 +380,19 @@ public class HtmlReportGenerator {
 		html.append("<body>\n");
 		html.append("<h1>✅ Hazır Kupon</h1>\n");
 		html.append("<table>\n");
-		html.append("<thead><tr><th>🕒 Saat</th><th>⚽ Maç</th><th>🎯 Tahmin</th><th>📊 Skor Tahmini</th></tr></thead>\n");
+		html.append(
+				"<thead><tr><th>🕒 Saat</th><th>⚽ Maç</th><th>🎯 Tahmin</th><th>📊 Skor Tahmini</th></tr></thead>\n");
 		html.append("<tbody>\n");
 
 		for (LastPrediction p : predictions) {
-		    html.append("<tr>");
-		    html.append("<td><i class='fa-regular fa-clock'></i>").append(p.getTime()).append("</td>");
-		    html.append("<td class='match'><i class='fa-solid fa-futbol'></i>").append(p.getName()).append("</td>");
-		    html.append("<td class='prediction'><i class='fa-solid fa-bullseye'></i>").append(p.preditionsToString()).append("</td>");
-		    html.append("<td class='score'><i class='fa-solid fa-chart-line'></i>")
-		        .append(p.getScore() != null ? p.getScore() : "-")
-		        .append("</td>");
-		    html.append("</tr>\n");
+			html.append("<tr>");
+			html.append("<td><i class='fa-regular fa-clock'></i>").append(p.getTime()).append("</td>");
+			html.append("<td class='match'><i class='fa-solid fa-futbol'></i>").append(p.getName()).append("</td>");
+			html.append("<td class='prediction'><i class='fa-solid fa-bullseye'></i>").append(p.preditionsToString())
+					.append("</td>");
+			html.append("<td class='score'><i class='fa-solid fa-chart-line'></i>")
+					.append(p.getScore() != null ? p.getScore() : "-").append("</td>");
+			html.append("</tr>\n");
 		}
 
 		html.append("</tbody></table>\n");
