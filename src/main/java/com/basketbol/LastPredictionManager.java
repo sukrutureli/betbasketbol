@@ -27,7 +27,7 @@ public class LastPredictionManager {
 			TeamMatchHistory th = historyManager.getTeamHistories().get(i);
 			
 			LastPrediction tempLastPrediction = new LastPrediction(matchInfo.get(i).getName(), matchInfo.get(i).getTime());
-			String[] tahminListesi = { "MS1", "MS2", "Üst", "Alt" };
+			String[] tahminListesi = { "MS1", "MS2", "Ãœst", "Alt" };
 			
 			tempLastPrediction.setScore(predictionResults.get(i).getScoreline());
 
@@ -70,15 +70,15 @@ public class LastPredictionManager {
 					&& isScoreOk(pr.getScoreline(), "MS2", matchInfo)) {
 				return "MS2";
 			}
-		} else if (tahmin.equals("Üst")) {
+		} else if (tahmin.equals("Ãœst")) {
 			percentageH = h.getUst() * 100;
 			percentagePR = pr.getpOver25() * 100;
 			if (matchInfo.getOdds().getOver() > 0.0) {
-				if (percentageH > 60 && percentagePR > 60 && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
-					return "Üst";
+				if (percentageH > 60 && percentagePR > 60 && isScoreOk(pr.getScoreline(), "Ãœst", matchInfo)) {
+					return "Ãœst";
 				}
-				if (percentagePR > 70 && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
-					return "Üst";
+				if (percentagePR > 70 && isScoreOk(pr.getScoreline(), "Ãœst", matchInfo)) {
+					return "Ãœst";
 				}
 			}
 		} else if (tahmin.equals("Alt")) {
@@ -108,7 +108,7 @@ public class LastPredictionManager {
 			return true;
 		} else if (tahmin.equals("Alt") && (home + away) < match.getOdds().gethOverUnderValue()) {
 			return true;
-		} else if (tahmin.equals("Üst") && (home + away) > match.getOdds().gethOverUnderValue()) {
+		} else if (tahmin.equals("Ãœst") && (home + away) > match.getOdds().gethOverUnderValue()) {
 			return true;
 		} else {
 			return false;
@@ -122,7 +122,7 @@ public class LastPredictionManager {
 			return String.valueOf(match.getOdds().getMs2());
 		} else if (tahmin.equals("Alt")) {
 			return String.valueOf(match.getOdds().getUnder());
-		} else if (tahmin.equals("Üst")) {
+		} else if (tahmin.equals("Ãœst")) {
 			return String.valueOf(match.getOdds().getOver());
 		}
 		return null;
