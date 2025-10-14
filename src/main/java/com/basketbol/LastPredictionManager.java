@@ -59,14 +59,14 @@ public class LastPredictionManager {
 		if (tahmin.equals("MS1")) {
 			percentageH = h.getMs1() * 100;
 			percentagePR = pr.getpHome() * 100;
-			if (matchInfo.getOdds().getMs1() > 0.0 && percentageH > 60 && percentagePR > 60
+			if (matchInfo.getOdds().getMs1() > 0.0 && percentageH > 55 && percentagePR > 55
 					&& isScoreOk(pr.getScoreline(), "MS1", matchInfo)) {
 				return "MS1";
 			}
 		} else if (tahmin.equals("MS2")) {
 			percentageH = h.getMs2() * 100;
 			percentagePR = pr.getpAway() * 100;
-			if (matchInfo.getOdds().getMs2() > 0.0 && percentageH > 60 && percentagePR > 60
+			if (matchInfo.getOdds().getMs2() > 0.0 && percentageH > 55 && percentagePR > 55
 					&& isScoreOk(pr.getScoreline(), "MS2", matchInfo)) {
 				return "MS2";
 			}
@@ -74,10 +74,10 @@ public class LastPredictionManager {
 			percentageH = h.getUst() * 100;
 			percentagePR = pr.getpOver25() * 100;
 			if (matchInfo.getOdds().getOver() > 0.0) {
-				if (percentageH > 60 && percentagePR > 60 && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
+				if (percentageH > 55 && percentagePR > 55 && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
 					return "Üst";
 				}
-				if (percentagePR > 75 && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
+				if (percentagePR > 70 && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
 					return "Üst";
 				}
 			}
@@ -85,10 +85,10 @@ public class LastPredictionManager {
 			percentageH = h.getAlt() * 100;
 			percentagePR = (1 - pr.getpOver25()) * 100;
 			if (matchInfo.getOdds().getUnder() > 0.0) {
-				if (percentageH > 60 && percentagePR > 60 && isScoreOk(pr.getScoreline(), "Alt", matchInfo)) {
+				if (percentageH > 55 && percentagePR > 55 && isScoreOk(pr.getScoreline(), "Alt", matchInfo)) {
 					return "Alt";
 				}
-				if (percentagePR > 75 && isScoreOk(pr.getScoreline(), "Alt", matchInfo)) {
+				if (percentagePR > 70 && isScoreOk(pr.getScoreline(), "Alt", matchInfo)) {
 					return "Alt";
 				}
 			}
