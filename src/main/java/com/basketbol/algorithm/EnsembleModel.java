@@ -9,7 +9,6 @@ public class EnsembleModel implements BettingAlgorithm {
 
 	public EnsembleModel(List<BettingAlgorithm> models) {
 		this.models = models;
-		picks = new ArrayList<>();
 	}
 
 	@Override
@@ -64,9 +63,6 @@ public class EnsembleModel implements BettingAlgorithm {
 	private double safe(double v) {
 		return Double.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0.5;
 	}
-
-	public List<String> getPicks() {
-		return picks;
-	}
 }
+
 
