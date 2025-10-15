@@ -9,13 +9,12 @@ public class PaceAdjustedModel implements BettingAlgorithm {
     public String name() { return "PaceAdjustedModel"; }
 
     @Override
-    public double weight() { return 0.25; } // biraz artırdım çünkü toplam skor hesaplarında güçlü
+    public double weight() { return 0.0; }
 
     @Override
     public PredictionResult predict(Match match, Optional<Odds> oddsOpt) {
         BasketballStats h = match.getHomeStats();
         BasketballStats a = match.getAwayStats();
-
         if (h == null || a == null || h.isEmpty() || a.isEmpty())
             return neutral(match);
 
@@ -33,37 +32,56 @@ public class PaceAdjustedModel implements BettingAlgorithm {
         double defH = safe(h.getAvgDefensiveRating(), 105);
         double defA = safe(a.getAvgDefensiveRating(), 105);
 
-        // --- Tempo & Etkinlik birleşimi ---
-        double paceFactor = (paceH + paceA) / 2.0; // tipik 85–100 arası
-        double effCombined = ((offH + offA) - (defH + defA - 200)) / 2.0; // hücum güçlü, savunma zayıf → yüksek skor
+        // --- Ortalama tempo ve etkinlik ---
+        double pace = clamp((paceH + paceA) / 2.0, 80, 110); // basketbol temposu 80–110 arası
+        double effOff = (offH + offA) / 2.0;
+        double effDef = (defH + defA) / 2.0;
 
         // --- Beklenen toplam skor ---
-        double expectedTotal = (paceFactor / 100.0) * effCombined;
-        expectedTotal = clamp(expectedTotal, 120, 210); // basketbol real aralığı
+        double expectedTotal = (pace / 100.0) * ((effOff + (200 - effDef)) / 2.0);
+        expectedTotal = clamp(expectedTotal, 130, 200); // normal maç aralığı
 
         // --- pOver hesabı ---
-        double pOver = 0.5;
-        if (barem != null && barem > 0)
-            pOver = sigmoid((expectedTotal - barem) / 10.0); // 10 puan fark = %75 olasılık civarı
+        double pOver = 0.5; // nötr
+        if (barem != null && barem > 0) {
+            double diff = expectedTotal - barem;
+            // 20 sayı fark = %75 olasılık civarı, yani daha yumuşak sigmoid
+            pOver = sigmoid(diff / 20.0);
+        }
 
-        // --- Maç sonucu (Rating farkı) ---
+        // --- Maç sonucu (rating farkı) ---
         double ratingH = safe(h.getRating100(), 100);
         double ratingA = safe(a.getRating100(), 100);
-        double pHome = sigmoid((ratingH - ratingA) / 30.0);
+        double pHome = sigmoid((ratingH - ratingA) / 25.0);
 
         // --- Karar ---
         String msPick = pHome > 0.55 ? "MS1" : (pHome < 0.45 ? "MS2" : "Yakın");
-        String ouPick = (barem == null) ? "-" :
-                        (pOver > 0.55 ? "Üst" : (pOver < 0.45 ? "Alt" : "Sınırda"));
+        String ouPick;
+        if (barem == null)
+            ouPick = "-";
+        else if (pOver > 0.55)
+            ouPick = "Üst";
+        else if (pOver < 0.45)
+            ouPick = "Alt";
+        else
+            ouPick = "Sınırda";
 
-        double confidence = Math.max(Math.abs(pOver - 0.5), Math.abs(pHome - 0.5)) * 1.5;
-        confidence = clamp(confidence, 0.3, 0.9);
+        // --- Güven hesabı ---
+        double confidence = Math.max(Math.abs(pOver - 0.5), Math.abs(pHome - 0.5));
+        confidence = clamp(confidence * 1.2, 0.35, 0.9);
 
         String finalPick = msPick + " | " + ouPick;
 
-        return new PredictionResult(name(), match.getHomeTeam(), match.getAwayTeam(),
-                pHome, 0.0, 1 - pHome, pOver, 0.0,
-                finalPick, confidence, "-");
+        return new PredictionResult(
+                name(),
+                match.getHomeTeam(),
+                match.getAwayTeam(),
+                pHome, 0.0, 1 - pHome,
+                pOver, 0.0,
+                finalPick,
+                confidence,
+                "-"
+        );
     }
 
     private double sigmoid(double x) {
@@ -71,7 +89,7 @@ public class PaceAdjustedModel implements BettingAlgorithm {
     }
 
     private double safe(Double v, double def) {
-        return (v == null || Double.isNaN(v)) ? def : v;
+        return (v == null || Double.isNaN(v) || v == 0) ? def : v;
     }
 
     private double clamp(double v, double lo, double hi) {
@@ -83,4 +101,3 @@ public class PaceAdjustedModel implements BettingAlgorithm {
                 0.5, 0, 0.5, 0.5, 0, "-", 0.3, "-");
     }
 }
-
