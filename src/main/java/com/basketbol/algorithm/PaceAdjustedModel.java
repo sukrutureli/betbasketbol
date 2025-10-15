@@ -63,7 +63,7 @@ public class PaceAdjustedModel implements BettingAlgorithm {
 
         return new PredictionResult(name(), match.getHomeTeam(), match.getAwayTeam(),
                 pHome, 0.0, 1 - pHome, pOver, 0.0,
-                finalPick, confidence, "");
+                finalPick, confidence, "-");
     }
 
     private double sigmoid(double x) {
@@ -83,3 +83,4 @@ public class PaceAdjustedModel implements BettingAlgorithm {
                 0.5, 0, 0.5, 0.5, 0, "-", 0.3, "-");
     }
 }
+
