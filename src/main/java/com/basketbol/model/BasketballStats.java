@@ -15,8 +15,9 @@ public class BasketballStats {
 		this.avgPointsFor = avgPointsFor;
 		this.avgPointsAgainst = avgPointsAgainst;
 		this.avgTotalPoints = avgTotalPoints;
-		
-		calculateDerivedRatings();
+		if (isEmpty()) {
+			calculateDerivedRatings();
+		}
 	}
 
 	public Double getAvgPointsFor() {
@@ -68,7 +69,7 @@ public class BasketballStats {
 	 * sıfırsa 'boş' kabul edilir.
 	 */
 	public boolean isEmpty() {
-		boolean noGoals = avgPointsFor == 0 && avgPointsAgainst == 0 && avgTotalPoints == 0;
+		boolean noGoals = avgPointsFor == 0 && avgPointsAgainst == 0;
 		return noGoals;
 	}
 	
