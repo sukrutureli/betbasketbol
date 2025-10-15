@@ -19,7 +19,7 @@ import java.util.List;
 public class HtmlReportGenerator {
 
 	public static void generateHtml(List<MatchInfo> matches, MatchHistoryManager historyManager, List<Match> matchStats,
-			List<PredictionResult> results, List<List<String>> picks, String fileName) {
+			List<PredictionResult> results, String fileName) {
 
 		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
 
@@ -208,9 +208,6 @@ public class HtmlReportGenerator {
 					html.append("</div>");
 
 					html.append("<div class='history-section'>");
-					for (String s : picks.get(i)) {
-						html.append(s + "<br>");
-					}
 					html.append("<strong>").append(teamHistory.getTeamName()).append("</strong>");
 					html.append("</div>");
 
@@ -434,3 +431,4 @@ public class HtmlReportGenerator {
 		}
 	}
 }
+
