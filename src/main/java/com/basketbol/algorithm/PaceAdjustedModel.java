@@ -11,7 +11,7 @@ public class PaceAdjustedModel implements BettingAlgorithm {
 
 	@Override
 	public double weight() {
-		return 0.35;
+		return 0.2;
 	}
 
 	@Override
@@ -63,3 +63,4 @@ public class PaceAdjustedModel implements BettingAlgorithm {
 		return new PredictionResult(name(), m.getHomeTeam(), m.getAwayTeam(), 0.5, 0, 0.5, 0.5, 0, "-", 0.3, "-");
 	}
 }
+
