@@ -104,7 +104,7 @@ public class HtmlReportGenerator {
 				html.append("<button onclick=\"toggleHistory(this)\">Göster/Gizle</button>");
 				html.append("</div>");
 
-				if (teamHistory != null) {
+				if (teamHistory != null && teamHistory.getTotalMatches() > 0) {
 					html.append("<div class='odds' style='margin-top:10px;'>");
 					html.append("<strong>Güncel Oranlar ve Yüzdeler:</strong>");
 
