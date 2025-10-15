@@ -15,7 +15,7 @@ public class BasketballStats {
 		this.avgPointsFor = avgPointsFor;
 		this.avgPointsAgainst = avgPointsAgainst;
 		this.avgTotalPoints = avgTotalPoints;
-		if (isEmpty()) {
+		if (!isEmpty()) {
 			calculateDerivedRatings();
 		}
 	}
