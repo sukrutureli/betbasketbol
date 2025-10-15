@@ -248,10 +248,12 @@ public class TeamMatchHistory {
 		currentMatch.setOdds(pMatch.getOdds());
 
 		BasketballStats homeStats = new BasketballStats(getForAgainstAndTotal(sonMaclarHome, teamEv)[0],
-				getForAgainstAndTotal(sonMaclarHome, teamEv)[1], getForAgainstAndTotal(sonMaclarHome, teamEv)[2]);
+				getForAgainstAndTotal(sonMaclarHome, teamEv)[1], getForAgainstAndTotal(sonMaclarHome, teamEv)[2],
+				getForAgainstAndTotal(sonMaclarHome, teamEv)[3]);
 
 		BasketballStats awayStats = new BasketballStats(getForAgainstAndTotal(sonMaclarAway, teamDep)[0],
-				getForAgainstAndTotal(sonMaclarAway, teamDep)[1], getForAgainstAndTotal(sonMaclarAway, teamDep)[2]);
+				getForAgainstAndTotal(sonMaclarAway, teamDep)[1], getForAgainstAndTotal(sonMaclarAway, teamDep)[2],
+				getForAgainstAndTotal(sonMaclarAway, teamDep)[3]);
 
 		currentMatch.setHomeStats(homeStats);
 		currentMatch.setAwayStats(awayStats);
@@ -264,7 +266,7 @@ public class TeamMatchHistory {
 	}
 
 	public double[] getForAgainstAndTotal(List<MatchResult> macResult, String teamName) {
-		double[] points = { 0.0, 0.0, 0.0 };
+		double[] points = { 0.0, 0.0, 0.0, 0.0 };
 
 		int size = macResult.size();
 
@@ -272,9 +274,19 @@ public class TeamMatchHistory {
 			if (macResult.get(i).getHomeTeam().contains(teamName)) {
 				points[0] += macResult.get(i).getHomeScore();
 				points[1] += macResult.get(i).getAwayScore();
+				if (macResult.get(i).getHomeScore() > macResult.get(i).getAwayScore()) {
+					points[3] += 2;
+				} else {
+					points[3] += 1;
+				}
 			} else if (macResult.get(i).getAwayTeam().contains(teamName)) {
 				points[1] += macResult.get(i).getHomeScore();
 				points[0] += macResult.get(i).getAwayScore();
+				if (macResult.get(i).getHomeScore() < macResult.get(i).getAwayScore()) {
+					points[3] += 2;
+				} else {
+					points[3] += 1;
+				}
 			}
 			points[2] = points[2] + macResult.get(i).getHomeScore() + macResult.get(i).getAwayScore();
 		}
@@ -283,6 +295,7 @@ public class TeamMatchHistory {
 			points[0] /= size;
 			points[1] /= size;
 			points[2] /= size;
+			points[3] /= size;
 		}
 
 		return points;

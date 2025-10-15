@@ -2,7 +2,11 @@ package com.basketbol;
 
 import com.basketbol.scraper.BasketballScraper;
 import com.basketbol.algorithm.BettingAlgorithm;
+import com.basketbol.algorithm.EnsembleModel;
+import com.basketbol.algorithm.FormMomentumModel;
 import com.basketbol.algorithm.HeuristicPredictor;
+import com.basketbol.algorithm.PaceAdjustedModel;
+import com.basketbol.algorithm.ValueModel;
 import com.basketbol.html.HtmlReportGenerator;
 import com.basketbol.model.Match;
 import com.basketbol.model.MatchInfo;
@@ -67,14 +71,20 @@ public class Application {
                 }
             }
 
+            BettingAlgorithm formMomentum = new FormMomentumModel();
             BettingAlgorithm heur = new HeuristicPredictor();
+            BettingAlgorithm paceAdjusted = new PaceAdjustedModel();
+            BettingAlgorithm valueModel = new ValueModel();
+			EnsembleModel ensemble = new EnsembleModel(List.of(formMomentum, heur, paceAdjusted, valueModel));
 
             List<PredictionResult> results = new ArrayList<>();
+            List<List<String>> picks = new ArrayList<>();
             for (Match m : matchStats) {
-                results.add(heur.predict(m, Optional.empty()));
+                results.add(ensemble.predict(m, Optional.ofNullable(m.getOdds())));
+                picks.add(ensemble.getPicks());
             }
 
-            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol_.html");
+            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, picks, "basketbol_.html");
             System.out.println("✅ basketbol.html oluşturuldu.");
             
             LastPredictionManager lastPredictionManager = new LastPredictionManager(historyManager, results, matches);

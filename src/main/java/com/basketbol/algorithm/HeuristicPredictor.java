@@ -4,106 +4,104 @@ import com.basketbol.model.*;
 import java.util.Optional;
 
 /**
- * Basketbol maçları için basit ama dengeli bir heuristic model.
- * Kullanılan veriler:
- *  - Ev sahibinin son maç ortalamaları
- *  - Deplasman takımının son maç ortalamaları
- *  - Aralarındaki maçların ortalamaları (h2h)
- *  - Barem (alt/üst referansı)
+ * Basketbol maçları için basit ama dengeli bir heuristic model. Kullanılan
+ * veriler: - Ev sahibinin son maç ortalamaları - Deplasman takımının son maç
+ * ortalamaları - Aralarındaki maçların ortalamaları (h2h) - Barem (alt/üst
+ * referansı)
  */
 public class HeuristicPredictor implements BettingAlgorithm {
 
-    @Override
-    public String name() { return "HeuristicPredictor"; }
+	@Override
+	public String name() {
+		return "HeuristicPredictor";
+	}
 
-    @Override
-    public double weight() { return 1.0; }
+	@Override
+	public double weight() {
+		return 0.25;
+	}
 
-    @Override
-    public PredictionResult predict(Match match, Optional<Odds> oddsOpt) {
-        BasketballStats h = match.getHomeStats();
-        BasketballStats a = match.getAwayStats();
+	@Override
+	public PredictionResult predict(Match match, Optional<Odds> oddsOpt) {
+		BasketballStats h = match.getHomeStats();
+		BasketballStats a = match.getAwayStats();
 
-        // barem
-        double barem = -1.0;
-        if (match.getOdds() != null && match.getOdds().gethOverUnderValue() > 0)
-            barem = match.getOdds().gethOverUnderValue();
+		// barem
+		double barem = -1.0;
+		Odds o;
+		if (!oddsOpt.isEmpty()) {
+			o = oddsOpt.get();
+			if (o.gethOverUnderValue() > 0)
+				barem = o.gethOverUnderValue();
+		}
 
-        // head-to-head ortalaması
-        double h2hAvgForHome = 0.0;
-        double h2hAvgForAway = 0.0;
-        double h2hTotal = 0.0;
-        if (match.getH2hAvgTotalPoints() != null) {
-            h2hAvgForHome = match.getAvgPointsForHome();
-            h2hAvgForAway = match.getAvgPointsForAway();
-            h2hTotal = match.getH2hAvgTotalPoints();
-        }
-        
-        double forWeight = (h2hTotal > 0) ? 0.55 : 0.6;
-        double againstWeight = (h2hTotal > 0) ? 0.35 : 0.4;
-        double h2hWeight = (h2hTotal > 0) ? 0.1 : 0.0;
+		// head-to-head ortalaması
+		double h2hAvgForHome = 0.0;
+		double h2hAvgForAway = 0.0;
+		double h2hTotal = 0.0;
+		if (match.getH2hAvgTotalPoints() != null) {
+			h2hAvgForHome = match.getAvgPointsForHome();
+			h2hAvgForAway = match.getAvgPointsForAway();
+			h2hTotal = match.getH2hAvgTotalPoints();
+		}
 
-        // ---- Beklenen skor hesaplama ----
-        // Ev: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı + ev avantajı
-        double expectedHome = (forWeight * h.getAvgPointsFor()) +
-                              (againstWeight * a.getAvgPointsAgainst()) +
-                              (h2hWeight * h2hAvgForHome) +
-                              4.0; // ev avantajı
+		double forWeight = (h2hTotal > 0) ? 0.55 : 0.6;
+		double againstWeight = (h2hTotal > 0) ? 0.35 : 0.4;
+		double h2hWeight = (h2hTotal > 0) ? 0.1 : 0.0;
 
-        // Deplasman: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı
-        double expectedAway = (forWeight * a.getAvgPointsFor()) +
-                              (againstWeight * h.getAvgPointsAgainst()) +
-                              (h2hWeight * h2hAvgForAway);
+		// ---- Beklenen skor hesaplama ----
+		// Ev: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı + ev avantajı
+		double expectedHome = (forWeight * h.getAvgPointsFor()) + (againstWeight * a.getAvgPointsAgainst())
+				+ (h2hWeight * h2hAvgForHome) + 4.0; // ev avantajı
 
-        // H2H toplam skor ortalamasıyla uyumlu hale getir (stabilizasyon)
-        if (h2hTotal > 0) {
-            double currentTotal = expectedHome + expectedAway;
-            double diff = h2hTotal - currentTotal;
-            expectedHome += diff * 0.25;
-            expectedAway += diff * 0.25;
-        }
-        
-        // ---- Tahmin hesaplama ----
-        double diff = expectedHome - expectedAway;
-        double total = expectedHome + expectedAway;
+		// Deplasman: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı
+		double expectedAway = (forWeight * a.getAvgPointsFor()) + (againstWeight * h.getAvgPointsAgainst())
+				+ (h2hWeight * h2hAvgForAway);
 
-        // MS tahmini
-        String msPick = diff > 3 ? "MS1" : (diff < -3 ? "MS2" : "Yakın");
+		// H2H toplam skor ortalamasıyla uyumlu hale getir (stabilizasyon)
+		if (h2hTotal > 0) {
+			double currentTotal = expectedHome + expectedAway;
+			double diff = h2hTotal - currentTotal;
+			expectedHome += diff * 0.25;
+			expectedAway += diff * 0.25;
+		}
 
-        // Alt/Üst tahmini
-        String ouPick = total > barem + 3 ? "Üst"
-                         : total < barem - 3 ? "Alt" : "Sınırda";
-        
-        if (barem < 0) {
-        	ouPick = "-";
-        }
+		// ---- Tahmin hesaplama ----
+		double diff = expectedHome - expectedAway;
+		double total = expectedHome + expectedAway;
 
-        // Skor tahmini (yuvarlanmış)
-        String score = String.format("%d-%d",
-                Math.round(expectedHome),
-                Math.round(expectedAway));
+		// MS tahmini
+		String msPick = diff > 3 ? "MS1" : (diff < -3 ? "MS2" : "Yakın");
 
-        // Güven oranı
-        double confidence = Math.min(1.0, 0.5 + (Math.abs(diff) / 25.0));
+		// Alt/Üst tahmini
+		String ouPick = total > barem + 3 ? "Üst" : total < barem - 3 ? "Alt" : "Sınırda";
 
-        // Over ve BTTS benzeri olasılıklar (yaklaşık)
-        double pOver = clamp((total - barem) / 30.0 + 0.5, 0, 1);
-        double pHome = clamp(0.5 + (diff / 20.0), 0, 1);
-        double pAway = 1.0 - pHome;
+		if (barem < 0) {
+			ouPick = "-";
+		}
 
-        return new PredictionResult(
-                name(),
-                match.getHomeTeam(),
-                match.getAwayTeam(),
-                pHome, 0.0, pAway,
-                pOver, 0.0,
-                msPick + " | " + ouPick,
-                confidence,
-                score
-        );
-    }
+		// Skor tahmini (yuvarlanmış)
+		String score = String.format("%d-%d", Math.round(expectedHome), Math.round(expectedAway));
 
-    private static double clamp(double v, double lo, double hi) {
-        return Math.max(lo, Math.min(hi, v));
-    }
+		// Güven oranı
+		double confidence = Math.min(1.0, 0.5 + (Math.abs(diff) / 25.0));
+
+		// Over ve BTTS benzeri olasılıklar (yaklaşık)
+		double pOver = clamp((total - barem) / 30.0 + 0.5, 0, 1);
+		if (barem < 0) {
+			pOver = 0.5;
+		}
+
+		double pHome = clamp(0.5 + (diff / 20.0), 0, 1);
+		double pAway = 1.0 - pHome;
+		
+		String finalPick = msPick + " | " + ouPick;
+
+		return new PredictionResult(name(), match.getHomeTeam(), match.getAwayTeam(), pHome, 0.0, pAway, pOver, 0.0,
+				finalPick, confidence, score);
+	}
+
+	private static double clamp(double v, double lo, double hi) {
+		return Math.max(lo, Math.min(hi, v));
+	}
 }
