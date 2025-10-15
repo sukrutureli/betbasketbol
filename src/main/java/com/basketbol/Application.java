@@ -84,13 +84,13 @@ public class Application {
                 picks.add(ensemble.getPicks());
             }
 
-            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, picks, "basketbol.html");
+            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, picks, "basketbol_.html");
             System.out.println("✅ basketbol.html oluşturuldu.");
             
             LastPredictionManager lastPredictionManager = new LastPredictionManager(historyManager, results, matches);
             lastPredictionManager.fillPredictions();
           
-            HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(), "basketboltahmin.html");       
+            HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(), "basketboltahmin_.html");       
             System.out.println("basketboltahmin.html oluşturuldu.");
 
         } catch (Exception e) {
@@ -101,5 +101,6 @@ public class Application {
         }
     }
 }
+
 
 
