@@ -4,6 +4,8 @@ import com.basketbol.model.MatchInfo;
 import com.basketbol.model.MatchResult;
 import com.basketbol.model.Odds;
 import com.basketbol.model.TeamMatchHistory;
+import com.example.PageWaitUtils;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -326,6 +328,8 @@ public class BasketballScraper {
 		String name = "";
 		try {
 			driver.get(url);
+			PageWaitUtils.waitForPageLoad(driver, 12);
+			
 			try {
 				wait.until(ExpectedConditions
 						.visibilityOfElementLocated(By.cssSelector("div[data-test-id='HeaderTeams']")));
