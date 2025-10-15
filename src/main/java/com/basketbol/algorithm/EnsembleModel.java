@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 public class EnsembleModel implements BettingAlgorithm {
 	private final List<BettingAlgorithm> models;
-	private List<String> picks;
 
 	public EnsembleModel(List<BettingAlgorithm> models) {
 		this.models = models;
@@ -42,7 +41,7 @@ public class EnsembleModel implements BettingAlgorithm {
 			if (!r.getScoreline().equals("-")) {
 				score = r.getScoreline();
 			}
-			picks.add(m.name() + "->" + r.getPick());
+			System.out.println(m.name() + "->" + r.getPick());
 			totalW += w;
 		}
 
@@ -70,3 +69,4 @@ public class EnsembleModel implements BettingAlgorithm {
 		return picks;
 	}
 }
+
