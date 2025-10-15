@@ -16,6 +16,11 @@ public class ValueModel implements BettingAlgorithm {
 
 	@Override
 	public PredictionResult predict(Match match, Optional<Odds> oddsOpt) {
+		BasketballStats h = match.getHomeStats();
+		BasketballStats a = match.getAwayStats();
+		if (h == null || a == null || h.isEmpty() || a.isEmpty())
+			return neutral(match);
+		
 		if (oddsOpt.isEmpty())
 			return neutral(match);
 		Odds o = oddsOpt.get();
@@ -36,3 +41,4 @@ public class ValueModel implements BettingAlgorithm {
 		return new PredictionResult(name(), m.getHomeTeam(), m.getAwayTeam(), 0.5, 0, 0.5, 0.5, 0, "-", 0.3, "-");
 	}
 }
+
