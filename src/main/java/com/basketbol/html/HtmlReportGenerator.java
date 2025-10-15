@@ -156,7 +156,11 @@ public class HtmlReportGenerator {
 					html.append("</table>");
 					html.append("</div>");
 
-					if (!Double.isNaN(results.get(i).getpHome())) { // herhangi biri NaN ise bu tabloyu ekleme
+					int rekabetMacCount = teamHistory.getRekabetGecmisi().size();
+					int sonMaclarHomeCount = teamHistory.getSonMaclarHome().size();
+					int sonMaclarAwayCount = teamHistory.getSonMaclarAway().size();
+
+					if (sonMaclarHomeCount > 0 && sonMaclarAwayCount > 0) { // herhangi biri NaN ise bu tabloyu ekleme
 						// stats eklendi
 						html.append("<div class='quick-summary'>");
 						html.append("<table class='qs'>");
@@ -191,10 +195,6 @@ public class HtmlReportGenerator {
 						html.append("</table>");
 						html.append("</div>");
 					}
-
-					int rekabetMacCount = teamHistory.getRekabetGecmisi().size();
-					int sonMaclarHomeCount = teamHistory.getSonMaclarHome().size();
-					int sonMaclarAwayCount = teamHistory.getSonMaclarAway().size();
 
 					html.append("<div class='history'>");
 
