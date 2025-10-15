@@ -4,8 +4,6 @@ import com.basketbol.model.MatchInfo;
 import com.basketbol.model.MatchResult;
 import com.basketbol.model.Odds;
 import com.basketbol.model.TeamMatchHistory;
-import com.example.PageWaitUtils;
-
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -45,8 +43,9 @@ public class BasketballScraper {
 	public List<MatchInfo> fetchMatches() {
 		List<MatchInfo> list = new ArrayList<>();
 		try {
-			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
-					.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+			//String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
+					//.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 			String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Popüler";
 			driver.get(url);
 			PageWaitUtils.safeWaitForLoad(driver, 20);

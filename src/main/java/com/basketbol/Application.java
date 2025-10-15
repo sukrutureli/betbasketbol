@@ -74,13 +74,13 @@ public class Application {
                 results.add(heur.predict(m, Optional.empty()));
             }
 
-            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol.html");
+            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol_.html");
             System.out.println("✅ basketbol.html oluşturuldu.");
             
             LastPredictionManager lastPredictionManager = new LastPredictionManager(historyManager, results, matches);
             lastPredictionManager.fillPredictions();
           
-            HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(), "basketboltahmin.html");       
+            HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(), "basketboltahmin_.html");       
             System.out.println("basketboltahmin.html oluşturuldu.");
 
         } catch (Exception e) {
