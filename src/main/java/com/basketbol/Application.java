@@ -79,6 +79,7 @@ public class Application {
 
             List<PredictionResult> results = new ArrayList<>();
             for (Match m : matchStats) {
+				System.out.println(m.getHomeTeam() + " - " + m.getAwayTeam());
                 results.add(ensemble.predict(m, Optional.ofNullable(m.getOdds())));
             }
 
@@ -99,6 +100,7 @@ public class Application {
         }
     }
 }
+
 
 
 
