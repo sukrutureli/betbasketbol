@@ -18,7 +18,7 @@ public class HeuristicPredictor implements BettingAlgorithm {
 
 	@Override
 	public double weight() {
-		return 0.30;
+		return 0.4;
 	}
 
 	@Override
@@ -105,4 +105,5 @@ public class HeuristicPredictor implements BettingAlgorithm {
 		return Math.max(lo, Math.min(hi, v));
 	}
 }
+
 
