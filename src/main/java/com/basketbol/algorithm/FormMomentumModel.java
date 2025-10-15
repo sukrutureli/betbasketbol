@@ -11,7 +11,7 @@ public class FormMomentumModel implements BettingAlgorithm {
 
 	@Override
 	public double weight() {
-		return 0.25;
+		return 0.35;
 	}
 
 	@Override
@@ -62,3 +62,4 @@ public class FormMomentumModel implements BettingAlgorithm {
 		return new PredictionResult(name(), m.getHomeTeam(), m.getAwayTeam(), 0.5, 0, 0.5, 0.5, 0, "-", 0.3, "-");
 	}
 }
+
