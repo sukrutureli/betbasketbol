@@ -78,13 +78,11 @@ public class Application {
 			EnsembleModel ensemble = new EnsembleModel(List.of(formMomentum, heur, paceAdjusted, valueModel));
 
             List<PredictionResult> results = new ArrayList<>();
-            List<List<String>> picks = new ArrayList<>();
             for (Match m : matchStats) {
                 results.add(ensemble.predict(m, Optional.ofNullable(m.getOdds())));
-                picks.add(ensemble.getPicks());
             }
 
-            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, picks, "basketbol.html");
+            HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol.html");
             System.out.println("✅ basketbol.html oluşturuldu.");
             
             LastPredictionManager lastPredictionManager = new LastPredictionManager(historyManager, results, matches);
@@ -101,6 +99,7 @@ public class Application {
         }
     }
 }
+
 
 
 
