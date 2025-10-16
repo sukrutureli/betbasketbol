@@ -302,7 +302,7 @@ public class TeamMatchHistory {
 	}
 
 	public String getStyle(String type, String pick) {
-		String color = "background-color: #c8facc;";
+		String color = "background-color:#e8fbe8; border:1px solid #6ecf6e;";
 
 		if (!isInfoEnough()) {
 			return "";
