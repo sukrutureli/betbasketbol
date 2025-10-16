@@ -89,6 +89,8 @@ public class Application {
 
 			HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(), "basketboltahmin.html");
 			System.out.println("basketboltahmin.html oluşturuldu.");
+			
+			PredictionSaver.saveTodayPredictions(lastPredictionManager.getPredictionData());
 
 		} catch (Exception e) {
 			System.out.println("GENEL HATA: " + e.getMessage());

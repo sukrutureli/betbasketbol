@@ -7,12 +7,14 @@ import com.basketbol.model.LastPrediction;
 import com.basketbol.model.MatchInfo;
 import com.basketbol.model.PredictionResult;
 import com.basketbol.model.TeamMatchHistory;
+import com.basketbol.model.PredictionData;
 
 public class LastPredictionManager {
 	private List<LastPrediction> lastPrediction;
 	private MatchHistoryManager historyManager;
 	private List<PredictionResult> predictionResults;
 	private List<MatchInfo> matchInfo;
+	private List<PredictionData> predictionData;
 
 	public LastPredictionManager(MatchHistoryManager historyManager, List<PredictionResult> predictionResults,
 			List<MatchInfo> matchInfo) {
@@ -20,6 +22,7 @@ public class LastPredictionManager {
 		this.historyManager = historyManager;
 		this.predictionResults = predictionResults;
 		this.matchInfo = matchInfo;
+		this.predictionData = new ArrayList<PredictionData>();
 	}
 
 	public void fillPredictions() {
@@ -41,6 +44,11 @@ public class LastPredictionManager {
 
 			if (!tempLastPrediction.getPredictions().isEmpty()) {
 				lastPrediction.add(tempLastPrediction);
+				
+				String homeTeam = tempLastPrediction.getName().split("-")[0].trim();
+				String awayTeam = tempLastPrediction.getName().split("-")[1].trim();
+				PredictionData tempPredictionData = new PredictionData(homeTeam, awayTeam, tempLastPrediction.getPredictions());
+				predictionData.add(tempPredictionData);
 			}
 		}
 	}
@@ -130,6 +138,10 @@ public class LastPredictionManager {
 
 	public List<LastPrediction> getLastPrediction() {
 		return lastPrediction;
+	}
+
+	public List<PredictionData> getPredictionData() {
+		return predictionData;
 	}
 
 }
