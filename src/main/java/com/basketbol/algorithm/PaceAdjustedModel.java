@@ -33,20 +33,21 @@ public class PaceAdjustedModel implements BettingAlgorithm {
         double defA = safe(a.getAvgDefensiveRating(), 105);
 
         // --- Ortalama tempo ve etkinlik ---
-        double pace = clamp((paceH + paceA) / 2.0, 80, 110); // basketbol temposu 80–110 arası
+        double pace = clamp((paceH + paceA) / 2.0, 80, 110); 
         double effOff = (offH + offA) / 2.0;
         double effDef = (defH + defA) / 2.0;
 
-        // --- Beklenen toplam skor ---
+        // --- Yeni beklenen toplam skor ---
         double expectedTotal = (pace / 100.0) * ((effOff + (200 - effDef)) / 2.0);
-        expectedTotal = clamp(expectedTotal, 130, 200); // normal maç aralığı
+        // Daha agresif tempo ve skor dağılımı için ayarlama:
+        expectedTotal += (pace - 90) * 0.8;
+        expectedTotal = clamp(expectedTotal, 150, 230);
 
         // --- pOver hesabı ---
-        double pOver = 0.5; // nötr
+        double pOver = 0.5;
         if (barem != null && barem > 0) {
             double diff = expectedTotal - barem;
-            // 20 sayı fark = %75 olasılık civarı, yani daha yumuşak sigmoid
-            pOver = sigmoid(diff / 20.0);
+            pOver = sigmoid(diff / 10.0); // daha duyarlı
         }
 
         // --- Maç sonucu (rating farkı) ---
@@ -68,7 +69,7 @@ public class PaceAdjustedModel implements BettingAlgorithm {
 
         // --- Güven hesabı ---
         double confidence = Math.max(Math.abs(pOver - 0.5), Math.abs(pHome - 0.5));
-        confidence = clamp(confidence * 1.2, 0.35, 0.9);
+        confidence = clamp(confidence * 1.4, 0.35, 0.95);
 
         String finalPick = msPick + " | " + ouPick;
 
