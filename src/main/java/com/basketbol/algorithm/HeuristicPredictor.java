@@ -18,7 +18,7 @@ public class HeuristicPredictor implements BettingAlgorithm {
 
 	@Override
 	public double weight() {
-		return 0.4;
+		return 0.5;
 	}
 
 	@Override

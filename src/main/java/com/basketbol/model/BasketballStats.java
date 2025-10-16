@@ -6,19 +6,11 @@ public class BasketballStats {
 	private Double avgTotalPoints;
 	private Double ppg;
 
-	private Double avgPossessions;
-	private Double avgOffensiveRating;
-	private Double avgDefensiveRating;
-	private Double rating100;
-
 	public BasketballStats(Double avgPointsFor, Double avgPointsAgainst, Double avgTotalPoints, Double ppg) {
 		this.avgPointsFor = avgPointsFor;
 		this.avgPointsAgainst = avgPointsAgainst;
 		this.avgTotalPoints = avgTotalPoints;
 		this.ppg = ppg;
-		if (!isEmpty()) {
-			calculateDerivedRatings();
-		}
 	}
 
 	public Double getAvgPointsFor() {
@@ -45,52 +37,13 @@ public class BasketballStats {
 		this.avgTotalPoints = avgTotalPoints;
 	}
 
-	public Double getAvgPossessions() {
-		return avgPossessions;
-	}
-
-	public Double getAvgOffensiveRating() {
-		return avgOffensiveRating;
-	}
-
-	public Double getAvgDefensiveRating() {
-		return avgDefensiveRating;
-	}
-
-	public Double getRating100() {
-		return rating100;
-	}
-
 	public Double getPpg() {
 		return ppg;
 	}
 
-	/**
-	 * Takım verisi eksik veya anlamsız mı? Eğer hem goller hem form hem rating
-	 * sıfırsa 'boş' kabul edilir.
-	 */
 	public boolean isEmpty() {
 		boolean noGoals = avgPointsFor == 0 && avgPointsAgainst == 0;
 		return noGoals;
-	}
-
-	private void calculateDerivedRatings() {
-		if (avgPossessions == null || avgPossessions <= 0) {
-			avgPossessions = ((avgPointsFor + avgPointsAgainst) / 2.0) / 2.0;
-			avgPossessions = clamp(avgPossessions, 70, 110);
-		}
-
-		double safePoss = (avgPossessions == null || avgPossessions == 0) ? 90.0 : avgPossessions;
-
-		avgOffensiveRating = (avgPointsFor / safePoss) * 100.0;
-		avgDefensiveRating = (avgPointsAgainst / safePoss) * 100.0;
-
-		// Offensive - Defensive farkına göre güç endeksi (100 tabanlı)
-		rating100 = clamp(100 + (avgOffensiveRating - avgDefensiveRating) / 4.0, 60, 140);
-	}
-
-	private double clamp(double v, double lo, double hi) {
-		return Math.max(lo, Math.min(hi, v));
 	}
 
 }
