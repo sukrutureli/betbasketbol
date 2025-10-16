@@ -76,7 +76,7 @@ public class BasketballStats {
 	
 	private void calculateDerivedRatings() {
 	    if (avgPossessions == null || avgPossessions <= 0) {
-	        avgPossessions = (avgPointsFor + avgPointsAgainst) / 1.8;
+	        avgPossessions = (avgPointsFor + avgPointsAgainst) / 2.0;
 	    }
 
 	    // yine null olma ihtimaline karşı koruma

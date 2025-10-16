@@ -32,20 +32,20 @@ public class PaceAdjustedModel implements BettingAlgorithm {
         double defH = safe(h.getAvgDefensiveRating(), 105);
         double defA = safe(a.getAvgDefensiveRating(), 105);
 
-        double lowerPace = 80;
-        double upperPace = 110;
+        double lowerPace = 0;
+        double upperPace = 200;
 
         // Barem varsa lig temposunu tahmin et
         if (barem != null) {
             if (barem > 190) {         // NBA, G-League vb.
                 lowerPace = 90;
-                upperPace = 115;
+                upperPace = 135;
             } else if (barem < 170) {  // Avrupa, FIBA
-                lowerPace = 70;
+                lowerPace = 55;
                 upperPace = 95;
             } else {                   // Orta tempo lig
-                lowerPace = 80;
-                upperPace = 105;
+                lowerPace = 70;
+                upperPace = 110;
             }
         }
 
