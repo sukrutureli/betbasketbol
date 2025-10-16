@@ -37,7 +37,11 @@ public class LastPredictionManager {
 			for (String s : tahminListesi) {
 				if (calculatePrediction(th, predictionResults.get(i),
 						matchInfo.get(i), s) != null) {
-					String withOdd = s + " (" + getOdds(s, matchInfo.get(i))  + ")";
+					String t = s;
+					if (!s.startsWith("MS")) {
+						t = matchInfo.get(i).getOdds().gethOverUnderValue() + " " + s;
+					}
+					String withOdd = t + " (" + getOdds(s, matchInfo.get(i))  + ")";
 					tempLastPrediction.getPredictions().add(withOdd);
 				}
 			}
