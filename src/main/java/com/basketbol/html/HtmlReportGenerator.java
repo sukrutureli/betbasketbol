@@ -76,6 +76,9 @@ public class HtmlReportGenerator {
 		html.append(
 				".team-stats { background: #e3f2fd; color: #0c5460; padding: 10px 12px; border-radius: 6px; margin: 8px 0; font-size: 0.9em; }");
 		html.append(
+				".stats { background: #fff; border: 1px solid #dbe2ea; padding: 18px; margin: 20px 0; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }");
+		html.append(".stats h3 { color: #004d80; margin-top: 0; }");
+		html.append(
 				".history-section { background: #f4f7fb; border: 1px solid #e1e7ef; padding: 14px; border-radius: 8px; margin: 10px 0; }");
 		html.append(
 				".match-result { background: #fff; padding: 6px 10px; margin: 4px 0; border-left: 4px solid #007bff; border-radius: 4px; font-size: 0.9em; }");
@@ -88,6 +91,24 @@ public class HtmlReportGenerator {
 		html.append("</head><body>");
 		html.append("<h1>🏀 Basketbol Tahminleri</h1>");
 		html.append("<p>Son güncelleme: " + LocalDateTime.now(ZoneId.of("Europe/Istanbul")) + "</p>");
+
+		// İstatistik bilgileri
+		int detailUrlCount = 0;
+		int processedTeamCount = 0;
+
+		// URL'li maçları say
+		for (MatchInfo match : matches) {
+			if (match.hasDetailUrl()) {
+				detailUrlCount++;
+			}
+		}
+
+		html.append("<div class='stats'>");
+		html.append("<h3>İstatistikler</h3>");
+		html.append("<p>- Toplam maç: ").append(matches.size()).append("</p>");
+		html.append("<p>- Detay URL'si olan: ").append(detailUrlCount).append("</p>");
+		html.append("<p>- Geçmiş verisi çekilecek: ").append(detailUrlCount).append("</p>");
+		html.append("</div>");
 
 		for (int i = 0; i < matches.size(); i++) {
 			MatchInfo match = matches.get(i);
@@ -126,6 +147,10 @@ public class HtmlReportGenerator {
 				html.append("<div class='odds-cell " + teamHistory.getStyle("H2", results.get(i).getPick()) + "'>");
 				html.append("<div class='odds-line'><span class='odds-label'>H2 (" + match.getOdds().getH2Value()
 						+ "):</span><span class='odds-value'>" + match.getOdds().getH2() + "</span></div></div>");
+				html.append("</div>");
+
+				// ALT / ÜST
+				html.append("<div class='odds-grid' style='margin-top:8px;'>");
 
 				// ALT: Alt - Üst
 				html.append("<div class='odds-cell " + teamHistory.getStyle("Alt", results.get(i).getPick()) + "'>");
@@ -217,16 +242,41 @@ public class HtmlReportGenerator {
 					html.append("</div>");
 				}
 				html.append("</div>");
+				processedTeamCount++;
 			} else {
 				html.append("<div class='no-data'>Bu maç için geçmiş veri bulunamadı</div>");
 			}
 
 			html.append("</div>");
 		}
+		// Final istatistikleri
+		html.append("<div class='stats'>");
+		html.append("<h3>Final İstatistikleri</h3>");
+		html.append("<p>- Toplam maç: ").append(matches.size()).append("</p>");
+		html.append("<p>- Detay URL'si olan: ").append(detailUrlCount).append("</p>");
+		html.append("<p>- Başarıyla geçmişi çekilen: ").append(processedTeamCount).append("</p>");
+		html.append("<p>- Toplam takım: ").append(historyManager.getTotalTeams()).append("</p>");
+		html.append("<p>- Başarı oranı: ").append(
+				detailUrlCount > 0 ? String.format("%.1f%%", (processedTeamCount * 100.0 / detailUrlCount)) : "0%")
+				.append("</p>");
+		html.append("</div>");
+
+		html.append("<p style='text-align: center; color: #666; margin-top: 30px;'>");
+		html.append("Bu veriler otomatik olarak çekilmiştir - Son güncelleme: ")
+				.append(LocalDateTime.now(istanbulZone));
+		html.append("</p>");
 
 		html.append("<script>");
-		html.append(
-				"function toggleHistory(button){const m=button.closest('.match');const s=m.querySelectorAll('.history .history-section');let h=s[0]&&s[0].style.display==='none';s.forEach(x=>x.style.display=h?'block':'none');button.textContent=h?'Gizle':'Göster';}");
+		html.append("function toggleHistory(button) {");
+		html.append("  const matchDiv = button.closest('.match');");
+		html.append("  const historySections = matchDiv.querySelectorAll('.history .history-section');");
+		html.append("  let isHidden = historySections[0].style.display === 'none';");
+		html.append("  historySections.forEach(section => {");
+		html.append("    section.style.display = isHidden ? 'block' : 'none';");
+		html.append("  });");
+		html.append("  button.textContent = isHidden ? 'Gizle' : 'Göster';");
+		html.append("}");
+		html.append("document.querySelectorAll('.history .history-section').forEach(s => s.style.display = 'none');");
 		html.append("</script>");
 		html.append("</body></html>");
 
