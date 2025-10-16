@@ -5,12 +5,12 @@ public class BasketballStats {
 	private Double avgPointsAgainst;
 	private Double avgTotalPoints;
 	private Double ppg;
-	
+
 	private Double avgPossessions;
 	private Double avgOffensiveRating;
 	private Double avgDefensiveRating;
 	private Double rating100;
-	
+
 	public BasketballStats(Double avgPointsFor, Double avgPointsAgainst, Double avgTotalPoints, Double ppg) {
 		this.avgPointsFor = avgPointsFor;
 		this.avgPointsAgainst = avgPointsAgainst;
@@ -44,7 +44,7 @@ public class BasketballStats {
 	public void setAvgTotalPoints(Double avgTotalPoints) {
 		this.avgTotalPoints = avgTotalPoints;
 	}
-	
+
 	public Double getAvgPossessions() {
 		return avgPossessions;
 	}
@@ -73,25 +73,24 @@ public class BasketballStats {
 		boolean noGoals = avgPointsFor == 0 && avgPointsAgainst == 0;
 		return noGoals;
 	}
-	
+
 	private void calculateDerivedRatings() {
-	    if (avgPossessions == null || avgPossessions <= 0) {
-	        avgPossessions = (avgPointsFor + avgPointsAgainst) / 2.0;
-	    }
+		if (avgPossessions == null || avgPossessions <= 0) {
+			avgPossessions = ((avgPointsFor + avgPointsAgainst) / 2.0) / 2.0;
+			avgPossessions = clamp(avgPossessions, 70, 110);
+		}
 
-	    // yine null olma ihtimaline karşı koruma
-	    double safePoss = (avgPossessions == null || avgPossessions == 0) ? 1.0 : avgPossessions;
+		double safePoss = (avgPossessions == null || avgPossessions == 0) ? 90.0 : avgPossessions;
 
-	    avgOffensiveRating = (avgPointsFor / safePoss) * 100.0;
-	    avgDefensiveRating = (avgPointsAgainst / safePoss) * 100.0;
+		avgOffensiveRating = (avgPointsFor / safePoss) * 100.0;
+		avgDefensiveRating = (avgPointsAgainst / safePoss) * 100.0;
 
-	    rating100 = clamp(100 + (avgOffensiveRating - avgDefensiveRating) / 3.0, 50, 150);
+		// Offensive - Defensive farkına göre güç endeksi (100 tabanlı)
+		rating100 = clamp(100 + (avgOffensiveRating - avgDefensiveRating) / 4.0, 60, 140);
 	}
 
+	private double clamp(double v, double lo, double hi) {
+		return Math.max(lo, Math.min(hi, v));
+	}
 
-    private double clamp(double v, double lo, double hi) {
-        return Math.max(lo, Math.min(hi, v));
-    }
-	
 }
-
