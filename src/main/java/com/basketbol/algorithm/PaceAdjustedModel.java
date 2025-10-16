@@ -32,8 +32,26 @@ public class PaceAdjustedModel implements BettingAlgorithm {
         double defH = safe(h.getAvgDefensiveRating(), 105);
         double defA = safe(a.getAvgDefensiveRating(), 105);
 
-        // --- Ortalama tempo ve etkinlik ---
-        double pace = clamp((paceH + paceA) / 2.0, 80, 110); 
+        double lowerPace = 80;
+        double upperPace = 110;
+
+        // Barem varsa lig temposunu tahmin et
+        if (barem != null) {
+            if (barem > 190) {         // NBA, G-League vb.
+                lowerPace = 90;
+                upperPace = 115;
+            } else if (barem < 170) {  // Avrupa, FIBA
+                lowerPace = 70;
+                upperPace = 95;
+            } else {                   // Orta tempo lig
+                lowerPace = 80;
+                upperPace = 105;
+            }
+        }
+
+        double pace = clamp((paceH + paceA) / 2.0, lowerPace, upperPace);
+
+        
         double effOff = (offH + offA) / 2.0;
         double effDef = (defH + defA) / 2.0;
 
@@ -41,7 +59,9 @@ public class PaceAdjustedModel implements BettingAlgorithm {
         double expectedTotal = (pace / 100.0) * ((effOff + (200 - effDef)) / 2.0);
         // Daha agresif tempo ve skor dağılımı için ayarlama:
         expectedTotal += (pace - 90) * 0.8;
-        expectedTotal = clamp(expectedTotal, 150, 230);
+        double lower = (barem != null) ? barem - 50 : 0;
+        double upper = (barem != null) ? barem + 50 : 400;
+        expectedTotal = clamp(expectedTotal, lower, upper);
 
         // --- pOver hesabı ---
         double pOver = 0.5;
