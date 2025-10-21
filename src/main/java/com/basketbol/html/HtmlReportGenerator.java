@@ -303,7 +303,7 @@ public class HtmlReportGenerator {
 		html.append("<head>\n");
 		html.append("<meta charset='UTF-8'>\n");
 		html.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n");
-		html.append("<title>✅ Hazır Kupon</title>\n");
+		html.append("<title>💰 Hazır Kupon</title>\n");
 		html.append(
 				"<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'>\n");
 		html.append("<style>\n");
@@ -351,7 +351,7 @@ public class HtmlReportGenerator {
 		html.append("</style>\n");
 		html.append("</head>\n");
 		html.append("<body>\n");
-		html.append("<h1>✅ Hazır Kupon</h1>\n");
+		html.append("<h1>💰 Hazır Kupon</h1>\n");
 		html.append("<table>\n");
 		html.append(
 				"<thead><tr><th>🕒 Saat</th><th>⚽ Maç</th><th>🎯 Tahmin</th><th>📊 Skor Tahmini</th></tr></thead>\n");
