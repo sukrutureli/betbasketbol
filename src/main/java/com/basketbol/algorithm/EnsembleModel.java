@@ -2,7 +2,6 @@ package com.basketbol.algorithm;
 
 import com.basketbol.model.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class EnsembleModel implements BettingAlgorithm {
 	private final List<BettingAlgorithm> models;
