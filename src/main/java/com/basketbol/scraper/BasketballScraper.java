@@ -43,9 +43,9 @@ public class BasketballScraper {
 	public List<MatchInfo> fetchMatches() {
 		List<MatchInfo> list = new ArrayList<>();
 		try {
-			// String date =
-			// LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
+					.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+//			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 			String url = "https://www.nesine.com/iddaa/basketbol?et=2&le=1&dt=" + date;
 
 			driver.manage().deleteAllCookies();
@@ -230,7 +230,7 @@ public class BasketballScraper {
 			list = extractCompetitionHistoryResults(url);
 		} catch (Exception e) {
 			System.out.println("⚠️ Basketbol rekabet geçmişi hatası: " + e.getMessage());
-	    }
+		}
 		return list;
 	}
 
