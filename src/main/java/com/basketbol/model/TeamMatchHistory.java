@@ -143,6 +143,11 @@ public class TeamMatchHistory {
 			result += ((ms1SonA / sonMaclarAway.size()) * 0.3);
 
 			return result;
+		} else if (isInfoEnoughWithoutRekabet()) {
+			double result = ((ms1SonH / sonMaclarHome.size()) * 0.5);
+			result += ((ms1SonA / sonMaclarAway.size()) * 0.5);
+
+			return result;
 		} else {
 			return (ms1Rekabet + ms1SonH + ms1SonA) / getTotalMatches();
 		}
@@ -185,6 +190,11 @@ public class TeamMatchHistory {
 			result += ((ms2SonA / sonMaclarAway.size()) * 0.3);
 
 			return result;
+		} else if (isInfoEnoughWithoutRekabet()) {
+			double result = ((ms2SonH / sonMaclarHome.size()) * 0.5);
+			result += ((ms2SonA / sonMaclarAway.size()) * 0.5);
+
+			return result;
 		} else {
 			return (ms2Rekabet + ms2SonH + ms2SonA) / getTotalMatches();
 		}
@@ -222,6 +232,11 @@ public class TeamMatchHistory {
 			result += ((ustSonA / sonMaclarAway.size()) * 0.3);
 
 			return result;
+		} else if (isInfoEnoughWithoutRekabet()) {
+			double result = ((ustSonH / sonMaclarHome.size()) * 0.5);
+			result += ((ustSonA / sonMaclarAway.size()) * 0.5);
+
+			return result;
 		} else {
 			return (ustRekabet + ustSonH + ustSonA) / getTotalMatches();
 		}
@@ -237,6 +252,14 @@ public class TeamMatchHistory {
 		}
 
 		return true;
+	}
+
+	public boolean isInfoEnoughWithoutRekabet() {
+		if (sonMaclarHome.size() > 1 && sonMaclarAway.size() > 1 && rekabetGecmisi.size() == 0) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public String toStringAsPercentage(double value) {
@@ -304,7 +327,7 @@ public class TeamMatchHistory {
 	public String getStyle(String type, String pick) {
 		String color = "background-color:#e8fbe8; border:1px solid #6ecf6e;";
 
-		if (!isInfoEnough()) {
+		if (!isInfoEnough() && !isInfoEnoughWithoutRekabet()) {
 			return "";
 		}
 

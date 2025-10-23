@@ -61,7 +61,7 @@ public class LastPredictionManager {
 		double percentageH = 0;
 		double percentagePR = 0;
 
-		if (!h.isInfoEnough()) {
+		if (!h.isInfoEnough() && !h.isInfoEnoughWithoutRekabet()) {
 			return null;
 		}
 		
