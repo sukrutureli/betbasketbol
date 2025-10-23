@@ -119,7 +119,7 @@ public class HtmlReportGenerator {
 			html.append("<div class='match-header'>");
 			html.append("<div class='match-name'>").append(match.getName()).append("</div>");
 			html.append("<div class='match-time'>").append(match.getTime()).append("</div>");
-			html.append("<button onclick=\"toggleHistory(this)\">Göster/Gizle</button>");
+			html.append("<button onclick=\"toggleHistory(this)\">Göster</button>");
 			html.append("</div>");
 
 			if (teamHistory != null && teamHistory.getTotalMatches() > 0) {
