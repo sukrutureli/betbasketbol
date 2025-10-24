@@ -80,7 +80,7 @@ public class BasketballScraper {
 		List<Map<String, String>> collected = new ArrayList<>();
 
 		int stable = 0, prevCount = 0;
-		int minScroll = 10;
+		int minScroll = 12;
 
 		int waitTry = 0;
 		while (driver.findElements(eventSelector).isEmpty() && waitTry < 10) {
@@ -89,7 +89,7 @@ public class BasketballScraper {
 		}
 		System.out.println("⏳ İlk basketbol maçları göründü (" + waitTry + "sn) sonra scroll başlıyor...");
 
-		for (int i = 0; (i < 60 && stable < 5) || i < minScroll; i++) {
+		for (int i = 0; (i < 70 && stable < 5) || i < minScroll; i++) {
 			List<WebElement> matches = driver.findElements(eventSelector);
 
 			for (WebElement el : matches) {
