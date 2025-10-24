@@ -47,7 +47,7 @@ public class BasketballScraper {
 	public List<MatchInfo> fetchMatches() {
 		List<MatchInfo> list = new ArrayList<>();
 		try {
-			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(0)
+			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
 					.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 			String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Pop%C3%BCler";
 
@@ -400,6 +400,7 @@ Thread.sleep(2000);
 	}
 
 }
+
 
 
 
