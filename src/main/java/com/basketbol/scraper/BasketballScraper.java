@@ -47,14 +47,18 @@ public class BasketballScraper {
 	public List<MatchInfo> fetchMatches() {
 		List<MatchInfo> list = new ArrayList<>();
 		try {
-			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
+			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(0)
 					.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 			String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Pop%C3%BCler";
 
 			driver.manage().deleteAllCookies();
 			driver.get(url);
 			PageWaitUtils.safeWaitForLoad(driver, 25);
-
+wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+    By.cssSelector("div.event-list.pre-event")
+));
+Thread.sleep(2000);
+			
 			List<Map<String, String>> raw = scrollAndCollectMatchData();
 			System.out.println("🏀 Toplam basketbol maçı: " + raw.size());
 
@@ -396,5 +400,6 @@ public class BasketballScraper {
 	}
 
 }
+
 
 
