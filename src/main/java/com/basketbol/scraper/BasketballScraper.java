@@ -99,7 +99,15 @@ public class BasketballScraper {
 						seen.add(name);
 						Map<String, String> map = new HashMap<>();
 						map.put("name", name);
-						map.put("url", el.findElement(By.cssSelector("div.name a")).getAttribute("href"));
+						
+						String href = el.findElement(By.cssSelector("div.name a")).getAttribute("href");
+						if (href == null || href.contains("javascript:void") || href.isEmpty()) {
+						    // canlı maç veya geçersiz link
+						    continue;
+						}
+						map.put("url", href);
+
+						
 						map.put("time", el.findElement(By.cssSelector("div.time span")).getText().trim());
 
 						// 🎯 1-2 Maç Sonucu

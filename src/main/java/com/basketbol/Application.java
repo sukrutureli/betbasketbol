@@ -39,7 +39,7 @@ public class Application {
 			for (int i = 0; i < matches.size(); i++) {
 				MatchInfo match = matches.get(i);
 
-				//if (match.hasDetailUrl()) {
+				if (match.hasDetailUrl()) {
 					System.out.println("Geçmiş çekiliyor " + (i + 1) + "/" + matches.size() + ": " + match.getName());
 					try {
 						String url = match.getDetailUrl();
@@ -64,7 +64,7 @@ public class Application {
 						System.out.println(
 								"Geçmiş çekme hatası: " + e.getClass().getSimpleName() + " - " + e.getMessage());
 					}
-				//}
+				}
 
 				if ((i + 1) % 20 == 0) {
 					System.out.println("İşlendi: " + (i + 1) + "/" + matches.size());
