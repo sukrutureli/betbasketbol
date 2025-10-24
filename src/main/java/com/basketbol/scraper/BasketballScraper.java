@@ -47,7 +47,8 @@ public class BasketballScraper {
 	public List<MatchInfo> fetchMatches() {
 		List<MatchInfo> list = new ArrayList<>();
 		try {
-			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
+					.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 			String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Pop%C3%BCler";
 
 			driver.manage().deleteAllCookies();
@@ -99,15 +100,14 @@ public class BasketballScraper {
 						seen.add(name);
 						Map<String, String> map = new HashMap<>();
 						map.put("name", name);
-						
+
 						String href = el.findElement(By.cssSelector("div.name a")).getAttribute("href");
 						if (href == null || href.contains("javascript:void") || href.isEmpty()) {
-						    // canlı maç veya geçersiz link
-						    continue;
+							// canlı maç veya geçersiz link
+							continue;
 						}
 						map.put("url", href);
 
-						
 						map.put("time", el.findElement(By.cssSelector("div.time span")).getText().trim());
 
 						// 🎯 1-2 Maç Sonucu
