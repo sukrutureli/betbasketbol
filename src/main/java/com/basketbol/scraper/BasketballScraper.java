@@ -47,7 +47,7 @@ public class BasketballScraper {
 	public List<MatchInfo> fetchMatches() {
 		List<MatchInfo> list = new ArrayList<>();
 		try {
-			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
+			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(0)
 					.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 			String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Pop%C3%BCler";
 
@@ -90,7 +90,7 @@ public class BasketballScraper {
 		}
 		System.out.println("⏳ İlk basketbol maçları göründü (" + waitTry + "sn) sonra scroll başlıyor...");
 
-		for (int i = 0; (i < 70 && stable < 5) || i < minScroll; i++) {
+		for (int i = 0; (i < 120 && stable < 8) || i < minScroll; i++) {
 			List<WebElement> matches = driver.findElements(eventSelector);
 
 			for (WebElement el : matches) {
@@ -158,8 +158,8 @@ public class BasketballScraper {
 				stable = 0;
 			prevCount = seen.size();
 
-			js.executeScript("window.scrollBy(0, 2000)");
-			Thread.sleep(1000);
+			js.executeScript("window.scrollBy(0, 2500)");
+			Thread.sleep(1200);
 		}
 
 		System.out.println("🧩 Toplanan benzersiz basket maç: " + seen.size());
@@ -396,3 +396,4 @@ public class BasketballScraper {
 	}
 
 }
+
