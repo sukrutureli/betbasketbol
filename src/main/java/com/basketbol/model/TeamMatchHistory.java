@@ -255,7 +255,7 @@ public class TeamMatchHistory {
 	}
 
 	public boolean isInfoEnoughWithoutRekabet() {
-		if (sonMaclarHome.size() > 1 && sonMaclarAway.size() > 1 && rekabetGecmisi.size() == 0) {
+		if (sonMaclarHome.size() > 1 && sonMaclarAway.size() > 1 && rekabetGecmisi.size() < 2) {
 			return true;
 		}
 

@@ -15,7 +15,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class BasketballScraper {
 
@@ -43,30 +47,22 @@ public class BasketballScraper {
 	public List<MatchInfo> fetchMatches() {
 		List<MatchInfo> list = new ArrayList<>();
 		try {
-			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).plusDays(1)
-					.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-//			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-			String url = "https://www.nesine.com/iddaa/basketbol?et=2&le=1&dt=" + date;
+			String date = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+			String url = "https://www.nesine.com/iddaa/basketbol?et=2&dt=" + date + "&le=2&ocg=MS&gt=Pop%C3%BCler";
 
 			driver.manage().deleteAllCookies();
 			driver.get(url);
 			PageWaitUtils.safeWaitForLoad(driver, 25);
 
-			scrollToEnd();
+			List<Map<String, String>> raw = scrollAndCollectMatchData();
+			System.out.println("🏀 Toplam basketbol maçı: " + raw.size());
 
-			wait.until(ExpectedConditions
-					.presenceOfAllElementsLocatedBy(By.cssSelector("div[data-test-id^='r_'][data-sport-id='2']")));
-
-			Thread.sleep(1000);
-			List<WebElement> events = driver.findElements(By.cssSelector("div[data-test-id^='r_'][data-sport-id='2']"));
-
-			System.out.println("🏀 Toplam basketbol maçı: " + events.size());
-
-			for (int i = 0; i < events.size(); i++) {
-				WebElement e = events.get(i);
-				MatchInfo info = extractMatchInfo(e, i);
-				if (info != null)
-					list.add(info);
+			int index = 0;
+			for (Map<String, String> d : raw) {
+				Odds o = new Odds(toDouble(d.get("ms1")), toDouble(d.get("ms2")), toDouble(d.get("h1Value")),
+						toDouble(d.get("h1")), toDouble(d.get("h2")), toDouble(d.get("h2Value")),
+						toDouble(d.get("alt")), toDouble(d.get("barem")), toDouble(d.get("ust")));
+				list.add(new MatchInfo(d.get("name"), d.get("time"), d.get("url"), o, index++));
 			}
 
 		} catch (Exception e) {
@@ -75,96 +71,91 @@ public class BasketballScraper {
 		return list;
 	}
 
-	private void scrollToEnd() throws InterruptedException {
-		int stable = 0;
-		int prev = -1;
+	// =============================================================
+	// SCROLL VE VERİ TOPLAMA
+	// =============================================================
+	private List<Map<String, String>> scrollAndCollectMatchData() throws InterruptedException {
+		By eventSelector = By.cssSelector("div[id^='r_'].event-list[data-sport-id='2']");
+		Set<String> seen = new HashSet<>();
+		List<Map<String, String>> collected = new ArrayList<>();
 
-		for (int i = 0; i < 8; i++) {
+		int stable = 0, prevCount = 0;
+		int minScroll = 10;
+
+		int waitTry = 0;
+		while (driver.findElements(eventSelector).isEmpty() && waitTry < 10) {
+			Thread.sleep(1000);
+			waitTry++;
+		}
+		System.out.println("⏳ İlk basketbol maçları göründü (" + waitTry + "sn) sonra scroll başlıyor...");
+
+		for (int i = 0; (i < 60 && stable < 5) || i < minScroll; i++) {
+			List<WebElement> matches = driver.findElements(eventSelector);
+
+			for (WebElement el : matches) {
+				try {
+					String name = el.findElement(By.cssSelector("div.name a")).getText().trim();
+					if (!seen.contains(name) && !name.isEmpty()) {
+						seen.add(name);
+						Map<String, String> map = new HashMap<>();
+						map.put("name", name);
+						map.put("url", el.findElement(By.cssSelector("div.name a")).getAttribute("href"));
+						map.put("time", el.findElement(By.cssSelector("div.time span")).getText().trim());
+
+						// 🎯 1-2 Maç Sonucu
+						List<WebElement> ms = el.findElements(By.cssSelector("dd.col-02.event-row .cell"));
+						if (ms.size() >= 2) {
+							map.put("ms1", ms.get(0).getText());
+							map.put("ms2", ms.get(1).getText());
+						} else {
+							map.put("ms1", "-");
+							map.put("ms2", "-");
+						}
+
+						// 🎯 Handikaplı Oranlar (H1 - H2 - Barem)
+						List<WebElement> hand = el.findElements(By.cssSelector("dd.col-04.event-row .cell"));
+						if (hand.size() >= 4) {
+							map.put("h1Value", hand.get(0).getText());
+							map.put("h1", hand.get(1).getText());
+							map.put("h2", hand.get(2).getText());
+							map.put("h2Value", hand.get(3).getText());
+						} else {
+							map.put("h1", "-");
+							map.put("h1Value", "-");
+							map.put("h2", "-");
+							map.put("h2Value", "-");
+						}
+
+						// 🎯 Alt / Üst
+						List<WebElement> altust = el.findElements(By.cssSelector("dd.col-03.event-row .cell"));
+						if (altust.size() >= 3) {
+							map.put("alt", altust.get(0).getText());
+							map.put("barem", altust.get(1).getText());
+							map.put("ust", altust.get(2).getText());
+						} else {
+							map.put("alt", "-");
+							map.put("ust", "-");
+							map.put("barem", "-");
+						}
+
+						collected.add(map);
+					}
+				} catch (Exception ignore) {
+				}
+			}
+
+			if (seen.size() == prevCount)
+				stable++;
+			else
+				stable = 0;
+			prevCount = seen.size();
+
 			js.executeScript("window.scrollBy(0, 2000)");
 			Thread.sleep(1000);
 		}
 
-		while (stable < 3) {
-			List<WebElement> events = driver.findElements(By.cssSelector("div[data-test-id^='r_'][data-sport-id='2']"));
-			int size = events.size();
-
-			js.executeScript("window.scrollBy(0, 2000)");
-			Thread.sleep(1000);
-
-			stable = (size == prev) ? stable + 1 : 0;
-			prev = size;
-		}
-
-		for (int i = 0; i < 8; i++) {
-			js.executeScript("window.scrollBy(0, -2000)");
-			Thread.sleep(1000);
-		}
-	}
-
-	private MatchInfo extractMatchInfo(WebElement event, int index) {
-		try {
-			js.executeScript("arguments[0].scrollIntoView({block:'center'});", event);
-			Thread.sleep(100);
-
-			WebElement link = event.findElement(By.cssSelector("a[data-test-id='matchName']"));
-			String name = link.getText().trim();
-			String url = link.getAttribute("href");
-
-			String time = extractMatchTime(event);
-			Odds odds = extractOdds(event);
-
-			return new MatchInfo(name, time, url, odds, index);
-		} catch (Exception e) {
-			System.out.println("extractMatchInfo hata: " + e.getMessage());
-			return null;
-		}
-	}
-
-	private String extractMatchTime(WebElement e) {
-		try {
-			WebElement timeEl = e.findElement(By.cssSelector("span[data-testid^='time']"));
-			return timeEl.getText().trim();
-		} catch (Exception ex) {
-			return "?";
-		}
-	}
-
-	// =============================================================
-	// ORANLARI AYIKLA (Basketbol)
-	// =============================================================
-	private Odds extractOdds(WebElement event) {
-		try {
-			String ms1 = getOdd(event, "odd_Maç Sonucu_1");
-			String ms2 = getOdd(event, "odd_Maç Sonucu_2");
-
-			String h1Baremi = getOdd(event, "odd_Handikaplı Maç Sonucu_H1");
-			String h2Baremi = getOdd(event, "odd_Handikaplı Maç Sonucu_H2");
-			String h1 = getOdd(event, "odd_Handikaplı Maç Sonucu_1");
-			String h2 = getOdd(event, "odd_Handikaplı Maç Sonucu_2");
-
-			String alt = getOdd(event, "odd_Alt/Üst_Alt");
-			String ust = getOdd(event, "odd_Alt/Üst_Üst");
-			String barem = getOdd(event, "odd_Alt/Üst_Limit");
-
-			Odds o = new Odds(toDouble(ms1), toDouble(ms2), toDouble(h1Baremi), toDouble(h1), toDouble(h2),
-					toDouble(h2Baremi), toDouble(alt), toDouble(barem), toDouble(ust));
-
-			// Ek verileri Odds objene dilersen sonradan eklersin (barem, h1/h2 baremleri
-			// vs.)
-			return o;
-		} catch (Exception e) {
-			System.out.println("extractOdds hata: " + e.getMessage());
-			return new Odds(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-		}
-	}
-
-	private String getOdd(WebElement event, String testId) {
-		try {
-			WebElement el = event.findElement(By.cssSelector("button[data-testid='" + testId + "']"));
-			return el.getText().trim();
-		} catch (Exception e) {
-			return "-";
-		}
+		System.out.println("🧩 Toplanan benzersiz basket maç: " + seen.size());
+		return collected;
 	}
 
 	private double toDouble(String s) {
