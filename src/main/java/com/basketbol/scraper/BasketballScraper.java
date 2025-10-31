@@ -76,94 +76,116 @@ public class BasketballScraper {
 	// SCROLL VE VERİ TOPLAMA
 	// =============================================================
 	private List<Map<String, String>> scrollAndCollectMatchData() throws InterruptedException {
-		By eventSelector = By.cssSelector("div[id^='r_'].event-list[data-sport-id='2']");
-		Set<String> seen = new HashSet<>();
-		List<Map<String, String>> collected = new ArrayList<>();
+	    By eventSelector = By.cssSelector("div[id^='r_'].event-list[data-sport-id='2']");
+	    Set<String> seen = new HashSet<>();
+	    List<Map<String, String>> collected = new ArrayList<>();
 
-		int stable = 0, prevCount = 0;
-		int minScroll = 12;
+	    int stable = 0, prevCount = 0;
+	    int maxScroll = 150; // Maksimum scroll iterasyonu
+	    int scrollAmount = 2000;
 
-		int waitTry = 0;
-		while (driver.findElements(eventSelector).isEmpty() && waitTry < 10) {
-			Thread.sleep(1000);
-			waitTry++;
-		}
-		System.out.println("⏳ İlk basketbol maçları göründü (" + waitTry + "sn) sonra scroll başlıyor...");
+	    int waitTry = 0;
+	    while (driver.findElements(eventSelector).isEmpty() && waitTry < 15) {
+	        Thread.sleep(500);
+	        waitTry++;
+	    }
+	    System.out.println("⏳ İlk basketbol maçları göründü (" + waitTry + "sn sonra) - scroll başlıyor...");
 
-		for (int i = 0; (i < 70 && stable < 5) || i < minScroll; i++) {
-			List<WebElement> matches = driver.findElements(eventSelector);
+	    long startTime = System.currentTimeMillis();
+	    long maxWaitTime = 120000; // 2 dakika max
 
-			for (WebElement el : matches) {
-				try {
-					String name = el.findElement(By.cssSelector("div.name a")).getText().trim();
-					if (!seen.contains(name) && !name.isEmpty()) {
-						seen.add(name);
-						Map<String, String> map = new HashMap<>();
-						map.put("name", name);
+	    for (int i = 0; i < maxScroll; i++) {
+	        // Timeout kontrolü
+	        if (System.currentTimeMillis() - startTime > maxWaitTime) {
+	            System.out.println("⏱️ Maksimum süre aşıldı, scroll sonlandırılıyor");
+	            break;
+	        }
 
-						String href = el.findElement(By.cssSelector("div.name a")).getAttribute("href");
-						if (href == null || href.contains("javascript:void") || href.isEmpty()) {
-							// canlı maç veya geçersiz link
-							continue;
-						}
-						map.put("url", href);
+	        List<WebElement> matches = driver.findElements(eventSelector);
 
-						map.put("time", el.findElement(By.cssSelector("div.time span")).getText().trim());
+	        // Tüm maçları işle
+	        for (WebElement el : matches) {
+	            try {
+	                String name = el.findElement(By.cssSelector("div.name a")).getText().trim();
+	                if (!seen.contains(name) && !name.isEmpty()) {
+	                    seen.add(name);
+	                    Map<String, String> map = new HashMap<>();
+	                    map.put("name", name);
 
-						// 🎯 1-2 Maç Sonucu
-						List<WebElement> ms = el.findElements(By.cssSelector("dd.col-02.event-row .cell"));
-						if (ms.size() >= 2) {
-							map.put("ms1", ms.get(0).getText());
-							map.put("ms2", ms.get(1).getText());
-						} else {
-							map.put("ms1", "-");
-							map.put("ms2", "-");
-						}
+	                    String href = el.findElement(By.cssSelector("div.name a")).getAttribute("href");
+	                    if (href == null || href.contains("javascript:void") || href.isEmpty()) {
+	                        // canlı maç veya geçersiz link
+	                        continue;
+	                    }
+	                    map.put("url", href);
 
-						// 🎯 Handikaplı Oranlar (H1 - H2 - Barem)
-						List<WebElement> hand = el.findElements(By.cssSelector("dd.col-04.event-row .cell"));
-						if (hand.size() >= 4) {
-							map.put("h1Value", hand.get(0).getText());
-							map.put("h1", hand.get(1).getText());
-							map.put("h2", hand.get(2).getText());
-							map.put("h2Value", hand.get(3).getText());
-						} else {
-							map.put("h1", "-");
-							map.put("h1Value", "-");
-							map.put("h2", "-");
-							map.put("h2Value", "-");
-						}
+	                    map.put("time", el.findElement(By.cssSelector("div.time span")).getText().trim());
 
-						// 🎯 Alt / Üst
-						List<WebElement> altust = el.findElements(By.cssSelector("dd.col-03.event-row .cell"));
-						if (altust.size() >= 3) {
-							map.put("alt", altust.get(0).getText());
-							map.put("barem", altust.get(1).getText());
-							map.put("ust", altust.get(2).getText());
-						} else {
-							map.put("alt", "-");
-							map.put("ust", "-");
-							map.put("barem", "-");
-						}
+	                    // 🎯 1-2 Maç Sonucu
+	                    List<WebElement> ms = el.findElements(By.cssSelector("dd.col-02.event-row .cell"));
+	                    if (ms.size() >= 2) {
+	                        map.put("ms1", ms.get(0).getText());
+	                        map.put("ms2", ms.get(1).getText());
+	                    } else {
+	                        map.put("ms1", "-");
+	                        map.put("ms2", "-");
+	                    }
 
-						collected.add(map);
-					}
-				} catch (Exception ignore) {
-				}
-			}
+	                    // 🎯 Handikaplı Oranlar (H1 - H2 - Barem)
+	                    List<WebElement> hand = el.findElements(By.cssSelector("dd.col-04.event-row .cell"));
+	                    if (hand.size() >= 4) {
+	                        map.put("h1Value", hand.get(0).getText());
+	                        map.put("h1", hand.get(1).getText());
+	                        map.put("h2", hand.get(2).getText());
+	                        map.put("h2Value", hand.get(3).getText());
+	                    } else {
+	                        map.put("h1", "-");
+	                        map.put("h1Value", "-");
+	                        map.put("h2", "-");
+	                        map.put("h2Value", "-");
+	                    }
 
-			if (seen.size() == prevCount)
-				stable++;
-			else
-				stable = 0;
-			prevCount = seen.size();
+	                    // 🎯 Alt / Üst
+	                    List<WebElement> altust = el.findElements(By.cssSelector("dd.col-03.event-row .cell"));
+	                    if (altust.size() >= 3) {
+	                        map.put("alt", altust.get(0).getText());
+	                        map.put("barem", altust.get(1).getText());
+	                        map.put("ust", altust.get(2).getText());
+	                    } else {
+	                        map.put("alt", "-");
+	                        map.put("ust", "-");
+	                        map.put("barem", "-");
+	                    }
 
-			js.executeScript("window.scrollBy(0, 2000)");
-			Thread.sleep(1000);
-		}
+	                    collected.add(map);
+	                }
+	            } catch (Exception ignore) {
+	            }
+	        }
 
-		System.out.println("🧩 Toplanan benzersiz basket maç: " + seen.size());
-		return collected;
+	        // Stabilite kontrolü
+	        if (seen.size() == prevCount) {
+	            stable++;
+	            System.out.println("  ⚠️ Stabilite sayacı: " + stable + "/8 (toplam: " + seen.size() + ")");
+	        } else {
+	            stable = 0;
+	            System.out.println("  ✓ Maç sayısı: " + seen.size() + " (+yeni " + (seen.size() - prevCount) + ")");
+	        }
+	        prevCount = seen.size();
+
+	        // 8 kez ardarda sabitlik → dur
+	        if (stable >= 8) {
+	            System.out.println("✅ Scroll tamamlandı (sabitliğe ulaşıldı)");
+	            break;
+	        }
+
+	        // Scroll yap
+	        js.executeScript("window.scrollBy(0, " + scrollAmount + ");");
+	        Thread.sleep(800); // Stabil waiting time
+	    }
+
+	    System.out.println("🧩 TOPLAM BENZERSIZ BASKETBOL MAÇI: " + seen.size());
+	    return collected;
 	}
 
 	private double toDouble(String s) {
