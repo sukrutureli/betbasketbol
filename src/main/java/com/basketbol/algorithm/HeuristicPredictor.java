@@ -35,36 +35,15 @@ public class HeuristicPredictor implements BettingAlgorithm {
 				barem = o.gethOverUnderValue();
 		}
 
-		// head-to-head ortalaması
-		double h2hAvgForHome = 0.0;
-		double h2hAvgForAway = 0.0;
-		double h2hTotal = 0.0;
-		if (match.getH2hAvgTotalPoints() != null) {
-			h2hAvgForHome = match.getAvgPointsForHome();
-			h2hAvgForAway = match.getAvgPointsForAway();
-			h2hTotal = match.getH2hAvgTotalPoints();
-		}
-
-		double forWeight = (h2hTotal > 0) ? 0.55 : 0.6;
-		double againstWeight = (h2hTotal > 0) ? 0.35 : 0.4;
-		double h2hWeight = (h2hTotal > 0) ? 0.1 : 0.0;
+		double forWeight = 0.6;
+		double againstWeight = 0.4;
 
 		// ---- Beklenen skor hesaplama ----
 		// Ev: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı + ev avantajı
-		double expectedHome = (forWeight * h.getAvgPointsFor()) + (againstWeight * a.getAvgPointsAgainst())
-				+ (h2hWeight * h2hAvgForHome) + 4.0; // ev avantajı
+		double expectedHome = (forWeight * h.getAvgPointsFor()) + (againstWeight * a.getAvgPointsAgainst()) + 4.0;
 
 		// Deplasman: kendi hücum ortalaması + rakibin yediği sayı + h2h katkısı
-		double expectedAway = (forWeight * a.getAvgPointsFor()) + (againstWeight * h.getAvgPointsAgainst())
-				+ (h2hWeight * h2hAvgForAway);
-
-		// H2H toplam skor ortalamasıyla uyumlu hale getir (stabilizasyon)
-		if (h2hTotal > 0) {
-			double currentTotal = expectedHome + expectedAway;
-			double diff = h2hTotal - currentTotal;
-			expectedHome += diff * 0.25;
-			expectedAway += diff * 0.25;
-		}
+		double expectedAway = (forWeight * a.getAvgPointsFor()) + (againstWeight * h.getAvgPointsAgainst());
 
 		// ---- Tahmin hesaplama ----
 		double diff = expectedHome - expectedAway;
@@ -94,7 +73,7 @@ public class HeuristicPredictor implements BettingAlgorithm {
 
 		double pHome = clamp(0.5 + (diff / 20.0), 0, 1);
 		double pAway = 1.0 - pHome;
-		
+
 		String finalPick = msPick + " | " + ouPick;
 
 		return new PredictionResult(name(), match.getHomeTeam(), match.getAwayTeam(), pHome, 0.0, pAway, pOver, 0.0,
@@ -105,5 +84,3 @@ public class HeuristicPredictor implements BettingAlgorithm {
 		return Math.max(lo, Math.min(hi, v));
 	}
 }
-
-

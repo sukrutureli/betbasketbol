@@ -138,9 +138,9 @@ public class TeamMatchHistory {
 		}
 
 		if (isInfoEnough()) {
-			double result = (ms1Rekabet / rekabetGecmisi.size()) * 0.4;
-			result += ((ms1SonH / sonMaclarHome.size()) * 0.3);
-			result += ((ms1SonA / sonMaclarAway.size()) * 0.3);
+			double result = (ms1Rekabet / rekabetGecmisi.size()) * 0.1;
+			result += ((ms1SonH / sonMaclarHome.size()) * 0.45);
+			result += ((ms1SonA / sonMaclarAway.size()) * 0.45);
 
 			return result;
 		} else if (isInfoEnoughWithoutRekabet()) {
@@ -185,9 +185,9 @@ public class TeamMatchHistory {
 		}
 
 		if (isInfoEnough()) {
-			double result = (ms2Rekabet / rekabetGecmisi.size()) * 0.4;
-			result += ((ms2SonH / sonMaclarHome.size()) * 0.3);
-			result += ((ms2SonA / sonMaclarAway.size()) * 0.3);
+			double result = (ms2Rekabet / rekabetGecmisi.size()) * 0.1;
+			result += ((ms2SonH / sonMaclarHome.size()) * 0.45);
+			result += ((ms2SonA / sonMaclarAway.size()) * 0.45);
 
 			return result;
 		} else if (isInfoEnoughWithoutRekabet()) {
@@ -227,9 +227,9 @@ public class TeamMatchHistory {
 		}
 
 		if (isInfoEnough()) {
-			double result = (ustRekabet / rekabetGecmisi.size()) * 0.4;
-			result += ((ustSonH / sonMaclarHome.size()) * 0.3);
-			result += ((ustSonA / sonMaclarAway.size()) * 0.3);
+			double result = (ustRekabet / rekabetGecmisi.size()) * 0.1;
+			result += ((ustSonH / sonMaclarHome.size()) * 0.45);
+			result += ((ustSonA / sonMaclarAway.size()) * 0.45);
 
 			return result;
 		} else if (isInfoEnoughWithoutRekabet()) {
