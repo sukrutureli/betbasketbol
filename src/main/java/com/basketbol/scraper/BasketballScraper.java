@@ -91,7 +91,7 @@ public class BasketballScraper {
 		System.out.println("⏳ İlk basketbol maçları göründü (" + waitTry + "sn sonra) - scroll başlıyor...");
 
 		long startTime = System.currentTimeMillis();
-		long maxWaitTime = 240000; // 2 dakika max
+		long maxWaitTime = 480000; // 2 dakika max
 
 		for (int i = 0; i < maxScroll; i++) {
 			// Timeout kontrolü
