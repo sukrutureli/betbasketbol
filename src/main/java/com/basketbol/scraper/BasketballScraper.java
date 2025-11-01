@@ -100,6 +100,8 @@ public class BasketballScraper {
 	            System.out.println("⏱️ Maksimum süre aşıldı, scroll sonlandırılıyor");
 	            break;
 	        }
+	        
+	        Thread.sleep(300);
 
 	        List<WebElement> matches = driver.findElements(eventSelector);
 
