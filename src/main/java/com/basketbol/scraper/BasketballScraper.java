@@ -175,7 +175,7 @@ public class BasketballScraper {
 			prevCount = seen.size();
 
 			// 8 kez ardarda sabitlik → dur
-			if (stable >= 8) {
+			if (stable >= 4) {
 				System.out.println("✅ Scroll tamamlandı (sabitliğe ulaşıldı)");
 				break;
 			}
