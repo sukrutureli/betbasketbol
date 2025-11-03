@@ -187,102 +187,66 @@ public class BasketballScraper {
 
 		TeamMatchHistory th = new TeamMatchHistory(title, home, away, detailUrl, odds);
 		try {
-			List<MatchResult> rekabet = scrapeRekabetGecmisi(detailUrl + "/rekabet-gecmisi");
-			rekabet.forEach(th::addRekabetGecmisiMatch);
-
-			List<MatchResult> sonHome = scrapeSonMaclar(detailUrl + "/son-maclari", 1);
-			sonHome.forEach(m -> th.addSonMacMatch(m, 1));
-
-			List<MatchResult> sonAway = scrapeSonMaclar(detailUrl + "/son-maclari", 2);
-			sonAway.forEach(m -> th.addSonMacMatch(m, 2));
-		} catch (Exception e) {
-			System.out.println("scrapeTeamHistory hata: " + e.getMessage());
-		}
-		return th;
-	}
-
-	private List<MatchResult> scrapeRekabetGecmisi(String url) {
-		List<MatchResult> list = new ArrayList<>();
-		try {
-			driver.get(url);
+			String summaryUrl = detailUrl + "/ozet";
+			driver.get(summaryUrl);
 			PageWaitUtils.safeWaitForLoad(driver, 15);
-			Thread.sleep(800);
+			Thread.sleep(1000);
 
-			List<WebElement> rows = driver
+			// --- REKABET GEÇMİŞİ ---
+			List<WebElement> rekabetRows = driver
 					.findElements(By.cssSelector("div[data-test-id='CompitionHistoryTableItem']"));
-			for (WebElement r : rows) {
+			for (WebElement r : rekabetRows) {
 				try {
-					String league = safeText(r, "[data-test-id='CompitionTableItemLeague']");
 					String date = safeText(r, "[data-test-id='CompitionTableItemSeason']");
-					String home = safeText(r, "div[data-test-id='HomeTeam']");
-					String away = safeText(r, "div[data-test-id='AwayTeam']");
+					String league = safeText(r, "[data-test-id='CompitionTableItemLeague']");
+					String homeTeam = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='HomeTeam']")));
+					String awayTeam = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='AwayTeam']")));
 					String score = extractScore(r);
 					int[] sc = parseScore(score);
-					list.add(new MatchResult(home, away, sc[0], sc[1], date, league, "rekabet-gecmisi"));
+					th.addRekabetGecmisiMatch(
+							new MatchResult(homeTeam, awayTeam, sc[0], sc[1], date, league, "rekabet-gecmisi"));
 				} catch (Exception ignore) {
 				}
 			}
-		} catch (Exception e) {
-			System.out.println("⚠️ Rekabet geçmişi hatası: " + e.getMessage());
-		}
-		return list;
-	}
 
-	private List<MatchResult> scrapeSonMaclar(String url, int side) {
-		List<MatchResult> list = new ArrayList<>();
-		try {
-			driver.get(url);
-			PageWaitUtils.safeWaitForLoad(driver, 15);
-			Thread.sleep(800);
-
-			// Yeni yapı: Ev takımı (Home) / Deplasman takımı (Away) tabloları
-			String sel = (side == 1) ? "div[data-test-id^='LastMatchesTable'][data-test-id*='Home'] tbody tr"
-					: "div[data-test-id^='LastMatchesTable'][data-test-id*='Away'] tbody tr";
-
-			List<WebElement> rows = driver.findElements(By.cssSelector(sel));
-			System.out.println("🔹 Son maç (" + (side == 1 ? "Ev" : "Dep") + ") satır sayısı: " + rows.size());
-
-			for (WebElement r : rows) {
+			// --- SON MAÇLAR ---
+			List<WebElement> sonRows = driver
+					.findElements(By.cssSelector("div[data-test-id^='LastMatchesTable'] tbody tr"));
+			for (WebElement r : sonRows) {
 				try {
-					// Yeni Nesine istatistik HTML yapısı
 					String date = safeText(r, "td[data-test-id='TableBodyDate']");
 					String tournament = safeText(r, "td[data-test-id='TableBodyTournament']");
-					String home = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='HomeTeam']")));
-					String away = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='AwayTeam']")));
+					String homeTeam = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='HomeTeam']")));
+					String awayTeam = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='AwayTeam']")));
 					String score = extractScore(r);
 					int[] sc = parseScore(score);
 
-					list.add(new MatchResult(home, away, sc[0], sc[1], date, tournament, "son-maclari"));
-				} catch (Exception ex) {
-					System.out.println("⚠️ Son maç satırı hatası: " + ex.getMessage());
+					int side = (r.getAttribute("data-test-id") != null
+							&& r.getAttribute("data-test-id").contains("Home")) ? 1 : 2;
+					th.addSonMacMatch(
+							new MatchResult(homeTeam, awayTeam, sc[0], sc[1], date, tournament, "son-maclari"), side);
+				} catch (Exception ignore) {
 				}
 			}
 
-			System.out.println("✅ Son maçlar çekildi: " + list.size());
+			System.out.println("🏀 " + title + " geçmiş verisi: " + th.getRekabetGecmisi().size() + " rekabet, "
+					+ th.getSonMaclarHome().size() + "+" + th.getSonMaclarAway().size() + " son maç");
 		} catch (Exception e) {
-			System.out.println("⚠️ Son maç hatası: " + e.getMessage());
+			System.out.println("⚠️ Basketbol geçmiş verisi hatası: " + e.getMessage());
 		}
-		return list;
-	}
-
-	private String extractTeamName(WebElement el) {
-		try {
-			return el.getText().trim();
-		} catch (Exception e) {
-			return "-";
-		}
+		return th;
 	}
 
 	private String extractScore(WebElement r) {
 		try {
 			List<WebElement> scoreEls = r
-					.findElements(By.cssSelector("div[data-test-id='Score'], button[data-test-id='NsnButton'] span"));
+					.findElements(By.cssSelector("div[data-test-id='Score'], span[data-test-id='Score']"));
 			for (WebElement s : scoreEls) {
 				String t = s.getText().replaceAll("\\(.*?\\)", "").trim();
 				if (t.matches("\\d+\\s*-\\s*\\d+"))
 					return t;
 			}
-		} catch (Exception ignored) {
+		} catch (Exception e) {
 		}
 		return "-";
 	}
@@ -293,6 +257,14 @@ public class BasketballScraper {
 			return new int[] { Integer.parseInt(p[0].trim()), Integer.parseInt(p[1].trim()) };
 		} catch (Exception e) {
 			return new int[] { -1, -1 };
+		}
+	}
+
+	private String extractTeamName(WebElement el) {
+		try {
+			return el.getText().trim();
+		} catch (Exception e) {
+			return "-";
 		}
 	}
 
