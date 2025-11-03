@@ -210,10 +210,26 @@ public class BasketballScraper {
 			}
 
 			// --- SON MAÇLAR ---
-			// --- SON MAÇLAR ---
 			List<WebElement> sonTables = driver.findElements(By.cssSelector("div[data-test-id^='LastMatchesTable']"));
 			for (WebElement table : sonTables) {
-				int side = (table.getAttribute("data-test-id").contains("Home")) ? 1 : 2;
+				int side = 0;
+
+				try {
+					// Başlık metnine göre hangi taraf olduğunu anla
+					WebElement titleEl = table
+							.findElement(By.cssSelector("h3, [data-test-id='LastMatchesTableTitle']"));
+					String titleText = titleEl.getText().toLowerCase(Locale.ROOT);
+					if (titleText.contains("ev") || titleText.contains("home")) {
+						side = 1;
+					} else if (titleText.contains("deplasman") || titleText.contains("away")) {
+						side = 2;
+					} else {
+						// fallback: ilk tablo ev kabul edilir
+						side = (sonTables.indexOf(table) == 0) ? 1 : 2;
+					}
+				} catch (Exception e) {
+					side = (sonTables.indexOf(table) == 0) ? 1 : 2;
+				}
 
 				List<WebElement> rows = table.findElements(By.cssSelector("tbody tr"));
 				for (WebElement r : rows) {
