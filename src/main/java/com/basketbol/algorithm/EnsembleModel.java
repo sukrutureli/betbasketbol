@@ -40,8 +40,8 @@ public class EnsembleModel implements BettingAlgorithm {
 			
 			if (!r.getScoreline().equals("-")) {
 				String[] scores = r.getScoreline().split("-");
-				homeScore += (w * Double.valueOf(scores[0]));
-				awayScore += (w * Double.valueOf(scores[1]));
+				homeScore += (w * Integer.valueOf(scores[0]));
+				awayScore += (w * Integer.valueOf(scores[1]));
 			}
 			
 			System.out.println(m.name() + "->" + r.getPick());
@@ -71,4 +71,5 @@ public class EnsembleModel implements BettingAlgorithm {
 		return Double.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0.5;
 	}
 }
+
 
