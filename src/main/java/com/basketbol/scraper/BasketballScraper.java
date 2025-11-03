@@ -235,7 +235,7 @@ public class BasketballScraper {
 			PageWaitUtils.safeWaitForLoad(driver, 12);
 			Thread.sleep(1000);
 
-			selectTournament();
+			//selectTournament();
 
 			try {
 				wait.until(ExpectedConditions.or(
@@ -263,7 +263,7 @@ public class BasketballScraper {
 			PageWaitUtils.safeWaitForLoad(driver, 12);
 			Thread.sleep(1000);
 
-			selectTournament();
+			//selectTournament();
 
 			String sel = (side == 1)
 					? "div[data-test-id^='LastMatchesTable'][data-test-id*='First'] tbody tr, div[data-test-id^='LastMatchesTable'][data-test-id*='Home'] tbody tr"

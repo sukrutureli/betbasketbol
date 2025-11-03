@@ -25,7 +25,8 @@ public class EnsembleModel implements BettingAlgorithm {
 		double pHome = 0, pAway = 0, pOver = 0;
 		double totalW = 0;
 		double confSum = 0;
-		String score = "-";
+		double homeScore = 0;
+		double awayScore = 0;
 
 		for (BettingAlgorithm m : models) {
 			PredictionResult r = m.predict(match, odds);
@@ -36,9 +37,11 @@ public class EnsembleModel implements BettingAlgorithm {
 			pAway += w * safe(r.getpAway());
 			pOver += w * safe(r.getpOver25());
 			confSum += w * r.getConfidence();
-			if (!r.getScoreline().equals("-")) {
-				score = r.getScoreline();
-			}
+			
+			String[] scores = r.getScoreline().split("-");
+			homeScore += (w * Double.valueOf(scores[0]));
+			awayScore += (w * Double.valueOf(scores[1]));
+			
 			System.out.println(m.name() + "->" + r.getPick());
 			totalW += w;
 		}
@@ -48,6 +51,9 @@ public class EnsembleModel implements BettingAlgorithm {
 		pHome /= totalW;
 		pAway /= totalW;
 		pOver /= totalW;
+		homeScore /= totalW;
+		awayScore /= totalW;
+		String score = Math.round(homeScore) + "-" + Math.round(awayScore);
 
 		String msPick = (pHome > 0.55) ? "MS1" : (pAway > 0.55 ? "MS2" : "Yakın");
 		String ouPick = (pOver > 0.55) ? "Üst" : (pOver < 0.45 ? "Alt" : "Sınırda");
@@ -63,5 +69,3 @@ public class EnsembleModel implements BettingAlgorithm {
 		return Double.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0.5;
 	}
 }
-
-
