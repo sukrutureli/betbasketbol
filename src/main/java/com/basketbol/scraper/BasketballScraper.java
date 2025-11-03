@@ -210,22 +210,28 @@ public class BasketballScraper {
 			}
 
 			// --- SON MAÇLAR ---
-			List<WebElement> sonRows = driver
-					.findElements(By.cssSelector("div[data-test-id^='LastMatchesTable'] tbody tr"));
-			for (WebElement r : sonRows) {
-				try {
-					String date = safeText(r, "td[data-test-id='TableBodyDate']");
-					String tournament = safeText(r, "td[data-test-id='TableBodyTournament']");
-					String homeTeam = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='HomeTeam']")));
-					String awayTeam = extractTeamName(r.findElement(By.cssSelector("div[data-test-id='AwayTeam']")));
-					String score = extractScore(r);
-					int[] sc = parseScore(score);
+			// --- SON MAÇLAR ---
+			List<WebElement> sonTables = driver.findElements(By.cssSelector("div[data-test-id^='LastMatchesTable']"));
+			for (WebElement table : sonTables) {
+				int side = (table.getAttribute("data-test-id").contains("Home")) ? 1 : 2;
 
-					int side = (r.getAttribute("data-test-id") != null
-							&& r.getAttribute("data-test-id").contains("Home")) ? 1 : 2;
-					th.addSonMacMatch(
-							new MatchResult(homeTeam, awayTeam, sc[0], sc[1], date, tournament, "son-maclari"), side);
-				} catch (Exception ignore) {
+				List<WebElement> rows = table.findElements(By.cssSelector("tbody tr"));
+				for (WebElement r : rows) {
+					try {
+						String date = safeText(r, "td[data-test-id='TableBodyDate']");
+						String tournament = safeText(r, "td[data-test-id='TableBodyTournament']");
+						String homeTeam = extractTeamName(
+								r.findElement(By.cssSelector("div[data-test-id='HomeTeam']")));
+						String awayTeam = extractTeamName(
+								r.findElement(By.cssSelector("div[data-test-id='AwayTeam']")));
+						String score = extractScore(r);
+						int[] sc = parseScore(score);
+
+						th.addSonMacMatch(
+								new MatchResult(homeTeam, awayTeam, sc[0], sc[1], date, tournament, "son-maclari"),
+								side);
+					} catch (Exception ignore) {
+					}
 				}
 			}
 
