@@ -37,11 +37,13 @@ public class EnsembleModel implements BettingAlgorithm {
 			pAway += w * safe(r.getpAway());
 			pOver += w * safe(r.getpOver25());
 			confSum += w * r.getConfidence();
-			
-			String[] scores = r.getScoreline().split("-");
-			homeScore += (w * Double.valueOf(scores[0]));
-			awayScore += (w * Double.valueOf(scores[1]));
-			
+
+			if (!r.getScoreline().equals("-")) {
+				String[] scores = r.getScoreline().split("-");
+				homeScore += (w * Double.valueOf(scores[0]));
+				awayScore += (w * Double.valueOf(scores[1]));
+			}
+
 			System.out.println(m.name() + "->" + r.getPick());
 			totalW += w;
 		}
