@@ -34,19 +34,19 @@ public class LastPredictionManager {
 
 			LastPrediction tempLastPrediction = new LastPrediction(matchInfo.get(i).getName(),
 					matchInfo.get(i).getTime());
-			String[] tahminListesi = { "MS1", "MS2", "Üst", "Alt" };
 
 			tempLastPrediction.setScore(predictionResults.get(i).getScoreline());
 
-			for (String s : tahminListesi) {
-				if (calculatePrediction(th, predictionResults.get(i), matchInfo.get(i), s) != null) {
-					String t = s;
-					if (!s.startsWith("MS")) {
-						t = matchInfo.get(i).getOdds().gethOverUnderValue() + " " + s;
-					}
-					String withOdd = t + getOddsAndPercentage(s, matchInfo.get(i), predictionResults.get(i));
-					tempLastPrediction.getPredictions().add(withOdd);
+			List<String> tahminList = calculatePrediction(th, predictionResults.get(i), matchInfo.get(i),
+					predictionResults.get(i).getPick());
+			
+			for (String s:tahminList) {
+				String t = s;
+				if (!s.startsWith("MS")) {
+					t = matchInfo.get(i).getOdds().gethOverUnderValue() + " " + s;
 				}
+				String withOdd = t + getOddsAndPercentage(s, matchInfo.get(i), predictionResults.get(i));
+				tempLastPrediction.getPredictions().add(withOdd);
 			}
 
 			if (!tempLastPrediction.getPredictions().isEmpty()) {
@@ -61,47 +61,52 @@ public class LastPredictionManager {
 		}
 	}
 
-	private String calculatePrediction(TeamMatchHistory h, PredictionResult pr, MatchInfo matchInfo, String tahmin) {
+	private List<String> calculatePrediction(TeamMatchHistory h, PredictionResult pr, MatchInfo matchInfo,
+			String tahmin) {
 		double percentageH = 0;
 		double percentagePR = 0;
+
+		String[] tahminler = tahmin.split(" | ");
+		List<String> resultList = new ArrayList<String>();
 
 		if (!h.isInfoEnough() && !h.isInfoEnoughWithoutRekabet()) {
 			return null;
 		}
-
-		if (tahmin.equals("MS1")) {
-			percentageH = h.getMs1() * 100;
-			percentagePR = pr.getpHome() * 100;
-			if (matchInfo.getOdds().getMs1() > 0.0 && isPercentageOK(percentageH, percentagePR)
-					&& isScoreOk(pr.getScoreline(), "MS1", matchInfo)) {
-				return "MS1";
-			}
-		} else if (tahmin.equals("MS2")) {
-			percentageH = h.getMs2() * 100;
-			percentagePR = pr.getpAway() * 100;
-			if (matchInfo.getOdds().getMs2() > 0.0 && isPercentageOK(percentageH, percentagePR)
-					&& isScoreOk(pr.getScoreline(), "MS2", matchInfo)) {
-				return "MS2";
-			}
-		} else if (tahmin.equals("Üst")) {
-			percentageH = h.getUst() * 100;
-			percentagePR = pr.getpOver25() * 100;
-			if (matchInfo.getOdds().getOver() > 0.0) {
-				if (isPercentageOK(percentageH, percentagePR) && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
-					return "Üst";
+		for (String t : tahminler) {
+			if (t.equals("MS1")) {
+				percentageH = h.getMs1() * 100;
+				percentagePR = pr.getpHome() * 100;
+				if (matchInfo.getOdds().getMs1() > 0.0 && isPercentageOK(percentageH, percentagePR)
+						&& isScoreOk(pr.getScoreline(), "MS1", matchInfo)) {
+					resultList.add("MS1");
 				}
-			}
-		} else if (tahmin.equals("Alt")) {
-			percentageH = h.getAlt() * 100;
-			percentagePR = (1 - pr.getpOver25()) * 100;
-			if (matchInfo.getOdds().getUnder() > 0.0) {
-				if (isPercentageOK(percentageH, percentagePR) && isScoreOk(pr.getScoreline(), "Alt", matchInfo)) {
-					return "Alt";
+			} else if (t.equals("MS2")) {
+				percentageH = h.getMs2() * 100;
+				percentagePR = pr.getpAway() * 100;
+				if (matchInfo.getOdds().getMs2() > 0.0 && isPercentageOK(percentageH, percentagePR)
+						&& isScoreOk(pr.getScoreline(), "MS2", matchInfo)) {
+					resultList.add("MS2");
+				}
+			} else if (t.equals("Üst")) {
+				percentageH = h.getUst() * 100;
+				percentagePR = pr.getpOver25() * 100;
+				if (matchInfo.getOdds().getOver() > 0.0) {
+					if (isPercentageOK(percentageH, percentagePR) && isScoreOk(pr.getScoreline(), "Üst", matchInfo)) {
+						resultList.add("Üst");
+					}
+				}
+			} else if (t.equals("Alt")) {
+				percentageH = h.getAlt() * 100;
+				percentagePR = (1 - pr.getpOver25()) * 100;
+				if (matchInfo.getOdds().getUnder() > 0.0) {
+					if (isPercentageOK(percentageH, percentagePR) && isScoreOk(pr.getScoreline(), "Alt", matchInfo)) {
+						resultList.add("Alt");
+					}
 				}
 			}
 		}
 
-		return null;
+		return resultList;
 	}
 
 	private boolean isScoreOk(String score, String tahmin, MatchInfo match) {
