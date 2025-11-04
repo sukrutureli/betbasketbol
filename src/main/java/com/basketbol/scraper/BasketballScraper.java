@@ -193,7 +193,6 @@ public class BasketballScraper {
 			Thread.sleep(1000);
 
 			// --- REKABET GEÇMİŞİ ---
-
 			try {
 				List<WebElement> rows = driver
 						.findElements(By.cssSelector("div[data-test-id='CompitionHistoryTableItem']"));
@@ -201,10 +200,33 @@ public class BasketballScraper {
 
 				for (WebElement r : rows) {
 					try {
+						// 🔹 Tarih
 						String date = safeText(r,
 								"[data-test-id='CompitionTableItemSeason'], [data-test-id='TableBodyDate']");
-						String league = safeText(r,
-								"[data-test-id='CompitionTableItemLeague'], [data-test-id='TableBodyTournament']");
+
+						// 🔹 Lig (bazı basket sayfalarında iç span’lar içinde)
+						String league = "-";
+						try {
+							WebElement leagueEl = r.findElement(By.cssSelector(
+									"[data-test-id='CompitionTableItemLeague'], [data-test-id='CompitionTableItemTournament'], [data-test-id='CompitionTableItemCompetition'], [data-test-id='TableBodyTournament']"));
+							List<WebElement> spans = leagueEl.findElements(By.tagName("span"));
+							if (!spans.isEmpty()) {
+								StringBuilder sb = new StringBuilder();
+								for (WebElement s : spans) {
+									String txt = s.getText().trim();
+									if (!txt.isEmpty()) {
+										if (sb.length() > 0)
+											sb.append(" ");
+										sb.append(txt);
+									}
+								}
+								league = sb.toString().trim();
+							} else {
+								league = leagueEl.getText().trim();
+							}
+						} catch (Exception ignore) {
+						}
+
 						String homeTeam = extractTeamName(
 								r.findElement(By.cssSelector("div[data-test-id='HomeTeam']")));
 						String awayTeam = extractTeamName(
@@ -242,8 +264,24 @@ public class BasketballScraper {
 					List<WebElement> rows = table.findElements(By.cssSelector("tbody tr"));
 					for (WebElement r : rows) {
 						try {
-							String date = safeText(r, "td[data-test-id='TableBodyDate']");
-							String tournament = safeText(r, "td[data-test-id='TableBodyTournament']");
+							// 🔹 Lig ve tarih aynı hücrede (ör: <td
+							// data-test-id="TableBodyLeague"><span>V-L</span><span>31 Eki</span></td>)
+							String league = "-";
+							String date = "-";
+							try {
+								WebElement td = r.findElement(By.cssSelector("td[data-test-id='TableBodyLeague']"));
+								List<WebElement> spans = td.findElements(By.tagName("span"));
+								if (!spans.isEmpty()) {
+									if (spans.size() >= 1)
+										league = spans.get(0).getText().trim();
+									if (spans.size() >= 2)
+										date = spans.get(1).getText().trim();
+								} else {
+									league = td.getText().trim();
+								}
+							} catch (Exception ignore) {
+							}
+
 							String homeTeam = extractTeamName(
 									r.findElement(By.cssSelector("div[data-test-id='HomeTeam']")));
 							String awayTeam = extractTeamName(
@@ -252,7 +290,7 @@ public class BasketballScraper {
 							int[] sc = parseScore(score);
 
 							th.addSonMacMatch(
-									new MatchResult(homeTeam, awayTeam, sc[0], sc[1], date, tournament, "son-maclari"),
+									new MatchResult(homeTeam, awayTeam, sc[0], sc[1], date, league, "son-maclari"),
 									currentSide);
 						} catch (Exception ex) {
 							System.out.println("⚠️ Satır hatası: " + ex.getMessage());
