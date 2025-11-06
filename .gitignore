@@ -1,60 +1,60 @@
-# ==========================================
-#  Java / Maven / Eclipse Projesi .gitignore
-# ==========================================
+# -------------------------
+# Java / Maven / Eclipse .gitignore
+# -------------------------
 
-# --- IDE klasörleri ---
-.idea/
-.vscode/
-*.iml
+# Compiled class files
+*.class
+*.log
+
+# Maven build directory
+target/
+build/
+out/
+
+# Eclipse specific files
 .classpath
 .project
 .settings/
+.apt_generated/
+.factorypath
+.springBeans
+.recommenders/
 
-# --- Maven build çıktıları ---
-/target/
-**/target/
+# IntelliJ IDEA (Eğer bir gün IDEA kullanırsan)
+.idea/
+*.iml
+*.iws
 
-# --- Log ve temp dosyaları ---
-*.log
-*.tmp
-*.bak
-*.swp
+# VS Code (bazı kullanıcılar için)
+.vscode/
 
-# --- İşletim sistemi dosyaları ---
+# OS-specific files
 .DS_Store
 Thumbs.db
 
-# --- Test coverage / report çıktıları ---
-/coverage/
-/test-output/
-/surefire-reports/
+# Backup / temp files
+*.bak
+*.tmp
+*.swp
+~$*
 
-# --- Java derleme çıktıları ---
-*.class
+# Maven wrapper files (isteğe bağlı tutmak istersen aşağıyı yorum satırına al)
+.mvn/
+mvnw
+mvnw.cmd
 
-# --- Local config / environment ---
-.env
-*.properties.local
-*.yml.local
+# Logs
+logs/
+*.log
+!src/main/resources/log4j2.xml  # log config hariç
 
-# --- HTML üretimi (sadece public dizini hariç tutma) ---
-!public/
-public/*
-!public/*.html
-
-# --- Netlify / GitHub Pages cache ---
-.netlify/
-dist/
-build/
-
-# --- Eclipse metadata ---
-/bin/
-.metadata/
-
-# --- Diğer gereksiz ---
-*.orig
-*.rej
+# GitHub Actions artifacts
 *.zip
 *.tar
-*.tar.gz
+*.gz
+*.tgz
 *.7z
+
+# Generated HTML/JSON if auto-created by scraper
+public/
+data/
