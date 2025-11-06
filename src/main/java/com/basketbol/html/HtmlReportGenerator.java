@@ -41,8 +41,8 @@ public class HtmlReportGenerator {
 		/* --- Header --- */
 		html.append(
 				".match-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }");
-		html.append(".match-name { font-weight: 700; color: #003366; font-size: 1.1em; }");
-		html.append(".match-time { color: #666; font-size: 0.9em; }");
+		html.append(".match-name { font-weight: 700; color: #003366; font-size: 1.5em; line-height: 1.2; }");
+		html.append(".match-time { color: #004d80; font-size: 1.3em; font-weight: 600; }");
 		html.append(
 				".match-header button { background: linear-gradient(180deg,#007bff,#0062cc); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9em; }");
 		html.append(".match-header button:hover { background: linear-gradient(180deg,#0069d9,#005cbf); }");
@@ -120,7 +120,7 @@ public class HtmlReportGenerator {
 			html.append("<div class='match-header'>");
 			html.append("<div class='match-name'>").append(match.getName()).append("</div>");
 			html.append("<div class='match-time'>").append(match.getTime()).append("</div>");
-			html.append("<button onclick=\"toggleHistory(this)\">Göster</button>");
+//			html.append("<button onclick=\"toggleHistory(this)\">Göster</button>");
 			html.append("</div>");
 
 			if (teamHistory != null && teamHistory.getTotalMatches() > 0) {
@@ -202,51 +202,51 @@ public class HtmlReportGenerator {
 						+ home + " | Deplasman - " + away + "</div>");
 
 				// History
-				html.append("<div class='history'>");
-
-				html.append("<div class='history-section'>");
-				html.append("<strong>").append(teamHistory.getTeamName()).append("</strong>");
-				html.append("</div>");
-
-				// Rekabet Geçmişi
-				if (!teamHistory.getRekabetGecmisi().isEmpty()) {
-					html.append("<div class='history-section'>");
-					html.append("<h5>Rekabet Geçmişi</h5>");
-					for (MatchResult mr : teamHistory.getRekabetGecmisi()) {
-						String cls = getResultClass(mr, teamHistory.getTeamName());
-						html.append("<div class='match-result ").append(cls).append("'>").append(mr.getMatchDate())
-								.append(" - ").append(mr.getHomeTeam()).append(" ").append(mr.getScoreString())
-								.append(" ").append(mr.getAwayTeam()).append("</div>");
-					}
-					html.append("</div>");
-				}
-
-				// Ev Sahibi Son Maçlar
-				if (!teamHistory.getSonMaclarHome().isEmpty()) {
-					html.append("<div class='history-section'>");
-					html.append("<h5>Ev Sahibi Son Maçlar</h5>");
-					for (MatchResult mr : teamHistory.getSonMaclarHome()) {
-						String cls = getResultClass(mr, teamHistory.getTeamName());
-						html.append("<div class='match-result ").append(cls).append("'>").append(mr.getMatchDate())
-								.append(" - ").append(mr.getHomeTeam()).append(" ").append(mr.getScoreString())
-								.append(" ").append(mr.getAwayTeam()).append("</div>");
-					}
-					html.append("</div>");
-				}
-
-				// Deplasman Son Maçlar
-				if (!teamHistory.getSonMaclarAway().isEmpty()) {
-					html.append("<div class='history-section'>");
-					html.append("<h5>Deplasman Son Maçlar</h5>");
-					for (MatchResult mr : teamHistory.getSonMaclarAway()) {
-						String cls = getResultClass(mr, teamHistory.getTeamName());
-						html.append("<div class='match-result ").append(cls).append("'>").append(mr.getMatchDate())
-								.append(" - ").append(mr.getHomeTeam()).append(" ").append(mr.getScoreString())
-								.append(" ").append(mr.getAwayTeam()).append("</div>");
-					}
-					html.append("</div>");
-				}
-				html.append("</div>");
+//				html.append("<div class='history'>");
+//
+//				html.append("<div class='history-section'>");
+//				html.append("<strong>").append(teamHistory.getTeamName()).append("</strong>");
+//				html.append("</div>");
+//
+//				// Rekabet Geçmişi
+//				if (!teamHistory.getRekabetGecmisi().isEmpty()) {
+//					html.append("<div class='history-section'>");
+//					html.append("<h5>Rekabet Geçmişi</h5>");
+//					for (MatchResult mr : teamHistory.getRekabetGecmisi()) {
+//						String cls = getResultClass(mr, teamHistory.getTeamName());
+//						html.append("<div class='match-result ").append(cls).append("'>").append(mr.getMatchDate())
+//								.append(" - ").append(mr.getHomeTeam()).append(" ").append(mr.getScoreString())
+//								.append(" ").append(mr.getAwayTeam()).append("</div>");
+//					}
+//					html.append("</div>");
+//				}
+//
+//				// Ev Sahibi Son Maçlar
+//				if (!teamHistory.getSonMaclarHome().isEmpty()) {
+//					html.append("<div class='history-section'>");
+//					html.append("<h5>Ev Sahibi Son Maçlar</h5>");
+//					for (MatchResult mr : teamHistory.getSonMaclarHome()) {
+//						String cls = getResultClass(mr, teamHistory.getTeamName());
+//						html.append("<div class='match-result ").append(cls).append("'>").append(mr.getMatchDate())
+//								.append(" - ").append(mr.getHomeTeam()).append(" ").append(mr.getScoreString())
+//								.append(" ").append(mr.getAwayTeam()).append("</div>");
+//					}
+//					html.append("</div>");
+//				}
+//
+//				// Deplasman Son Maçlar
+//				if (!teamHistory.getSonMaclarAway().isEmpty()) {
+//					html.append("<div class='history-section'>");
+//					html.append("<h5>Deplasman Son Maçlar</h5>");
+//					for (MatchResult mr : teamHistory.getSonMaclarAway()) {
+//						String cls = getResultClass(mr, teamHistory.getTeamName());
+//						html.append("<div class='match-result ").append(cls).append("'>").append(mr.getMatchDate())
+//								.append(" - ").append(mr.getHomeTeam()).append(" ").append(mr.getScoreString())
+//								.append(" ").append(mr.getAwayTeam()).append("</div>");
+//					}
+//					html.append("</div>");
+//				}
+//				html.append("</div>");
 				processedTeamCount++;
 			} else {
 				html.append("<div class='no-data'>Bu maç için geçmiş veri bulunamadı</div>");
