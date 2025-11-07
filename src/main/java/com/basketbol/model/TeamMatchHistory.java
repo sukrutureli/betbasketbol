@@ -326,13 +326,12 @@ public class TeamMatchHistory {
 
 	public String getStyle(String type, Double possibility, Double odd) {
 		String color = "background-color:#e8fbe8; border:1px solid #6ecf6e;";
-		int percentage = ((int) (possibility * 100));
 
 		if (!isInfoEnough() && !isInfoEnoughWithoutRekabet()) {
 			return "";
 		}
-		if (odd > 1) {
-			if (percentage >= 60) {
+		if (odd > 1.0) {
+			if (possibility > 0.6) {
 				return color;
 			}
 		}
