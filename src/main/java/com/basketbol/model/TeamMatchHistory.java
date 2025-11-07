@@ -324,15 +324,17 @@ public class TeamMatchHistory {
 		return points;
 	}
 
-	public String getStyle(String type, String pick) {
+	public String getStyle(String type, Double possibility, Double odd) {
 		String color = "background-color:#e8fbe8; border:1px solid #6ecf6e;";
+		int percentage = ((int) (possibility * 100));
 
 		if (!isInfoEnough() && !isInfoEnoughWithoutRekabet()) {
 			return "";
 		}
-
-		if (pick.contains(type)) {
-			return color;
+		if (odd > 1) {
+			if (percentage >= 60) {
+				return color;
+			}
 		}
 
 		return "";
