@@ -72,14 +72,14 @@ public class LastPredictionManager {
 		for (String t : tahminler) {
 
 			if (t.equals("MS1")) {
-				if (matchInfo.getOdds().getMs1() > 1.0 && h.getMax().equals(t)
+				if (matchInfo.getOdds().getMs1() > 1.29 && matchInfo.getOdds().getMs1() < 1.9 && h.getMax().equals(t)
 						&& isScoreOk(pr.getScoreline(), t, matchInfo)) {
 					if (pr.getpHome() > pr.getpAway()) {
 						resultList.add(t);
 					}
 				}
 			} else if (t.equals("MS2")) {
-				if (matchInfo.getOdds().getMs2() > 1.0 && h.getMax().equals(t)
+				if (matchInfo.getOdds().getMs2() > 1.29 && matchInfo.getOdds().getMs2() < 1.9 && h.getMax().equals(t)
 						&& isScoreOk(pr.getScoreline(), t, matchInfo)) {
 					if (pr.getpHome() < pr.getpAway()) {
 						resultList.add(t);
