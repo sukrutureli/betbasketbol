@@ -39,8 +39,8 @@ public class LastPredictionManager {
 
 			List<String> tahminList = calculatePrediction(th, predictionResults.get(i), matchInfo.get(i),
 					predictionResults.get(i).getPick());
-			
-			for (String s:tahminList) {
+
+			for (String s : tahminList) {
 				String t = s;
 				if (!s.startsWith("MS")) {
 					t = matchInfo.get(i).getOdds().gethOverUnderValue() + " " + s;
@@ -70,29 +70,34 @@ public class LastPredictionManager {
 			return null;
 		}
 		for (String t : tahminler) {
-			
+
 			if (t.equals("MS1")) {
-				if (matchInfo.getOdds().getMs1() > 1.0 && h.getMs1() > 0.6
+				if (matchInfo.getOdds().getMs1() > 1.0 && h.getMax().equals(t)
 						&& isScoreOk(pr.getScoreline(), t, matchInfo)) {
-					resultList.add(t);
+					if (pr.getpHome() > pr.getpAway()) {
+						resultList.add(t);
+					}
 				}
-			}
-			else if (t.equals("MS2")) {
-				if (matchInfo.getOdds().getMs2() > 1.0 && h.getMs2() > 0.6
+			} else if (t.equals("MS2")) {
+				if (matchInfo.getOdds().getMs2() > 1.0 && h.getMax().equals(t)
 						&& isScoreOk(pr.getScoreline(), t, matchInfo)) {
-					resultList.add(t);
+					if (pr.getpHome() < pr.getpAway()) {
+						resultList.add(t);
+					}
 				}
-			}
-			else if (t.equals("Üst")) {
-				if (matchInfo.getOdds().getOver() > 1.0 && h.getUst() > 0.6
+			} else if (t.equals("Üst")) {
+				if (matchInfo.getOdds().getOver() > 1.0 && h.getMax().equals(t)
 						&& isScoreOk(pr.getScoreline(), t, matchInfo)) {
-					resultList.add(t);
+					if (pr.getpOver25() > 0.5) {
+						resultList.add(t);
+					}
 				}
-			}
-			else if (t.equals("Alt")) {
-				if (matchInfo.getOdds().getUnder() > 1.0 && h.getAlt() > 0.6
+			} else if (t.equals("Alt")) {
+				if (matchInfo.getOdds().getUnder() > 1.0 && h.getMax().equals(t)
 						&& isScoreOk(pr.getScoreline(), t, matchInfo)) {
-					resultList.add(t);
+					if (pr.getpOver25() < 0.5) {
+						resultList.add(t);
+					}
 				}
 			}
 		}

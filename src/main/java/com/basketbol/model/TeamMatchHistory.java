@@ -323,6 +323,30 @@ public class TeamMatchHistory {
 
 		return points;
 	}
+	
+	public String getMax() {
+		String maxStr = "";
+		double max = 0.0;
+
+		if (getMs1() > max) {
+			maxStr = "MS1";
+			max = getMs1();
+		}
+		if (getMs2() > max) {
+			maxStr = "MS2";
+			max = getMs1();
+		}
+		if (getAlt() > max) {
+			maxStr = "Alt";
+			max = getAlt();
+		}
+		if (getUst() > max) {
+			maxStr = "Üst";
+			max = getUst();
+		}
+
+		return maxStr;
+	}
 
 	public String getStyle(String type, Double possibility, Double odd) {
 		String color = "background-color:#e8fbe8; border:1px solid #6ecf6e;";
