@@ -10,6 +10,7 @@ import com.basketbol.model.LastPrediction;
 import com.basketbol.model.MatchInfo;
 import com.basketbol.model.PredictionResult;
 import com.basketbol.model.TeamMatchHistory;
+import com.basketbol.util.MathUtils;
 import com.basketbol.model.PredictionData;
 
 public class LastPredictionManager {
@@ -125,14 +126,17 @@ public class LastPredictionManager {
 
 	private String getOddsAndPercentage(String tahmin, MatchInfo match, PredictionResult pr) {
 		if (tahmin.equals("MS1")) {
-			return " (" + String.valueOf(match.getOdds().getMs1()) + " - %" + ((int) (pr.getpHome() * 100)) + ")";
+			return String.format(" (%s - %s)", String.valueOf(match.getOdds().getMs1()),
+					MathUtils.fmtPct(pr.getpHome()));
 		} else if (tahmin.equals("MS2")) {
-			return " (" + String.valueOf(match.getOdds().getMs2()) + " - %" + ((int) (pr.getpAway() * 100)) + ")";
+			return String.format(" (%s - %s)", String.valueOf(match.getOdds().getMs2()),
+					MathUtils.fmtPct(pr.getpAway()));
 		} else if (tahmin.equals("Alt")) {
-			return " (" + String.valueOf(match.getOdds().getUnder()) + " - %" + ((int) ((1 - pr.getpOver25()) * 100))
-					+ ")";
+			return String.format(" (%s - %s)", String.valueOf(match.getOdds().getUnder()),
+					MathUtils.fmtPct(1 - pr.getpOver25()));
 		} else if (tahmin.equals("Üst")) {
-			return " (" + String.valueOf(match.getOdds().getOver()) + " - %" + ((int) (pr.getpOver25() * 100)) + ")";
+			return String.format(" (%s - %s)", String.valueOf(match.getOdds().getOver()),
+					MathUtils.fmtPct(pr.getpOver25()));
 		}
 		return null;
 	}
@@ -143,28 +147,5 @@ public class LastPredictionManager {
 
 	public List<PredictionData> getPredictionData() {
 		return predictionData;
-	}
-
-	public boolean isPercentageOK(double h, double pr) {
-		boolean result = false;
-		double hWd = 55;
-		double hWe = 60;
-		double prWd = 60;
-		double prWe = 65;
-
-		LocalDate now = LocalDate.now(ZoneId.of("Europe/Istanbul"));
-		boolean isWeekEnd = now.getDayOfWeek() == DayOfWeek.SATURDAY || now.getDayOfWeek() == DayOfWeek.SUNDAY;
-
-		if (isWeekEnd) {
-			if (h >= hWe && pr >= prWe) {
-				result = true;
-			}
-		} else {
-			if (h >= hWd && pr >= prWd) {
-				result = true;
-			}
-		}
-
-		return result;
 	}
 }

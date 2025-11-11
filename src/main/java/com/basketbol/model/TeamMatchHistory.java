@@ -262,10 +262,6 @@ public class TeamMatchHistory {
 		return false;
 	}
 
-	public String toStringAsPercentage(double value) {
-		return "%" + ((int) (value * 100));
-	}
-
 	public Match createStats(MatchInfo pMatch) {
 		Match currentMatch = new Match(teamEv, teamDep);
 		currentMatch.setOdds(pMatch.getOdds());

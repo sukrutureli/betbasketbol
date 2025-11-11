@@ -133,15 +133,13 @@ public class HtmlReportGenerator {
 						+ teamHistory.getStyle("MS1", teamHistory.getMs1(), match.getOdds().getMs1()) + "'>");
 				html.append("<div class='odds-line'><span class='odds-label'>MS1:</span><span class='odds-value'>"
 						+ match.getOdds().getMs1() + "</span></div>");
-				html.append("<span class='odds-pct'>" + teamHistory.toStringAsPercentage(teamHistory.getMs1())
-						+ "</span></div>");
+				html.append("<span class='odds-pct'>" + MathUtils.fmtPct(teamHistory.getMs1()) + "</span></div>");
 
 				html.append("<div class='odds-cell' style='"
 						+ teamHistory.getStyle("MS2", teamHistory.getMs2(), match.getOdds().getMs2()) + "'>");
 				html.append("<div class='odds-line'><span class='odds-label'>MS2:</span><span class='odds-value'>"
 						+ match.getOdds().getMs2() + "</span></div>");
-				html.append("<span class='odds-pct'>" + teamHistory.toStringAsPercentage(teamHistory.getMs2())
-						+ "</span></div>");
+				html.append("<span class='odds-pct'>" + MathUtils.fmtPct(teamHistory.getMs2()) + "</span></div>");
 
 				html.append("<div class='odds-cell " + teamHistory.getStyle("H1", 0.0, match.getOdds().getH1Value())
 						+ "'>");
@@ -163,16 +161,14 @@ public class HtmlReportGenerator {
 				html.append(
 						"<div class='odds-line'><span class='odds-label'>Alt (" + match.getOdds().gethOverUnderValue()
 								+ "):</span><span class='odds-value'>" + match.getOdds().getUnder() + "</span></div>");
-				html.append("<span class='odds-pct'>" + teamHistory.toStringAsPercentage(teamHistory.getAlt())
-						+ "</span></div>");
+				html.append("<span class='odds-pct'>" + MathUtils.fmtPct(teamHistory.getAlt()) + "</span></div>");
 
 				html.append("<div class='odds-cell' style='"
 						+ teamHistory.getStyle("Üst", teamHistory.getUst(), match.getOdds().getOver()) + "'>");
 				html.append(
 						"<div class='odds-line'><span class='odds-label'>Üst (" + match.getOdds().gethOverUnderValue()
 								+ "):</span><span class='odds-value'>" + match.getOdds().getOver() + "</span></div>");
-				html.append("<span class='odds-pct'>" + teamHistory.toStringAsPercentage(teamHistory.getUst())
-						+ "</span></div>");
+				html.append("<span class='odds-pct'>" + MathUtils.fmtPct(teamHistory.getUst()) + "</span></div>");
 
 				html.append("</div>"); // odds-grid
 				html.append("</div>"); // odds-mini
@@ -195,8 +191,7 @@ public class HtmlReportGenerator {
 					html.append("<td class='qs-odd'>" + MathUtils.fmtPct(results.get(i).getpOver25()) + "</td>");
 					html.append("<td class='qs-pick'><span class='pick'>" + results.get(i).getPick() + "</span></td>");
 					html.append("<td class='qs-score'>" + results.get(i).getScoreline() + "</td>");
-					html.append("<td class='qs-odd'>" + String.format("%.0f%%", results.get(i).getConfidence() * 100)
-							+ "</td>");
+					html.append("<td class='qs-odd'>" + MathUtils.fmtPct(results.get(i).getConfidence()) + "</td>");
 					html.append("</tr></tbody></table></div>");
 				}
 
