@@ -84,10 +84,6 @@ public class HeuristicPredictor implements BettingAlgorithm {
 		// --- 8. Güven oranı ---
 		double confidence = clamp(0.55 + Math.abs(diff) / 25.0, 0.55, 0.95);
 
-		// --- 9. Meta bilgi ---
-		String meta = String.format("diff=%.1f total=%.1f barem=%.1f offH=%.1f offA=%.1f", diff, total, barem, offHome,
-				offAway);
-
 		return new PredictionResult(name(), match.getHomeTeam(), match.getAwayTeam(), pHome, 0.0, pAway, pOver, 0.0,
 				finalPick, confidence, score);
 	}

@@ -83,9 +83,6 @@ public class FormMomentumModel implements BettingAlgorithm {
 		double expectedAway = total / 2.0 - diff / 2.0;
 		String score = String.format("%d-%d", Math.round(expectedHome), Math.round(expectedAway));
 
-		// --- 9. Meta bilgi ---
-		String meta = String.format("momentum=%.2f diff=%.1f total=%.1f barem=%.1f", momentum, diff, total, barem);
-
 		return new PredictionResult(name(), match.getHomeTeam(), match.getAwayTeam(), pHome, 0.0, pAway, pOver, 0.0,
 				finalPick, confidence, score);
 	}
