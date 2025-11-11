@@ -75,14 +75,16 @@ public class MatchResult {
 	public void setMatchType(String matchType) {
 		this.matchType = matchType;
 	}
-	
+
 	public String getResult() {
-        if (homeScore > awayScore) return "H"; // Home win
-        if (awayScore > homeScore) return "A"; // Away win
-        return "D"; // Draw
-    }
-    
-    public String getScoreString() {
-        return homeScore + "-" + awayScore;
-    }
+		if (homeScore > awayScore)
+			return "H"; // Home win
+		if (awayScore > homeScore)
+			return "A"; // Away win
+		return "D"; // Draw
+	}
+
+	public String getScoreString() {
+		return homeScore + "-" + awayScore;
+	}
 }

@@ -323,7 +323,7 @@ public class TeamMatchHistory {
 
 		return points;
 	}
-	
+
 	public String getMax() {
 		String maxStr = "";
 		double max = 0.0;

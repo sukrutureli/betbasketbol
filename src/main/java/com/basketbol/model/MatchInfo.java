@@ -54,9 +54,9 @@ public class MatchInfo {
 	public void setIndex(int index) {
 		this.index = index;
 	}
-	
-    public boolean hasDetailUrl() {
-        return detailUrl != null && !detailUrl.isEmpty() && detailUrl.contains("istatistik.nesine.com");
-    }
+
+	public boolean hasDetailUrl() {
+		return detailUrl != null && !detailUrl.isEmpty() && detailUrl.contains("istatistik.nesine.com");
+	}
 
 }

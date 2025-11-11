@@ -8,31 +8,32 @@ public class LastPrediction {
 	private String time;
 	private List<String> predictions;
 	private String score;
-	
+
 	public LastPrediction(String name, String time) {
 		this.name = name;
 		this.time = time;
 		this.predictions = new ArrayList<String>();
 	}
-	
+
 	public List<String> getPredictions() {
 		return predictions;
 	}
+
 	public void setPredictions(List<String> predictions) {
 		this.predictions = predictions;
 	}
-	
+
 	public String preditionsToString() {
 		String result = "";
-		
-		for (String s:predictions) {
+
+		for (String s : predictions) {
 			if (result.equals("")) {
 				result += s;
 			} else {
 				result += " | " + s;
 			}
 		}
-		
+
 		return result;
 	}
 

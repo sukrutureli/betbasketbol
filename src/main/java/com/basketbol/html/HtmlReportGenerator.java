@@ -143,13 +143,13 @@ public class HtmlReportGenerator {
 				html.append("<span class='odds-pct'>" + teamHistory.toStringAsPercentage(teamHistory.getMs2())
 						+ "</span></div>");
 
-				html.append("<div class='odds-cell "
-						+ teamHistory.getStyle("H1", 0.0, match.getOdds().getH1Value()) + "'>");
+				html.append("<div class='odds-cell " + teamHistory.getStyle("H1", 0.0, match.getOdds().getH1Value())
+						+ "'>");
 				html.append("<div class='odds-line'><span class='odds-label'>H1 (" + match.getOdds().getH1Value()
 						+ "):</span><span class='odds-value'>" + match.getOdds().getH1() + "</span></div></div>");
 
-				html.append("<div class='odds-cell "
-						+ teamHistory.getStyle("H2", 0.0, match.getOdds().getH2Value()) + "'>");
+				html.append("<div class='odds-cell " + teamHistory.getStyle("H2", 0.0, match.getOdds().getH2Value())
+						+ "'>");
 				html.append("<div class='odds-line'><span class='odds-label'>H2 (" + match.getOdds().getH2Value()
 						+ "):</span><span class='odds-value'>" + match.getOdds().getH2() + "</span></div></div>");
 				html.append("</div>");

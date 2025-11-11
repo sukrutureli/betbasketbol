@@ -2,19 +2,19 @@ package com.basketbol.model;
 
 public class Match {
 	private String homeTeam;
-    private String awayTeam;
-    private BasketballStats homeStats;
-    private BasketballStats awayStats;
-    private Odds odds;
+	private String awayTeam;
+	private BasketballStats homeStats;
+	private BasketballStats awayStats;
+	private Odds odds;
 
 	private Double avgPointsForHome;
 	private Double avgPointsForAway;
 	private Double h2hAvgTotalPoints;
-	
+
 	public Match(String homeTeam, String awayTeam) {
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-    }
+		this.homeTeam = homeTeam;
+		this.awayTeam = awayTeam;
+	}
 
 	public String getHomeTeam() {
 		return homeTeam;

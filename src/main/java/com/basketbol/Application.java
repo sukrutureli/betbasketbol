@@ -87,9 +87,10 @@ public class Application {
 			LastPredictionManager lastPredictionManager = new LastPredictionManager(historyManager, results, matches);
 			lastPredictionManager.fillPredictions();
 
-			HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(), "basketboltahmin.html");
+			HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(),
+					"basketboltahmin.html");
 			System.out.println("basketboltahmin.html oluşturuldu.");
-			
+
 			PredictionSaver.saveTodayPredictions(lastPredictionManager.getPredictionData());
 
 		} catch (Exception e) {
