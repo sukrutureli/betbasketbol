@@ -1,38 +1,58 @@
 package com.basketbol;
 
 import com.basketbol.scraper.BasketballScraper;
-import com.basketbol.algorithm.BettingAlgorithm;
-import com.basketbol.algorithm.EnsembleModel;
-import com.basketbol.algorithm.FormMomentumModel;
-import com.basketbol.algorithm.HeuristicPredictor;
-import com.basketbol.html.HtmlReportGenerator;
-import com.basketbol.model.Match;
-import com.basketbol.model.MatchInfo;
-import com.basketbol.model.PredictionResult;
-import com.basketbol.model.TeamMatchHistory;
-
+import com.basketbol.scraper.ControlScraper;
+import com.basketbol.algorithm.*;
+import com.basketbol.html.CombinedHtmlReportGenerator;
+import com.basketbol.model.*;
+import com.basketbol.prediction.JsonReader;
+import com.basketbol.prediction.JsonStorage;
+import com.basketbol.prediction.PredictionUpdater;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Application {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
+
+		String mode = args.length > 0 ? args[0].toLowerCase() : "basketbol";
+		System.out.println("Çalışma modu: " + mode.toUpperCase());
+
+		switch (mode) {
+		case "basketbol":
+			runBasketballPrediction();
+			break;
+		case "kontrol":
+			runKontrol();
+			System.out.println("🧩 Kontrol modu henüz aktif değil (basketbol).");
+			break;
+		default:
+			System.out.println("⚠️ Geçersiz argüman: " + mode);
+			System.out.println("Kullanım: java -jar prediction.jar [basketbol | kontrol]");
+			break;
+		}
+
+		System.out.println("\nTamamlandı: " + LocalDateTime.now(istanbulZone));
+	}
+
+	private static void runBasketballPrediction() {
 		BasketballScraper scraper = null;
 		MatchHistoryManager historyManager = new MatchHistoryManager();
 		List<MatchInfo> matches = null;
 		List<Match> matchStats = new ArrayList<>();
+		List<PredictionResult> results = new ArrayList<>();
 		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
 
 		try {
-			System.out.println("=== İddaa Scraper Başlatılıyor ===");
+			System.out.println("=== 🏀 Basketbol Scraper Başlatılıyor ===");
 			System.out.println("Zaman: " + LocalDateTime.now(istanbulZone));
 
 			scraper = new BasketballScraper();
 
-			System.out.println("\n1. Ana sayfa maçları çekiliyor...");
+			System.out.println("\n1️⃣ Ana sayfa maçları çekiliyor...");
 			matches = scraper.fetchMatches();
 			System.out.println("Ana sayfadan " + matches.size() + " maç çekildi");
 
@@ -61,8 +81,7 @@ public class Application {
 							System.gc();
 
 					} catch (Exception e) {
-						System.out.println(
-								"Geçmiş çekme hatası: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+						System.out.println("Geçmiş çekme hatası: " + e.getMessage());
 					}
 				}
 
@@ -71,27 +90,31 @@ public class Application {
 				}
 			}
 
+			// 🔹 Tahmin algoritmaları
 			BettingAlgorithm formMomentum = new FormMomentumModel();
-			BettingAlgorithm heur = new HeuristicPredictor();
-			EnsembleModel ensemble = new EnsembleModel(List.of(formMomentum, heur));
+			BettingAlgorithm heuristic = new HeuristicPredictor();
+			EnsembleModel ensemble = new EnsembleModel(List.of(formMomentum, heuristic));
 
-			List<PredictionResult> results = new ArrayList<>();
 			for (Match m : matchStats) {
-				System.out.println(m.getHomeTeam() + " - " + m.getAwayTeam());
 				results.add(ensemble.predict(m, Optional.ofNullable(m.getOdds())));
 			}
 
-			HtmlReportGenerator.generateHtml(matches, historyManager, matchStats, results, "basketbol.html");
-			System.out.println("✅ basketbol.html oluşturuldu.");
-
+			// 🔹 Tahminlerin son halini oluştur
 			LastPredictionManager lastPredictionManager = new LastPredictionManager(historyManager, results, matches);
 			lastPredictionManager.fillPredictions();
 
-			HtmlReportGenerator.generateHtmlForSublist(lastPredictionManager.getLastPrediction(),
-					"basketboltahmin.html");
-			System.out.println("basketboltahmin.html oluşturuldu.");
+			// 🔹 Birleşik HTML raporu oluştur
+			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
+					historyManager, matchStats, results, lastPredictionManager.getPredictionData(), "basketbol.html");
+			System.out.println("✅ basketbol.html oluşturuldu (birleşik rapor).");
 
-			PredictionSaver.saveTodayPredictions(lastPredictionManager.getPredictionData());
+			// 🔹 JSON çıktılarını kaydet
+			JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
+			JsonStorage.save("basketbol", "LastPrediction", lastPredictionManager.getLastPrediction());
+			JsonStorage.save("basketbol", "MatchInfo", matches);
+			JsonStorage.save("basketbol", "TeamMatchHistory", historyManager.getTeamHistories());
+			JsonStorage.save("basketbol", "Match", matchStats);
+			JsonStorage.save("basketbol", "PredictionResult", results);
 
 		} catch (Exception e) {
 			System.out.println("GENEL HATA: " + e.getMessage());
@@ -99,6 +122,61 @@ public class Application {
 		} finally {
 			if (scraper != null)
 				scraper.close();
+		}
+	}
+	
+	private static void runKontrol() throws IOException {
+		ControlScraper scraper = null;
+		MatchHistoryManager historyManager = new MatchHistoryManager();
+		List<MatchInfo> matches = JsonReader.readFromGithub("basketbol", "MatchInfo", JsonReader.getToday(),
+				MatchInfo.class);
+		List<Match> matchStats = JsonReader.readFromGithub("basketbol", "Match", JsonReader.getToday(), Match.class);
+		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
+		List<PredictionResult> results = JsonReader.readFromGithub("basketbol", "PredictionResult", JsonReader.getToday(),
+				PredictionResult.class);
+
+		List<TeamMatchHistory> teamHistoryList = JsonReader.readFromGithub("basketbol", "TeamMatchHistory",
+				JsonReader.getToday(), TeamMatchHistory.class);
+
+		try {
+			System.out.println("Zaman: " + LocalDateTime.now(istanbulZone));
+
+			// Scraper'ı başlat
+			scraper = new ControlScraper();
+
+			Map<String, String> updatedScores = scraper.fetchFinishedScoresBasket();
+
+			PredictionUpdater.updateFromGithub(updatedScores, "PredictionData-");
+
+			for (int i = 0; i < matches.size(); i++) {
+				MatchInfo match = matches.get(i);
+
+				// Detay URL'si varsa geçmiş verilerini çek
+				if (match.hasDetailUrl()) {
+					System.out.println("Geçmiş çekiliyor " + (i + 1) + "/" + matches.size() + ": " + match.getName());
+
+					historyManager.addTeamHistory(teamHistoryList.get(i));
+
+				}
+			}
+
+			LastPredictionManager lastPredictionManager = new LastPredictionManager(historyManager, results, matches);
+			lastPredictionManager.fillPredictions();
+
+			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
+					historyManager, matchStats, results, lastPredictionManager.getPredictionData(),
+					String.format("basketbol%s.html", ""));
+			System.out.println("basketbol.html oluşturuldu.");
+
+			JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
+
+		} catch (Exception e) {
+			System.out.println("GENEL HATA: " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			if (scraper != null) {
+				scraper.close();
+			}
 		}
 	}
 }
