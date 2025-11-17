@@ -1,5 +1,7 @@
 package com.basketbol.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class MatchResult {
 	private String homeTeam;
 	private String awayTeam;
@@ -76,6 +78,7 @@ public class MatchResult {
 		this.matchType = matchType;
 	}
 
+	@JsonIgnore
 	public String getResult() {
 		if (homeScore > awayScore)
 			return "H"; // Home win
@@ -84,6 +87,7 @@ public class MatchResult {
 		return "D"; // Draw
 	}
 
+	@JsonIgnore
 	public String getScoreString() {
 		return homeScore + "-" + awayScore;
 	}

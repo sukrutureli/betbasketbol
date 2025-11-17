@@ -3,6 +3,10 @@ package com.basketbol.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TeamMatchHistory {
 	private String teamName;
 	private String teamEv;
@@ -41,7 +45,8 @@ public class TeamMatchHistory {
 	public int getTotalMatches() {
 		return rekabetGecmisi.size() + sonMaclarHome.size() + sonMaclarAway.size();
 	}
-
+	
+	@JsonIgnore
 	public List<MatchResult> getAllMatches() {
 		List<MatchResult> allMatches = new ArrayList<>();
 		allMatches.addAll(rekabetGecmisi);

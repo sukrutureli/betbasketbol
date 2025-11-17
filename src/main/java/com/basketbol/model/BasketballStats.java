@@ -1,5 +1,8 @@
 package com.basketbol.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BasketballStats {
 	private Double avgPointsFor;
 	private Double avgPointsAgainst;
