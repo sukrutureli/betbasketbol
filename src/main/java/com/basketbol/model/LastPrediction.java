@@ -8,6 +8,10 @@ public class LastPrediction {
 	private String time;
 	private List<String> predictions;
 	private String score;
+	
+	public LastPrediction() {
+		
+	}
 
 	public LastPrediction(String name, String time) {
 		this.name = name;

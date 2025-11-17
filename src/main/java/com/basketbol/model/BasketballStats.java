@@ -8,6 +8,10 @@ public class BasketballStats {
 	private Double avgPointsAgainst;
 	private Double avgTotalPoints;
 	private Double ppg;
+	
+	public BasketballStats() {
+		
+	}
 
 	public BasketballStats(Double avgPointsFor, Double avgPointsAgainst, Double avgTotalPoints, Double ppg) {
 		this.avgPointsFor = avgPointsFor;

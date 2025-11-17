@@ -16,6 +16,10 @@ public class TeamMatchHistory {
 	private List<MatchResult> rekabetGecmisi;
 	private List<MatchResult> sonMaclarHome;
 	private List<MatchResult> sonMaclarAway;
+	
+	public TeamMatchHistory() {
+		
+	}
 
 	public TeamMatchHistory(String teamName, String teamEv, String teamDep, String detailUrl, Odds odds) {
 		this.teamName = teamName;

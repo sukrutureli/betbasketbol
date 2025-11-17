@@ -10,6 +10,10 @@ public class Match {
 	private Double avgPointsForHome;
 	private Double avgPointsForAway;
 	private Double h2hAvgTotalPoints;
+	
+	public Match() {
+		
+	}
 
 	public Match(String homeTeam, String awayTeam) {
 		this.homeTeam = homeTeam;

@@ -10,6 +10,10 @@ public class MatchResult {
 	private String matchDate;
 	private String tournament;
 	private String matchType; // "rekabet-gecmisi" veya "son-maclar"
+	
+	public MatchResult() {
+		
+	}
 
 	public MatchResult(String homeTeam, String awayTeam, int homeScore, int awayScore, String matchDate,
 			String tournament, String matchType) {

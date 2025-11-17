@@ -10,6 +10,10 @@ public class Odds {
 	private Double hOverUnderValue;
 	private Double over;
 	private Double under;
+	
+	public Odds() {
+		
+	}
 
 	public Odds(Double ms1, Double ms2, Double h1Value, Double h1, Double h2, Double h2Value, Double under,
 			Double hOverUnderValue, Double over) {

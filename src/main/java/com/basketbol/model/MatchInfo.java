@@ -6,6 +6,10 @@ public class MatchInfo {
 	private String detailUrl;
 	private Odds odds;
 	private int index;
+	
+	public MatchInfo() {
+		
+	}
 
 	public MatchInfo(String name, String time, String detailUrl, Odds odds, int index) {
 		this.setName(name);
