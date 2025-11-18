@@ -9,8 +9,11 @@ import com.basketbol.prediction.JsonReader;
 import com.basketbol.prediction.JsonStorage;
 import com.basketbol.prediction.PredictionUpdater;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Application {
@@ -105,7 +108,8 @@ public class Application {
 
 			// 🔹 Birleşik HTML raporu oluştur
 			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
-					historyManager, matchStats, results, lastPredictionManager.getPredictionData(), "basketbol.html");
+					historyManager, matchStats, results, lastPredictionManager.getPredictionData(), "basketbol.html",
+					getStringDay(false));
 			System.out.println("✅ basketbol.html oluşturuldu (birleşik rapor).");
 
 			// 🔹 JSON çıktılarını kaydet
@@ -124,7 +128,7 @@ public class Application {
 				scraper.close();
 		}
 	}
-	
+
 	private static void runKontrol() throws IOException {
 		ControlScraper scraper = null;
 		MatchHistoryManager historyManager = new MatchHistoryManager();
@@ -132,8 +136,8 @@ public class Application {
 				MatchInfo.class);
 		List<Match> matchStats = JsonReader.readFromGithub("basketbol", "Match", JsonReader.getToday(), Match.class);
 		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
-		List<PredictionResult> results = JsonReader.readFromGithub("basketbol", "PredictionResult", JsonReader.getToday(),
-				PredictionResult.class);
+		List<PredictionResult> results = JsonReader.readFromGithub("basketbol", "PredictionResult",
+				JsonReader.getToday(), PredictionResult.class);
 
 		List<TeamMatchHistory> teamHistoryList = JsonReader.readFromGithub("basketbol", "TeamMatchHistory",
 				JsonReader.getToday(), TeamMatchHistory.class);
@@ -164,8 +168,8 @@ public class Application {
 			lastPredictionManager.fillPredictions();
 
 			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
-					historyManager, matchStats, results, lastPredictionManager.getPredictionData(),
-					String.format("basketbol%s.html", ""));
+					historyManager, matchStats, results, lastPredictionManager.getPredictionData(), "basketbol.html",
+					getStringDay(true));
 			System.out.println("basketbol.html oluşturuldu.");
 
 			JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
@@ -178,5 +182,21 @@ public class Application {
 				scraper.close();
 			}
 		}
+	}
+
+	public static String getStringDay(boolean minusDay) {
+		LocalTime now = LocalTime.now(ZoneId.of("Europe/Istanbul"));
+		String day = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+		if (minusDay) {
+			if (now.isAfter(LocalTime.MIDNIGHT) && now.isBefore(LocalTime.of(6, 0))) {
+				day = LocalDate.now(ZoneId.of("Europe/Istanbul")).minusDays(1)
+						.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			} else {
+				day = LocalDate.now(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			}
+		}
+
+		return day;
 	}
 }
