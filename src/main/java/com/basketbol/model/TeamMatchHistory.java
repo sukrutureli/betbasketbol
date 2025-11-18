@@ -16,9 +16,9 @@ public class TeamMatchHistory {
 	private List<MatchResult> rekabetGecmisi;
 	private List<MatchResult> sonMaclarHome;
 	private List<MatchResult> sonMaclarAway;
-	
+
 	public TeamMatchHistory() {
-		
+
 	}
 
 	public TeamMatchHistory(String teamName, String teamEv, String teamDep, String detailUrl, Odds odds) {
@@ -49,7 +49,7 @@ public class TeamMatchHistory {
 	public int getTotalMatches() {
 		return rekabetGecmisi.size() + sonMaclarHome.size() + sonMaclarAway.size();
 	}
-	
+
 	@JsonIgnore
 	public List<MatchResult> getAllMatches() {
 		List<MatchResult> allMatches = new ArrayList<>();
@@ -113,6 +113,14 @@ public class TeamMatchHistory {
 
 	public void setDetailUrl(String detailUrl) {
 		this.detailUrl = detailUrl;
+	}
+
+	public Odds getOdds() {
+		return odds;
+	}
+
+	public void setOdds(Odds odds) {
+		this.odds = odds;
 	}
 
 	public double getMs1() {
