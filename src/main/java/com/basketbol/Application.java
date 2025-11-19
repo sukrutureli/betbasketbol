@@ -175,7 +175,7 @@ public class Application {
 					getStringDay(true), scraper.getResults());
 			System.out.println("basketbol.html oluşturuldu.");
 
-			JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
+			//JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
 			JsonStorage.save("basketbol", "RealScores", scraper.getResults());
 
 		} catch (Exception e) {
