@@ -28,8 +28,8 @@ public class CombinedHtmlReportGenerator {
 
 			String subBody = extractBody(subContent);
 			String detailBody = extractBody(detailContent);
-			String subStyle = stripBody(extractStyle(subContent));
-			String detStyle = stripBody(extractStyle(detailContent));
+			String subStyle = cleanStyles(extractStyle(subContent));
+			String detStyle = cleanStyles(extractStyle(detailContent));
 
 			// 2️⃣ Nihai sayfa
 			File dir = new File("public/basketbol");
@@ -39,26 +39,31 @@ public class CombinedHtmlReportGenerator {
 
 			try (FileWriter fw = new FileWriter(output)) {
 				fw.write("<!DOCTYPE html><html lang='tr'><head><meta charset='UTF-8'>");
-				fw.write("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
+				fw.write(
+						"<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>");
 				fw.write("<title>🏀 Basketbol Tahminleri + 💰 Hazır Kupon</title>");
 				fw.write("<style>");
 
 				// 🔹 Global reset + layout → her şey aynı genişlikte
 				fw.write("*,*::before,*::after{box-sizing:border-box;}");
-				fw.write("html,body{margin:0;padding:0;}");
+				fw.write("html,body{margin:0;padding:0;width:100%;overflow-x:hidden;}");
 				fw.write("body{font-family:Arial,sans-serif;background:#f7f8fa;color:#222;}");
-				fw.write("main{max-width:1200px;margin:0 auto;padding:0 10px;}");
-				fw.write("section{margin:24px 0;}");
-				fw.write("table{width:100%;border-collapse:collapse;}");
-				fw.write("th,td{border:1px solid #ddd;}");
 
-				// 🔹 Alt dosyalardan gelen stiller
+				fw.write("main{max-width:1200px;margin:0 auto;padding:0 10px;}");
+
+				fw.write("section{margin:24px 0;width:100%;overflow-x:hidden;}");
+
+				// 🔹 Tüm tablolar sabit genişlikte, overflow'u kendi içinde alır
+				fw.write("table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;}");
+				fw.write("th,td{border:1px solid #ddd;padding:6px;font-size:0.9rem;}");
+
+				// 🔹 Alt HTML'lerden gelen stiller
 				fw.write(subStyle);
 				fw.write(detStyle);
 
 				fw.write("</style></head><body>");
 				fw.write("<main>");
-				fw.write("<h1 style='text-align:center;margin:16px 0;'>" + day + "</h1>");
+				fw.write("<h1 style='text-align:center;margin:20px 0;'>" + day + "</h1>");
 
 				fw.write("<section id='sublist'>");
 				fw.write(subBody);
@@ -95,8 +100,12 @@ public class CombinedHtmlReportGenerator {
 		return (s != -1 && e != -1) ? html.substring(s + 7, e) : "";
 	}
 
-	// body{} kuralını sil (çakışma olmasın)
-	private static String stripBody(String css) {
-		return css.replaceAll("body\\s*\\{[^}]*\\}", "");
+	// body{}, html{} gibi global kurallar silinir (ana sayfayla çakışmasın diye)
+	private static String cleanStyles(String css) {
+		if (css == null)
+			return "";
+		css = css.replaceAll("body\\s*\\{[^}]*}", "");
+		css = css.replaceAll("html\\s*\\{[^}]*}", "");
+		return css;
 	}
 }

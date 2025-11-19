@@ -20,33 +20,43 @@ public class HtmlReportGenerator {
 		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
 
 		StringBuilder html = new StringBuilder();
-		html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
+		html.append("<!DOCTYPE html><html lang='tr'><head><meta charset='UTF-8'>");
+		html.append(
+				"<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>");
 		html.append("<title>🏀 Basketbol Tahminleri</title>");
 		html.append("<style>");
 
-		// 🔹 Temel layout
-		html.append("body{margin:0;padding:20px;font-family:'Segoe UI',Roboto,Arial,sans-serif;")
-				.append("background:#f3f6fa;color:#222;}");
-		html.append("h1{text-align:center;color:#004d80;margin-bottom:25px;font-size:26px;}");
+		// 🔹 Temel layout (standalone kullanım için)
+		html.append(
+				"body{margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#f3f6fa;color:#222;}");
+		html.append(".page{max-width:1200px;margin:0 auto;padding:16px 10px;}");
+		html.append("h1{text-align:center;color:#004d80;margin-bottom:16px;font-size:24px;}");
+
+		/*
+		 * --- Genel tablo kuralları (Combined üzerinde global table zaten override
+		 * ediyor) ---
+		 */
+		html.append("table{width:100%;border-collapse:collapse;}");
+		html.append("th,td{padding:8px;text-align:center;}");
 
 		/* --- Match card --- */
-		html.append(".match{background:#fff;border:1px solid #dce3ec;margin:18px 0;padding:18px;")
-				.append("border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}");
+		html.append(".match{background:#fff;border:1px solid #dce3ec;margin:18px 0;padding:18px;");
+		html.append("border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}");
 		html.append(".match:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,0.12);}");
 		html.append(".match.insufficient{background-color:#fff1f1;border-left:4px solid #dc3545;}");
 
 		/* --- Header --- */
-		html.append(".match-header{display:flex;justify-content:space-between;align-items:center;")
-				.append("flex-wrap:wrap;margin-bottom:10px;}");
-		html.append(".match-name{font-weight:700;color:#003366;font-size:1.5em;line-height:1.2;}");
-		html.append(".match-time{color:#004d80;font-size:1.3em;font-weight:600;}");
+		html.append(".match-header{display:flex;justify-content:space-between;align-items:center;");
+		html.append("flex-wrap:wrap;margin-bottom:10px;}");
+		html.append(".match-name{font-weight:700;color:#003366;font-size:1.3em;line-height:1.2;}");
+		html.append(".match-time{color:#004d80;font-size:1.1em;font-weight:600;}");
 
 		/* --- Odds Grid --- */
-		html.append(".odds-mini{background:#f8fafc;border:1px solid #dbe2ea;padding:12px;")
-				.append("border-radius:10px;margin:14px 0;}");
+		html.append(".odds-mini{background:#f8fafc;border:1px solid #dbe2ea;padding:12px;");
+		html.append("border-radius:10px;margin:14px 0;}");
 		html.append(".odds-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}");
-		html.append(".odds-cell{background:#fff;border:1px solid #ccd6e0;border-radius:8px;padding:8px;")
-				.append("text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.06);}");
+		html.append(".odds-cell{background:#fff;border:1px solid #ccd6e0;border-radius:8px;padding:8px;");
+		html.append("text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.06);}");
 		html.append(".highlight{background:#e9f9ec;border-color:#28a745!important;}");
 		html.append(".odds-label{font-weight:700;color:#004d80;font-size:0.95em;display:inline-block;}");
 		html.append(".odds-value{display:inline-block;font-weight:600;color:#111;font-size:0.9em;margin-left:4px;}");
@@ -54,32 +64,35 @@ public class HtmlReportGenerator {
 		html.append(".odds-pct{display:block;color:#555;font-size:0.82em;margin-top:2px;}");
 
 		/* --- Quick Summary --- */
-		html.append(".quick-summary table.qs{width:100%;border-collapse:collapse;background:#fff;")
-				.append("border:1px solid #ccd6e0;border-radius:8px;overflow:hidden;margin-top:10px;}");
-
+		html.append(".quick-summary{margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;}");
+		html.append(".quick-summary table.qs{width:100%;min-width:650px;border-collapse:collapse;background:#fff;");
+		html.append("border:1px solid #ccd6e0;border-radius:8px;overflow:hidden;}");
 		html.append(".quick-summary th,.quick-summary td{padding:8px;text-align:center;border:1px solid #e1e7ef;}");
-		html.append(".quick-summary th{background:#f0f5fb;color:#003366;font-weight:600;}");
-		html.append(".qs-odd{font-variant-numeric:tabular-nums;color:#333;}");
-		html.append(".qs-pick .pick{display:inline-block;padding:3px 10px;border-radius:12px;")
-				.append("background:#e7f1ff;color:#004d80;font-weight:700;}");
+		html.append(".quick-summary th{background:#f0f5fb;color:#003366;font-weight:600;font-size:0.9rem;}");
+		html.append(".qs-odd{font-variant-numeric:tabular-nums;color:#333;font-size:0.9rem;}");
+		html.append(".qs-pick .pick{display:inline-block;padding:3px 10px;border-radius:12px;");
+		html.append("background:#e7f1ff;color:#004d80;font-weight:700;font-size:0.9rem;}");
 		html.append(".qs-score{color:#111;font-weight:600;}");
-		
-		html.append(".quick-summary{overflow-x:auto;-webkit-overflow-scrolling:touch;}");
-		html.append(".quick-summary table.qs{min-width:650px;}");
 
-		/* --- Team Stats & History --- */
-		html.append(".team-stats{background:#e3f2fd;color:#0c5460;padding:10px 12px;border-radius:6px;")
-				.append("margin:8px 0;font-size:0.9em;}");
-		html.append(".stats{background:#fff;border:1px solid #dbe2ea;padding:18px;margin:20px 0;")
-				.append("border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);}");
-		html.append(".stats h3{color:#004d80;margin-top:0;}");
+		/* --- Team Stats --- */
+		html.append(".team-stats{background:#e3f2fd;color:#0c5460;padding:10px 12px;border-radius:6px;");
+		html.append("margin:8px 0;font-size:0.9em;}");
+		html.append(".stats{background:#fff;border:1px solid #dbe2ea;padding:18px;margin:20px 0;");
+		html.append("border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);}");
+		html.append(".stats h3{color:#004d80;margin-top:0;font-size:1.1rem;}");
 
 		/* --- Responsive --- */
-		html.append("@media (max-width:600px){.odds-grid{grid-template-columns:repeat(2,1fr);} }");
+		html.append("@media (max-width:600px){");
+		html.append(".odds-grid{grid-template-columns:repeat(2,1fr);}");
+		html.append(".match-name{font-size:1.1em;}");
+		html.append(".match-time{font-size:1em;}");
+		html.append("}");
 
 		html.append("</style></head><body>");
+		html.append("<div class='page'>");
 		html.append("<h1>🏀 Basketbol Tahminleri</h1>");
-		html.append("<p>Son güncelleme: ").append(LocalDateTime.now(istanbulZone)).append("</p>");
+		html.append("<p style='text-align:center;color:#555;margin-bottom:16px;'>Son güncelleme: ")
+				.append(LocalDateTime.now(istanbulZone)).append("</p>");
 
 		// İstatistikler
 		int detailUrlCount = 0;
@@ -222,11 +235,12 @@ public class HtmlReportGenerator {
 				.append("</p>");
 		html.append("</div>");
 
-		html.append("<p style='text-align:center;color:#666;margin-top:30px;'>");
+		html.append("<p style='text-align:center;color:#666;margin-top:24px;'>");
 		html.append("Bu veriler otomatik olarak çekilmiştir - Son güncelleme: ")
 				.append(LocalDateTime.now(istanbulZone));
 		html.append("</p>");
 
+		html.append("</div>"); // .page
 		html.append("</body></html>");
 
 		File dir = new File("public");
@@ -246,23 +260,32 @@ public class HtmlReportGenerator {
 		StringBuilder html = new StringBuilder();
 
 		html.append("<!DOCTYPE html><html lang='tr'><head><meta charset='UTF-8'>");
-		html.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
+		html.append(
+				"<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>");
 		html.append("<title>💰 Basketbol Kuponu</title>");
 		html.append("<style>");
-		html.append("body{font-family:Arial,sans-serif;background:#f7f8fa;margin:0;padding:20px;color:#222;}");
-		html.append("h1{text-align:center;color:#333;font-size:22px;margin-bottom:20px;}");
-		html.append("table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;");
+		html.append("body{font-family:Arial,sans-serif;background:#f7f8fa;margin:0;padding:0;color:#222;}");
+		html.append(".page{max-width:1200px;margin:0 auto;padding:16px 10px;}");
+		html.append("h1{text-align:center;color:#333;font-size:22px;margin-bottom:10px;}");
+		html.append(".table-wrapper{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px;}");
+		html.append("table{width:100%;border-collapse:collapse;min-width:650px;background:#fff;border-radius:8px;");
 		html.append("box-shadow:0 2px 8px rgba(0,0,0,0.1);}");
-		html.append("th,td{padding:10px 12px;text-align:center;border:1px solid #ddd;}");
-		html.append("th{background:#0077cc;color:#fff;font-size:15px;}");
+		html.append("th,td{padding:10px 12px;text-align:center;border:1px solid #ddd;font-size:0.9rem;}");
+		html.append("th{background:#0077cc;color:#fff;font-size:0.95rem;}");
 		html.append("tr:nth-child(even){background:#f3f6fa;}");
 		html.append("tr:hover{background:#eaf3ff;}");
-		html.append(".status-icon{font-size:1.2em;}");
+		html.append(".status-icon{font-size:1.1em;}");
 		html.append(".won{color:#28a745;}.lost{color:#dc3545;}.pending{color:#999;}");
+
+		html.append("@media (max-width:600px){");
+		html.append("h1{font-size:20px;}");
+		html.append("}");
 		html.append("</style></head><body>");
 
+		html.append("<div class='page'>");
 		html.append("<h1>💰 Basketbol Kuponu</h1>");
 		html.append("<p style='text-align:center;color:#555;'>Sistemin oluşturduğu öneri kuponu</p>");
+		html.append("<div class='table-wrapper'>");
 		html.append("<table><thead><tr>");
 		html.append("<th>🕒 Saat</th><th>🏀 Maç</th><th>🎯 Tahmin</th>")
 				.append("<th>📊 Skor Tahmini</th><th>📈 Gerçek Skor</th><th>Durum</th>");
@@ -298,7 +321,10 @@ public class HtmlReportGenerator {
 			html.append("</tr>");
 		}
 
-		html.append("</tbody></table></body></html>");
+		html.append("</tbody></table>");
+		html.append("</div>"); // .table-wrapper
+		html.append("</div>"); // .page
+		html.append("</body></html>");
 
 		File dir = new File("public");
 		if (!dir.exists())
