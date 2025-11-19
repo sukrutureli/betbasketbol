@@ -56,12 +56,16 @@ public class HtmlReportGenerator {
 		/* --- Quick Summary --- */
 		html.append(".quick-summary table.qs{width:100%;border-collapse:collapse;background:#fff;")
 				.append("border:1px solid #ccd6e0;border-radius:8px;overflow:hidden;margin-top:10px;}");
+
 		html.append(".quick-summary th,.quick-summary td{padding:8px;text-align:center;border:1px solid #e1e7ef;}");
 		html.append(".quick-summary th{background:#f0f5fb;color:#003366;font-weight:600;}");
 		html.append(".qs-odd{font-variant-numeric:tabular-nums;color:#333;}");
 		html.append(".qs-pick .pick{display:inline-block;padding:3px 10px;border-radius:12px;")
 				.append("background:#e7f1ff;color:#004d80;font-weight:700;}");
 		html.append(".qs-score{color:#111;font-weight:600;}");
+		
+		html.append(".quick-summary{overflow-x:auto;-webkit-overflow-scrolling:touch;}");
+		html.append(".quick-summary table.qs{min-width:650px;}");
 
 		/* --- Team Stats & History --- */
 		html.append(".team-stats{background:#e3f2fd;color:#0c5460;padding:10px 12px;border-radius:6px;")
@@ -308,7 +312,7 @@ public class HtmlReportGenerator {
 	}
 
 	private static String getRealScore(List<RealScores> rsList, String home, String away) {
-		String score = "(⏳)";
+		String score = " (⏳)";
 		int count = 0;
 
 		for (RealScores rs : rsList) {
@@ -323,7 +327,7 @@ public class HtmlReportGenerator {
 			}
 		}
 		if (count != 1)
-			score = "(⏳)";
+			score = " (⏳)";
 		return score;
 	}
 }
