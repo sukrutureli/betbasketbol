@@ -24,13 +24,15 @@ public class HtmlReportGenerator {
 		html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
 		html.append("<title>🏀 Basketbol Tahminleri</title>");
 		html.append("<style>");
-
-		html.append("html,body{margin:0;padding:0;width:100%;max-width:100%;overflow-x:hidden;}");
-		html.append(".match,.stats,.odds-mini,.quick-summary{width:100%;max-width:100%;box-sizing:border-box;}");
-		html.append("body{padding:10px !important;}");
-
+		// BURAYA EKLENECEK ⬇⬇⬇
 		html.append(
-				"body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f3f6fa; color: #222; }");
+				"body{margin:0!important;padding:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}");
+		html.append(
+				".match,.stats,.odds-mini,.quick-summary,.history-section{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding-left:10px!important;padding-right:10px!important;box-sizing:border-box!important;}");
+		html.append("table,.qs,.qs td,.qs th{width:100%!important;}");
+
+		html.append("body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; ... }");
+
 		html.append("h1 { text-align: center; color: #004d80; margin-bottom: 25px; font-size: 26px; }");
 
 		/* --- Match card --- */
