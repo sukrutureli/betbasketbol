@@ -1,29 +1,14 @@
-name: Build and Deploy to GitHub Pages
+name: Basketbol – Build and Deploy
 
 env:
   GITHUB_TOKEN: ${{ secrets.ADMIN_USER }}
+  MODE: basketbol
 
 on:
   schedule:
-    # BASKETBOL
-    - cron: '0 21 * * *'
-      env:
-        MODE: basketbol
-    # KONTROL
-    - cron: '0 23,4,16,19 * * *'
-      env:
-        MODE: kontrol
-
+    # TSİ 21:00 = UTC 18:00
+    - cron: '0 18 * * *'
   workflow_dispatch:
-    inputs:
-      mode:
-        description: "Manuel çalışma modu (basketbol / kontrol)"
-        required: true
-        default: "basketbol"
-        type: choice
-        options:
-          - basketbol
-          - kontrol
 
 jobs:
   scraper:
@@ -47,24 +32,10 @@ jobs:
           apt-get update
           apt-get install -y maven
 
-      - name: Determine Mode
-        id: setmode
+      - name: Run Basketbol Scraper
         run: |
-          if [ -n "${{ github.event.inputs.mode }}" ]; then
-            echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
-          elif [ -n "${{ github.event.schedule.env.MODE }}" ]; then
-            echo "mode=${{ github.event.schedule.env.MODE }}" >> $GITHUB_OUTPUT
-          else
-            echo "mode=basketbol" >> $GITHUB_OUTPUT
-          fi
-          echo "🔹 Çalışma modu: $(cat $GITHUB_OUTPUT)"
-
-      - name: Run Scraper
-        run: |
-          echo "🚀 ${MODE} modu başlatılıyor..."
-          mvn clean compile exec:java -Dexec.args="${MODE}"
-        env:
-          MODE: ${{ steps.setmode.outputs.mode }}
+          echo "🚀 Basketbol modu başlatılıyor..."
+          mvn clean compile exec:java -Dexec.args="basketbol"
 
       - name: Upload public directory as artifact
         uses: actions/upload-artifact@v4
@@ -83,7 +54,7 @@ jobs:
           name: public-html
           path: ./public
 
-      - name: Push updated files to sukrutureli/fathertahmin
+      - name: Push updated files to fathertahmin
         env:
           TOKEN: ${{ secrets.ADMIN_USER }}
         run: |
@@ -91,14 +62,14 @@ jobs:
           git clone "https://x-access-token:${TOKEN}@github.com/sukrutureli/fathertahmin.git" target-repo
           cd target-repo
 
-          echo "🔹 Copying updated files from public/..."
+          echo "🔹 Copying updated files..."
           cp -r ../public/* .
 
           echo "🔹 Committing changes..."
           git config user.name "Şükrü Türeli"
           git config user.email "sukrutureli@gmail.com"
           git add .
-          git commit -m "📦 Auto update public HTML ($(date +'%Y-%m-%d %H:%M'))" || echo "No changes to commit"
+          git commit -m "📦 [BASKETBOL] Auto update ($(date +'%Y-%m-%d %H:%M'))" || echo "No changes to commit"
 
-          echo "🔹 Pushing to main branch..."
+          echo "🔹 Pushing..."
           git push origin main
