@@ -108,7 +108,7 @@ public class Application {
 			// 🔹 Birleşik HTML raporu oluştur
 			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
 					historyManager, matchStats, results, lastPredictionManager.getPredictionData(), "basketbol.html",
-					getStringDay(false));
+					getStringDay(false), null);
 			System.out.println("✅ basketbol.html oluşturuldu (birleşik rapor).");
 
 			// 🔹 JSON çıktılarını kaydet
@@ -118,6 +118,7 @@ public class Application {
 			JsonStorage.save("basketbol", "TeamMatchHistory", historyManager.getTeamHistories());
 			JsonStorage.save("basketbol", "Match", matchStats);
 			JsonStorage.save("basketbol", "PredictionResult", results);
+			
 
 		} catch (Exception e) {
 			System.out.println("GENEL HATA: " + e.getMessage());
@@ -140,6 +141,9 @@ public class Application {
 
 		List<TeamMatchHistory> teamHistoryList = JsonReader.readFromGithub("basketbol", "TeamMatchHistory",
 				JsonReader.getToday(), TeamMatchHistory.class);
+		
+		List<RealScores> rsList = JsonReader.readFromGithub("basketbol", "RealScores",
+				JsonReader.getToday(), RealScores.class);
 
 		try {
 			System.out.println("Zaman: " + LocalDateTime.now(istanbulZone));
@@ -147,7 +151,7 @@ public class Application {
 			// Scraper'ı başlat
 			scraper = new ControlScraper();
 
-			Map<String, String> updatedScores = scraper.fetchFinishedScoresBasket();
+			Map<String, String> updatedScores = scraper.fetchFinishedScoresBasket(rsList);
 
 			PredictionUpdater.updateFromGithub(updatedScores, "PredictionData-");
 
@@ -168,10 +172,11 @@ public class Application {
 
 			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
 					historyManager, matchStats, results, lastPredictionManager.getPredictionData(), "basketbol.html",
-					getStringDay(true));
+					getStringDay(true), scraper.getResults());
 			System.out.println("basketbol.html oluşturuldu.");
 
 			JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
+			JsonStorage.save("basketbol", "RealScores", scraper.getResults());
 
 		} catch (Exception e) {
 			System.out.println("GENEL HATA: " + e.getMessage());

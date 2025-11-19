@@ -15,7 +15,7 @@ public class HtmlReportGenerator {
 
 	// === DETAYLI RAPOR ===
 	public static void generateHtml(List<MatchInfo> matches, MatchHistoryManager historyManager, List<Match> matchStats,
-			List<PredictionResult> results, String fileName) {
+			List<PredictionResult> results, String fileName, List<RealScores> realScores) {
 
 		ZoneId istanbulZone = ZoneId.of("Europe/Istanbul");
 
@@ -111,10 +111,14 @@ public class HtmlReportGenerator {
 			TeamMatchHistory teamHistory = historyManager.getTeamHistories().get(i);
 			boolean insufficient = (teamHistory != null && !teamHistory.isInfoEnough()
 					&& !teamHistory.isInfoEnoughWithoutRekabet());
+			
+			String homeStr = match.getName().split(" - ")[0];
+			String awayStr = match.getName().split(" - ")[1];
 
 			html.append("<div class='match").append(insufficient ? " insufficient" : "").append("'>");
 			html.append("<div class='match-header'>");
-			html.append("<div class='match-name'>").append(match.getName()).append("</div>");
+			html.append("<div class='match-name'>").append(match.getName()).append(getRealScore(realScores, homeStr, awayStr))
+					.append("</div>");
 			html.append("<div class='match-time'>").append(match.getTime()).append("</div>");
 //			html.append("<button onclick=\"toggleHistory(this)\">Göster</button>");
 			html.append("</div>");
@@ -366,5 +370,30 @@ public class HtmlReportGenerator {
 			return "win";
 		else
 			return "loss";
+	}
+
+	private static String getRealScore(List<RealScores> rsList, String home, String away) {
+		String score = String.format("(%s)", "⏳");
+
+		int count = 0;
+
+		for (RealScores rs : rsList) {
+			if (home.equals(rs.getHomeTeam()) && away.equals(rs.getAwayTeam())) {
+				score = String.format(" (%s)", rs.getScore());
+				count = 1;
+				break;
+			}
+
+			if (home.equals(rs.getHomeTeam()) || away.equals(rs.getAwayTeam())) {
+				score = String.format(" (%s)", rs.getScore());
+				count++;
+			}
+		}
+
+		if (count != 1) {
+			score = String.format(" (%s)", "⏳");
+		}
+
+		return score;
 	}
 }
