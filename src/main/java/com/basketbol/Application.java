@@ -153,7 +153,7 @@ public class Application {
 
 			Map<String, String> updatedScores = scraper.fetchFinishedScoresBasket(rsList);
 
-			PredictionUpdater.updateFromGithub(updatedScores, "PredictionData-");
+			List<PredictionData> predictions = PredictionUpdater.updateFromGithub(updatedScores, "PredictionData-");
 
 			for (int i = 0; i < matches.size(); i++) {
 				MatchInfo match = matches.get(i);
@@ -171,7 +171,7 @@ public class Application {
 			lastPredictionManager.fillPredictions();
 
 			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
-					historyManager, matchStats, results, lastPredictionManager.getPredictionData(), "basketbol.html",
+					historyManager, matchStats, results, predictions, "basketbol.html",
 					getStringDay(true), scraper.getResults());
 			System.out.println("basketbol.html oluşturuldu.");
 
