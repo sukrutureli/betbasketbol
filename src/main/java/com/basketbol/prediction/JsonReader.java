@@ -82,7 +82,7 @@ public class JsonReader {
 
         int status = conn.getResponseCode();
         if (status != 200) {
-            throw new IOException("❌ GitHub indirme hatası: HTTP " + status);
+        	System.out.println(String.format("⚠️ Dosya bulunamadı: %d", status));
         }
 
         try (InputStream in = conn.getInputStream()) {
