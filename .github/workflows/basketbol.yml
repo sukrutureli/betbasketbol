@@ -6,8 +6,8 @@ env:
 
 on:
   schedule:
-    # TSİ 21:00 = UTC 18:00
-    - cron: '0 18 * * *'
+    # TSİ 00:00 = UTC 21:00
+    - cron: '0 21 * * *'
   workflow_dispatch:
 
 jobs:
