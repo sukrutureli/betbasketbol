@@ -30,7 +30,6 @@ public class Application {
 			break;
 		case "kontrol":
 			runKontrol();
-			System.out.println("🧩 Kontrol modu henüz aktif değil (basketbol).");
 			break;
 		default:
 			System.out.println("⚠️ Geçersiz argüman: " + mode);

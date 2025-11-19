@@ -40,23 +40,21 @@ public class CombinedHtmlReportGenerator {
 				fw.write("<title>🏀 Basketbol Tahminleri + 💰 Hazır Kupon</title>");
 				fw.write("<style>");
 
-				//
-				// SUBLIST CSS → #sublist altında çalışsın
-				//
-				fw.write("#sublist {}\n");
-				fw.write(subStyle.replace("body", "#sublist body").replace("table", "#sublist table")
-						.replace("th", "#sublist th").replace("td", "#sublist td")
-						.replace(".match-mbs", "#sublist .match-mbs").replace(".won", "#sublist .won")
-						.replace(".lost", "#sublist .lost").replace(".pending", "#sublist .pending"));
+				fw.write("#sublist {\n");
+				fw.write("   width: 100%;\n");
+				fw.write("   box-sizing: border-box;\n");
+				fw.write("}\n");
+				fw.write("#sublist * { box-sizing: border-box; }\n");
 
-				//
-				// DETAIL CSS → #detailed altında çalışsın
-				//
-				fw.write("#detailed {}\n");
-				fw.write(detailStyle.replace("body", "#detailed body").replace(".match", "#detailed .match")
-						.replace(".odds", "#detailed .odds").replace(".quick-summary", "#detailed .quick-summary")
-						.replace("table", "#detailed table").replace("th", "#detailed th")
-						.replace("td", "#detailed td"));
+				fw.write(subStyle.replace("body {", "#sublist {").replace("body,", "#sublist,"));
+
+				fw.write("#detailed {\n");
+				fw.write("   width: 100%;\n");
+				fw.write("   box-sizing: border-box;\n");
+				fw.write("}\n");
+				fw.write("#detailed * { box-sizing: border-box; }\n");
+
+				fw.write(detailStyle.replace("body {", "#detailed {").replace("body,", "#detailed,"));
 
 				fw.write(
 						"section{margin:30px auto; max-width:1200px;} hr{border:none;border-top:3px solid #0077cc;margin:40px 0;}");
