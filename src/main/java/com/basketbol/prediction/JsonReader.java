@@ -83,11 +83,12 @@ public class JsonReader {
         int status = conn.getResponseCode();
         if (status != 200) {
         	System.out.println(String.format("⚠️ Dosya bulunamadı: %d", status));
+        	return List.of();
         }
 
         try (InputStream in = conn.getInputStream()) {
             return mapper.readerForListOf(clazz).readValue(in);
-        }
+        } 
     }
 
     /**
