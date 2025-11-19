@@ -24,6 +24,11 @@ public class HtmlReportGenerator {
 		html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
 		html.append("<title>🏀 Basketbol Tahminleri</title>");
 		html.append("<style>");
+
+		html.append("html,body{margin:0;padding:0;width:100%;max-width:100%;overflow-x:hidden;}");
+		html.append(".match,.stats,.odds-mini,.quick-summary{width:100%;max-width:100%;box-sizing:border-box;}");
+		html.append("body{padding:10px !important;}");
+
 		html.append(
 				"body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f3f6fa; color: #222; }");
 		html.append("h1 { text-align: center; color: #004d80; margin-bottom: 25px; font-size: 26px; }");
@@ -111,14 +116,14 @@ public class HtmlReportGenerator {
 			TeamMatchHistory teamHistory = historyManager.getTeamHistories().get(i);
 			boolean insufficient = (teamHistory != null && !teamHistory.isInfoEnough()
 					&& !teamHistory.isInfoEnoughWithoutRekabet());
-			
+
 			String homeStr = match.getName().split(" - ")[0];
 			String awayStr = match.getName().split(" - ")[1];
 
 			html.append("<div class='match").append(insufficient ? " insufficient" : "").append("'>");
 			html.append("<div class='match-header'>");
-			html.append("<div class='match-name'>").append(match.getName()).append(getRealScore(realScores, homeStr, awayStr))
-					.append("</div>");
+			html.append("<div class='match-name'>").append(match.getName())
+					.append(getRealScore(realScores, homeStr, awayStr)).append("</div>");
 			html.append("<div class='match-time'>").append(match.getTime()).append("</div>");
 //			html.append("<button onclick=\"toggleHistory(this)\">Göster</button>");
 			html.append("</div>");
