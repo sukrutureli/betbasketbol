@@ -361,14 +361,14 @@ public class TeamMatchHistory {
 		return maxStr;
 	}
 
-	public String getStyle(String type, Double possibility, Double odd) {
+	public String getStyle(String type, Double odd) {
 		String color = "background-color:#e8fbe8; border:1px solid #6ecf6e;";
 
 		if (!isInfoEnough() && !isInfoEnoughWithoutRekabet()) {
 			return "";
 		}
 		if (odd > 1.0) {
-			if (possibility > 0.6) {
+			if (type.equals(getMax())) {
 				return color;
 			}
 		}

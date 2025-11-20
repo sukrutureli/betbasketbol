@@ -252,29 +252,27 @@ public class CombinedHtmlReportGenerator {
 
 				// MS1 – MS2 – H1 – H2
 				html.append("<div class='odds-cell' style='")
-						.append(teamHistory.getStyle("MS1", teamHistory.getMs1(), match.getOdds().getMs1()))
-						.append("'>");
+						.append(teamHistory.getStyle("MS1", match.getOdds().getMs1())).append("'>");
 				html.append("<div class='odds-line'><span class='odds-label'>MS1:</span>")
 						.append("<span class='odds-value'>").append(match.getOdds().getMs1()).append("</span></div>");
 				html.append("<span class='odds-pct'>").append(MathUtils.fmtPct(teamHistory.getMs1()))
 						.append("</span></div>");
 
 				html.append("<div class='odds-cell' style='")
-						.append(teamHistory.getStyle("MS2", teamHistory.getMs2(), match.getOdds().getMs2()))
-						.append("'>");
+						.append(teamHistory.getStyle("MS2", match.getOdds().getMs2())).append("'>");
 				html.append("<div class='odds-line'><span class='odds-label'>MS2:</span>")
 						.append("<span class='odds-value'>").append(match.getOdds().getMs2()).append("</span></div>");
 				html.append("<span class='odds-pct'>").append(MathUtils.fmtPct(teamHistory.getMs2()))
 						.append("</span></div>");
 
-				html.append("<div class='odds-cell ")
-						.append(teamHistory.getStyle("H1", 0.0, match.getOdds().getH1Value())).append("'>");
+				html.append("<div class='odds-cell ").append(teamHistory.getStyle("H1", match.getOdds().getH1Value()))
+						.append("'>");
 				html.append("<div class='odds-line'><span class='odds-label'>H1 (").append(match.getOdds().getH1Value())
 						.append("):</span>").append("<span class='odds-value'>").append(match.getOdds().getH1())
 						.append("</span></div></div>");
 
-				html.append("<div class='odds-cell ")
-						.append(teamHistory.getStyle("H2", 0.0, match.getOdds().getH2Value())).append("'>");
+				html.append("<div class='odds-cell ").append(teamHistory.getStyle("H2", match.getOdds().getH2Value()))
+						.append("'>");
 				html.append("<div class='odds-line'><span class='odds-label'>H2 (").append(match.getOdds().getH2Value())
 						.append("):</span>").append("<span class='odds-value'>").append(match.getOdds().getH2())
 						.append("</span></div></div>");
@@ -285,8 +283,7 @@ public class CombinedHtmlReportGenerator {
 				html.append("<div class='odds-grid' style='margin-top:8px;'>");
 
 				html.append("<div class='odds-cell' style='")
-						.append(teamHistory.getStyle("Alt", teamHistory.getAlt(), match.getOdds().getUnder()))
-						.append("'>");
+						.append(teamHistory.getStyle("Alt", match.getOdds().getUnder())).append("'>");
 				html.append("<div class='odds-line'><span class='odds-label'>Alt (")
 						.append(match.getOdds().gethOverUnderValue()).append("):</span>")
 						.append("<span class='odds-value'>").append(match.getOdds().getUnder()).append("</span></div>");
@@ -294,8 +291,7 @@ public class CombinedHtmlReportGenerator {
 						.append("</span></div>");
 
 				html.append("<div class='odds-cell' style='")
-						.append(teamHistory.getStyle("Üst", teamHistory.getUst(), match.getOdds().getOver()))
-						.append("'>");
+						.append(teamHistory.getStyle("Üst", match.getOdds().getOver())).append("'>");
 				html.append("<div class='odds-line'><span class='odds-label'>Üst (")
 						.append(match.getOdds().gethOverUnderValue()).append("):</span>")
 						.append("<span class='odds-value'>").append(match.getOdds().getOver()).append("</span></div>");

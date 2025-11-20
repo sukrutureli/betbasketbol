@@ -118,7 +118,6 @@ public class Application {
 			JsonStorage.save("basketbol", "TeamMatchHistory", historyManager.getTeamHistories());
 			JsonStorage.save("basketbol", "Match", matchStats);
 			JsonStorage.save("basketbol", "PredictionResult", results);
-			
 
 		} catch (Exception e) {
 			System.out.println("GENEL HATA: " + e.getMessage());
@@ -141,9 +140,9 @@ public class Application {
 
 		List<TeamMatchHistory> teamHistoryList = JsonReader.readFromGithub("basketbol", "TeamMatchHistory",
 				JsonReader.getToday(), TeamMatchHistory.class);
-		
-		List<RealScores> rsList = JsonReader.readFromGithub("basketbol", "RealScores",
-				JsonReader.getToday(), RealScores.class);
+
+		List<RealScores> rsList = JsonReader.readFromGithub("basketbol", "RealScores", JsonReader.getToday(),
+				RealScores.class);
 
 		try {
 			System.out.println("Zaman: " + LocalDateTime.now(istanbulZone));
@@ -171,11 +170,12 @@ public class Application {
 			lastPredictionManager.fillPredictions();
 
 			CombinedHtmlReportGenerator.generateCombinedHtml(lastPredictionManager.getLastPrediction(), matches,
-					historyManager, matchStats, results, predictions, "basketbol.html",
-					getStringDay(true), scraper.getResults());
+					historyManager, matchStats, results, predictions, "basketbol.html", getStringDay(true),
+					scraper.getResults());
 			System.out.println("basketbol.html oluşturuldu.");
 
-			//JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
+			// JsonStorage.save("basketbol", "PredictionData",
+			// lastPredictionManager.getPredictionData());
 			JsonStorage.save("basketbol", "RealScores", scraper.getResults());
 
 		} catch (Exception e) {
