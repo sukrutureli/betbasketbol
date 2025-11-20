@@ -70,7 +70,7 @@ public class LastPredictionManager {
 		List<String> resultList = new ArrayList<String>();
 
 		if (!h.isInfoEnough() && !h.isInfoEnoughWithoutRekabet()) {
-			return null;
+			return resultList;
 		}
 		for (String t : tahminler) {
 
