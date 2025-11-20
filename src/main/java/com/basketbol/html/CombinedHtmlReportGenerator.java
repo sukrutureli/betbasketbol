@@ -384,19 +384,21 @@ public class CombinedHtmlReportGenerator {
 		String score = " (⏳)";
 		int count = 0;
 
-		for (RealScores rs : rsList) {
-			if (home.equals(rs.getHomeTeam()) && away.equals(rs.getAwayTeam())) {
-				score = " (" + rs.getScore() + ")";
-				count = 1;
-				break;
+		if (rsList != null) {
+			for (RealScores rs : rsList) {
+				if (home.equals(rs.getHomeTeam()) && away.equals(rs.getAwayTeam())) {
+					score = " (" + rs.getScore() + ")";
+					count = 1;
+					break;
+				}
+				if (home.equals(rs.getHomeTeam()) || away.equals(rs.getAwayTeam())) {
+					score = " (" + rs.getScore() + ")";
+					count++;
+				}
 			}
-			if (home.equals(rs.getHomeTeam()) || away.equals(rs.getAwayTeam())) {
-				score = " (" + rs.getScore() + ")";
-				count++;
-			}
+			if (count != 1)
+				score = " (⏳)";
 		}
-		if (count != 1)
-			score = " (⏳)";
 		return score;
 	}
 }
