@@ -112,12 +112,14 @@ public class Application {
 			System.out.println("✅ basketbol.html oluşturuldu (birleşik rapor).");
 
 			// 🔹 JSON çıktılarını kaydet
-			JsonStorage.save("basketbol", "PredictionData", lastPredictionManager.getPredictionData());
-			JsonStorage.save("basketbol", "LastPrediction", lastPredictionManager.getLastPrediction());
-			JsonStorage.save("basketbol", "MatchInfo", matches);
-			JsonStorage.save("basketbol", "TeamMatchHistory", historyManager.getTeamHistories());
-			JsonStorage.save("basketbol", "Match", matchStats);
-			JsonStorage.save("basketbol", "PredictionResult", results);
+			JsonStorage.save("basketbol", "PredictionData", getStringDay(false),
+					lastPredictionManager.getPredictionData());
+			JsonStorage.save("basketbol", "LastPrediction", getStringDay(false),
+					lastPredictionManager.getLastPrediction());
+			JsonStorage.save("basketbol", "MatchInfo", getStringDay(false), matches);
+			JsonStorage.save("basketbol", "TeamMatchHistory", getStringDay(false), historyManager.getTeamHistories());
+			JsonStorage.save("basketbol", "Match", getStringDay(false), matchStats);
+			JsonStorage.save("basketbol", "PredictionResult", getStringDay(false), results);
 
 		} catch (Exception e) {
 			System.out.println("GENEL HATA: " + e.getMessage());
@@ -176,7 +178,7 @@ public class Application {
 
 			// JsonStorage.save("basketbol", "PredictionData",
 			// lastPredictionManager.getPredictionData());
-			JsonStorage.save("basketbol", "RealScores", scraper.getResults());
+			JsonStorage.save("basketbol", "RealScores", JsonReader.getToday(), scraper.getResults());
 
 		} catch (Exception e) {
 			System.out.println("GENEL HATA: " + e.getMessage());
